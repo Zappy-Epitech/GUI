@@ -1,6 +1,7 @@
 #include "Gui.hpp"
 #include "../extern/flecs.hpp"
 #include "Spatial.hpp"
+#include "src/modules/Postframe.hpp"
 #include "src/modules/Raylib.hpp"
 #include <cstring>
 #include <raygui.h>
@@ -27,14 +28,15 @@ Gui::Gui(flecs::world &world) {
     world.component<Button>().member(flecs::String, "label");
     world.component<TextInput>();
     world.component<OnClick>();
-    world.component<TextUpdated>();
+    world.component<OnTextUpdate>();
 
-    world.system<Position2, Button>("Button System")
+    world.system<Position2, Button, OnClick>("Button System")
         .kind(flecs::OnUpdate)
         .run([](flecs::iter &it) {
             while (it.next()) {
                 auto positions = it.field<Position2>(0);
                 auto buttons = it.field<Button>(1);
+                auto onClicks = it.field<OnClick>(2);
 
                 for (auto i : it) {
                     const float textWidth = strlen(buttons[i].label) * fontSize * 0.5f;
@@ -44,18 +46,21 @@ Gui::Gui(flecs::world &world) {
                     Rectangle rect = { positions[i].x - width * 0.5f, positions[i].y, width, height };
 
                     if (GuiButton(rect, buttons[i].label)) {
-                        it.entity(i).emit<OnClick>();
+                        later([func = onClicks[i], entity = it.entity(i)](flecs::world &) {
+                            func(entity);
+                        });
                     }
                 }
             }
         });
 
-    world.system<Position2, TextInput>("Text Input System")
+    world.system<Position2, TextInput, OnTextUpdate>("Text Input System")
         .kind(flecs::OnUpdate)
         .run([](flecs::iter &it) {
             while (it.next()) {
                 auto positions = it.field<Position2>(0);
                 auto inputs = it.field<TextInput>(1);
+                auto onTextUpdates = it.field<OnTextUpdate>(2);
 
                 for (auto i : it) {
                     Rectangle rect = {
@@ -81,7 +86,9 @@ Gui::Gui(flecs::world &world) {
                     inputs[i].text.resize(std::strlen(inputs[i].text.c_str()));
 
                     if (previousText != inputs[i].text) {
-                        it.entity(i).emit(TextUpdated{ inputs[i].text });
+                        later([func = onTextUpdates[i], entity = it.entity(i), &text = inputs[i].text](flecs::world &) {
+                            func(entity, text);
+                        });
                     }
                 }
             }

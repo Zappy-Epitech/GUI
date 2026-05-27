@@ -9,7 +9,6 @@
 Raylib::Raylib(flecs::world &world) {
     world.module<Raylib>();
     world.import<Spatial>();
-    world.import<CameraController>();
 
     world.component<Color>();
     world.component<Cube>();

@@ -1,12 +1,11 @@
 #pragma once
 #include "../extern/flecs.hpp"
 #include <cstring>
+#include <functional>
 #include <string>
 
-struct OnClick {};
-struct TextUpdated {
-    std::string &text;
-};
+struct OnClick : std::function<void(flecs::entity)> {};
+struct OnTextUpdate : std::function<void(flecs::entity, std::string &)> {};
 
 struct Button {
     char *label = strdup("No Label");

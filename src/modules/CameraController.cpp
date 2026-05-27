@@ -1,5 +1,6 @@
 #include "CameraController.hpp"
 #include "../extern/flecs.hpp"
+#include "src/modules/Gui.hpp"
 #include <cmath>
 #include <raylib.h>
 
@@ -37,6 +38,10 @@ CameraController::CameraController(flecs::world &world) {
     world.system("Camera Controls")
         .kind(flecs::OnUpdate)
         .run([](flecs::iter &it) {
+            if (it.world().get<HasInputActive>().value) {
+                return;
+            }
+
             float moveStep = moveSpeed * it.delta_time();
             float lookStep = lookSpeed * it.delta_time();
 

@@ -10,6 +10,6 @@ jobs:
     steps:
       - name: Trigger submodule update on Common
         run: |
-          gh workflow run update-submodules.yml --repo ORG/Common
+          gh workflow run update-submodules.yml --repo Zappy-Epitech/Common
         env:
           GH_TOKEN: ${{ secrets.COMMON_TOKEN }}

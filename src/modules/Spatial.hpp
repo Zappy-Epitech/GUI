@@ -11,7 +11,9 @@ struct Position2 {
     float x, y;
 
     static Position2 center();
+    static Position2 bottom_center();
     static Position2 splat(float value);
+
     Position2 with_x(float x);
     Position2 with_y(float y);
     Position2 sub_x(float x);

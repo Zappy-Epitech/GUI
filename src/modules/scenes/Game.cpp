@@ -23,11 +23,20 @@ Game::Game(flecs::world &world) {
         .set(Position3::zero().with_y(1.2));
 
     Grid::spawn(world, 10, 10);
+
     world.entity("Exit Button")
         .set(Button("Exit"))
         .set(Position2::splat(100).with_y(50))
         .set(OnClick([world](flecs::entity) mutable {
             world.entity<Game>().destruct();
             world.import<Home>();
+        }));
+
+    world.entity("Command Input")
+        .set(TextInput(""))
+        .set(Position2::bottom_center())
+        .set(OnEnter([](flecs::entity, std::string &text) {
+            printf("Enter pressed: %s\n", text.c_str());
+            text.clear();
         }));
 }

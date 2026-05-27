@@ -5,7 +5,11 @@
 #include <string>
 
 struct OnClick : std::function<void(flecs::entity)> {};
+struct OnEnter : std::function<void(flecs::entity, std::string &)> {};
 struct OnTextUpdate : std::function<void(flecs::entity, std::string &)> {};
+struct HasInputActive {
+    bool value = false;
+};
 
 struct Button {
     char *label = strdup("No Label");

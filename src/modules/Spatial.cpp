@@ -25,6 +25,10 @@ Position2 Position2::center() {
     return { WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT / 2.0f };
 }
 
+Position2 Position2::bottom_center() {
+    return { WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT - 100.0f };
+}
+
 Position2 Position2::splat(float value) {
     return { value, value };
 }

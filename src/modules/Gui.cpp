@@ -30,8 +30,11 @@ Gui::Gui(flecs::world &world) {
     world.component<TextInput>();
     world.component<OnClick>();
     world.component<OnTextUpdate>();
+    world.singleton<HasInputActive>();
 
     static Sound ButtonSound;
+
+    world.set<HasInputActive>({ false });
 
     world.system().kind(flecs::OnStart).run([](auto) {
         ButtonSound = LoadSound("./assets/sounds/button.wav");
@@ -62,13 +65,14 @@ Gui::Gui(flecs::world &world) {
             }
         });
 
-    world.system<Position2, TextInput, OnTextUpdate>("Text Input System")
+    world.system<Position2, TextInput>("Text Input System")
         .kind<Render2D>()
         .run([](flecs::iter &it) {
+            bool isEnterButtonReleased = IsKeyPressed(KEY_ENTER);
+
             while (it.next()) {
                 auto positions = it.field<Position2>(0);
                 auto inputs = it.field<TextInput>(1);
-                auto onTextUpdates = it.field<OnTextUpdate>(2);
 
                 for (auto i : it) {
                     Rectangle rect = {
@@ -81,6 +85,7 @@ Gui::Gui(flecs::world &world) {
                     if (!inputs[i].active) {
                         if (GuiTextBox(rect, inputs[i].text.data(), static_cast<int>(inputs[i].text.size() + 1), false)) {
                             inputs[i].active = true;
+                            it.world().set<HasInputActive>({ true });
                         }
                         continue;
                     }
@@ -90,14 +95,25 @@ Gui::Gui(flecs::world &world) {
 
                     if (GuiTextBox(rect, inputs[i].text.data(), bufferSize, true)) {
                         inputs[i].active = false;
+                        it.world().set<HasInputActive>({ false });
                     }
+
                     inputs[i].text.resize(std::strlen(inputs[i].text.c_str()));
 
-                    if (previousText != inputs[i].text) {
-                        later([func = onTextUpdates[i], entity = it.entity(i), &text = inputs[i].text](flecs::world &) {
+                    if (isEnterButtonReleased && it.entity(i).has<OnEnter>()) {
+                        later([func = it.entity(i).get<OnEnter>(), entity = it.entity(i), &text = inputs[i].text](flecs::world &) {
                             func(entity, text);
-                            PlaySound(ButtonSound);
                         });
+                    }
+
+                    if (it.entity(i).has<OnTextUpdate>()) {
+
+                        if (previousText != inputs[i].text) {
+                            later([func = it.entity(i).get<OnTextUpdate>(), entity = it.entity(i), &text = inputs[i].text](flecs::world &) {
+                                func(entity, text);
+                                PlaySound(ButtonSound);
+                            });
+                        }
                     }
                 }
             }

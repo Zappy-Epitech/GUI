@@ -9,6 +9,12 @@
 Game::Game(flecs::world &world) {
     world.module<Game>();
     world.import<CameraController>();
+
+    world.entity()
+        .set(LoadModel("./assets/steve/scene.gltf"))
+        .set(Scale{ 0.03f })
+        .set(Position3::zero().with_y(1.2));
+
     Grid::spawn(world, 10, 10);
     world.entity("Exit Button")
         .set(Button("Exit"))

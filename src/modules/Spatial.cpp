@@ -16,6 +16,9 @@ Spatial::Spatial(flecs::world &world) {
     world.component<Size2>()
         .member<float>("width")
         .member<float>("height");
+
+    world.component<Scale>()
+        .member<float>("scale");
 }
 
 Position2 Position2::center() {
@@ -48,4 +51,44 @@ Position2 Position2::add_x(float x) {
 
 Position2 Position2::add_y(float y) {
     return { x, this->y + y };
+}
+
+Position3 Position3::zero() {
+    return { 0, 0, 0 };
+}
+
+Position3 Position3::with_x(float x) {
+    return { x, y, z };
+}
+
+Position3 Position3::with_y(float y) {
+    return { x, y, z };
+}
+
+Position3 Position3::with_z(float z) {
+    return { x, y, z };
+}
+
+Position3 Position3::sub_x(float x) {
+    return { this->x - x, y, z };
+}
+
+Position3 Position3::sub_y(float y) {
+    return { x, this->y - y, z };
+}
+
+Position3 Position3::sub_z(float z) {
+    return { x, y, this->z - z };
+}
+
+Position3 Position3::add_x(float x) {
+    return { this->x + x, y, z };
+}
+
+Position3 Position3::add_y(float y) {
+    return { x, this->y + y, z };
+}
+
+Position3 Position3::add_z(float z) {
+    return { x, y, this->z + z };
 }

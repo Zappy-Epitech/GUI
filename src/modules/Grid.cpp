@@ -11,11 +11,13 @@ static constexpr float cellPadding = 0.1f;
 
 Grid::Grid(flecs::world &world) {
     world.component<GridCell>();
+    world.system().kind(flecs::OnStart).run([world](auto) {
+        Model model = LoadModel("./assets/grass/scene.gltf");
 
-    world.prefab<GridCell>()
-        .set(GREEN)
-        .set(cellSize)
-        .add<Cube>();
+        world.prefab<GridCell>()
+            .set(model)
+            .set(Scale{ 0.4 });
+    });
 }
 
 void Grid::spawn(const flecs::world &world, uint width, uint height) {
@@ -29,10 +31,7 @@ void Grid::spawn(const flecs::world &world, uint width, uint height) {
             world.entity(std::format("GridCell({}, {})", x, y).c_str())
                 .is_a<GridCell>()
                 .child_of(grid)
-                .set(Position3{ xPosition, 0.0f, yPosition })
-                .set(GREEN)
-                .set(cellSize)
-                .add<Cube>();
+                .set(Position3{ xPosition, 0.0f, yPosition });
         }
     }
 }

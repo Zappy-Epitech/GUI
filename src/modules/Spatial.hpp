@@ -21,10 +21,25 @@ struct Position2 {
 };
 struct Position3 {
     float x, y, z;
+
+    static Position3 zero();
+    Position3 with_x(float x);
+    Position3 with_y(float y);
+    Position3 with_z(float z);
+    Position3 sub_x(float x);
+    Position3 sub_y(float y);
+    Position3 sub_z(float z);
+    Position3 add_x(float x);
+    Position3 add_y(float y);
+    Position3 add_z(float z);
 };
 
 struct Size2 {
     float width, height;
+};
+
+struct Scale {
+    float value;
 };
 
 struct Spatial {

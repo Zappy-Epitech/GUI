@@ -24761,6 +24761,8 @@ inline uint32_t get_generation(flecs::entity_t e) {
 
 struct scoped_world;
 
+struct Scene {};
+
 /**
  * @defgroup cpp_world World
  * @ingroup cpp_core

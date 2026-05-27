@@ -3,7 +3,6 @@
 #include "CameraController.hpp"
 #include "Spatial.hpp"
 #include <bit>
-#include <cstdlib>
 #include <raygui.h>
 #include <raylib.h>
 
@@ -16,19 +15,18 @@ Raylib::Raylib(flecs::world &world) {
     world.component<Cube>();
 
     world.system("Setup Window").kind(flecs::OnStart).run([](flecs::iter &) {
+        SetConfigFlags(FLAG_WINDOW_ALWAYS_RUN);
+        SetConfigFlags(FLAG_MSAA_4X_HINT);
         InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Zappy");
-        SetTargetFPS(0);
+        SetTargetFPS(120);
         GuiLoadStyleDefault();
         GuiSetStyle(DEFAULT, TEXT_SIZE, 32);
         GuiSetStyle(DEFAULT, TEXT_SPACING, 5);
     });
 
-    world.system("Begin Frame").kind(flecs::PreUpdate).run([](flecs::iter &) {
+    world.system("Begin Frame").kind(flecs::PreUpdate).run([](flecs::iter &it) {
         if (WindowShouldClose()) {
-            exit(0);
-        }
-        if (IsWindowMinimized() || !IsWindowFocused()) {
-            return;
+            return it.world().quit();
         }
         BeginDrawing();
         ClearBackground(BLACK);
@@ -53,7 +51,7 @@ Raylib::Raylib(flecs::world &world) {
         });
 
     world.system("End Frame").kind(flecs::PostUpdate).run([](flecs::iter &) {
-        if (IsWindowReady() && !IsWindowMinimized() && IsWindowFocused()) {
+        if (IsWindowReady()) {
             EndDrawing();
         }
     });

@@ -36,10 +36,9 @@ CameraController::CameraController(flecs::world &world) {
 
     world.system("Camera Controls")
         .kind(flecs::OnUpdate)
-        .run([](flecs::iter &) {
-            float dt = GetFrameTime();
-            float moveStep = moveSpeed * dt;
-            float lookStep = lookSpeed * dt;
+        .run([](flecs::iter &it) {
+            float moveStep = moveSpeed * it.delta_time();
+            float lookStep = lookSpeed * it.delta_time();
 
             if (IsKeyDown(KEY_RIGHT)) {
                 cameraYaw -= lookStep;

@@ -5,4 +5,10 @@ namespace flecs {
 struct world;
 };
 
-void spawnGrid(flecs::world &world, uint width, uint height);
+struct GridCell {};
+
+struct Grid {
+    Grid(flecs::world &world);
+
+    static void spawn(flecs::world &world, uint width, uint height);
+};

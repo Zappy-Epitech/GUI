@@ -14,7 +14,7 @@ int main() {
     world.import<Raylib>();
     world.import<Gui>();
 
-    spawnGrid(world, 10, 10);
+    Grid::spawn(world, 10, 10);
 
     world.entity("Button")
         .set(Button("Click Me !"))
@@ -24,7 +24,7 @@ int main() {
         });
 
     world.app()
-        .target_fps(120)
+        .target_fps(90)
         .enable_stats()
         .enable_rest()
         .threads(4)

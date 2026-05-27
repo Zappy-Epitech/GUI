@@ -10,9 +10,6 @@
 #include <raylib.h>
 #include <sys/types.h>
 
-const char *PlayButton = "PlayButton";
-const char *IpInput = "IpInput";
-
 int main() {
     flecs::world world;
 

@@ -14,6 +14,18 @@ Raylib::Raylib(flecs::world &world) {
     world.component<Cube>();
     world.component<Model>();
 
+    world.component<Render3D>()
+        .add(flecs::Phase)
+        .depends_on(flecs::PostUpdate);
+
+    world.component<Render2D>()
+        .add(flecs::Phase)
+        .depends_on<Render3D>();
+
+    world.component<PostRender>()
+        .add(flecs::Phase)
+        .depends_on<Render2D>();
+
     world.system("Setup Window")
         .kind(flecs::OnStart)
         .run([](flecs::iter &) {
@@ -21,12 +33,13 @@ Raylib::Raylib(flecs::world &world) {
             SetConfigFlags(FLAG_MSAA_4X_HINT);
             InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Zappy");
             SetTargetFPS(120);
+            InitAudioDevice();
             GuiLoadStyleDefault();
             GuiSetStyle(DEFAULT, TEXT_SIZE, 32);
             GuiSetStyle(DEFAULT, TEXT_SPACING, 5);
         });
 
-    world.system("Begin Frame").kind(flecs::PreUpdate).run([](flecs::iter &it) {
+    world.system("BeginFrame").kind(flecs::PreUpdate).run([](flecs::iter &it) {
         if (WindowShouldClose()) {
             return it.world().quit();
         }
@@ -34,14 +47,14 @@ Raylib::Raylib(flecs::world &world) {
         ClearBackground(BLACK);
     });
 
-    world.system("Begin 3d")
-        .kind(flecs::PostUpdate)
+    world.system("Begin3D")
+        .kind<Render3D>()
         .run([](flecs::iter &) {
             BeginMode3D(CameraController::camera());
         });
 
     world.system<Position3, Size2, Color>("Render Cube")
-        .kind(flecs::PostUpdate)
+        .kind<Render3D>()
         .with<Cube>()
         .run([](flecs::iter &it) {
             while (it.next()) {
@@ -57,19 +70,19 @@ Raylib::Raylib(flecs::world &world) {
         });
 
     world.system<const Position3, const Model, const Scale>("Render Model")
-        .kind(flecs::PostUpdate)
+        .kind<Render3D>()
         .each([](const Position3 &position, const Model &model, const Scale &scale) {
             DrawModel(model, std::bit_cast<Vector3>(position), scale.value, WHITE);
         });
 
-    world.system("End 3d")
-        .kind(flecs::PostUpdate)
+    world.system("End3D")
+        .kind<Render3D>()
         .run([](flecs::iter &) {
             EndMode3D();
         });
 
-    world.system("End Frame")
-        .kind(flecs::PostUpdate)
+    world.system("EndFrame")
+        .kind<PostRender>()
         .run([](flecs::iter &) {
             if (IsWindowReady()) {
                 EndDrawing();

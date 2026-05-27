@@ -18,11 +18,11 @@ static float cameraYaw = 0.0f;
 static float cameraPitch = -0.491532f;
 
 static bool isForwardDown() {
-    return IsKeyDown(KEY_Z) || IsKeyDown(KEY_W);
+    return IsKeyDown(KEY_W);
 }
 
 static bool isLeftDown() {
-    return IsKeyDown(KEY_Q) || IsKeyDown(KEY_A);
+    return IsKeyDown(KEY_A);
 }
 } // namespace
 
@@ -85,6 +85,12 @@ CameraController::CameraController(flecs::world &world) {
             if (IsKeyDown(KEY_D)) {
                 controlledCamera.position.x -= right.x * moveStep;
                 controlledCamera.position.z -= right.z * moveStep;
+            }
+            if (IsKeyDown(KEY_Q)) {
+                controlledCamera.position.y -= moveStep;
+            }
+            if (IsKeyDown(KEY_E)) {
+                controlledCamera.position.y += moveStep;
             }
 
             Vector3 lookDirection = {

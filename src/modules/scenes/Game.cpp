@@ -5,13 +5,20 @@
 #include "src/modules/Gui.hpp"
 #include "src/modules/Spatial.hpp"
 #include "src/modules/scenes/Home.hpp"
+#include <raylib.h>
 
 Game::Game(flecs::world &world) {
     world.module<Game>();
     world.import<CameraController>();
 
+    static Model SteveModel = {};
+
+    if (SteveModel.meshCount == 0) {
+        SteveModel = LoadModel("./assets/steve/scene.gltf");
+    }
+
     world.entity()
-        .set(LoadModel("./assets/steve/scene.gltf"))
+        .set(SteveModel)
         .set(Scale{ 0.03f })
         .set(Position3::zero().with_y(1.2));
 

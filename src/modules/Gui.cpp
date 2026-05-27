@@ -3,6 +3,7 @@
 #include "Spatial.hpp"
 #include "src/modules/Postframe.hpp"
 #include "src/modules/Raylib.hpp"
+#include <cstdio>
 #include <cstring>
 #include <raygui.h>
 #include <raylib.h>
@@ -30,8 +31,14 @@ Gui::Gui(flecs::world &world) {
     world.component<OnClick>();
     world.component<OnTextUpdate>();
 
+    static Sound ButtonSound;
+
+    world.system().kind(flecs::OnStart).run([](auto) {
+        ButtonSound = LoadSound("./assets/sounds/button.wav");
+    });
+
     world.system<Position2, Button, OnClick>("Button System")
-        .kind(flecs::OnUpdate)
+        .kind<Render2D>()
         .run([](flecs::iter &it) {
             while (it.next()) {
                 auto positions = it.field<Position2>(0);
@@ -48,6 +55,7 @@ Gui::Gui(flecs::world &world) {
                     if (GuiButton(rect, buttons[i].label)) {
                         later([func = onClicks[i], entity = it.entity(i)](flecs::world &) {
                             func(entity);
+                            PlaySound(ButtonSound);
                         });
                     }
                 }
@@ -55,7 +63,7 @@ Gui::Gui(flecs::world &world) {
         });
 
     world.system<Position2, TextInput, OnTextUpdate>("Text Input System")
-        .kind(flecs::OnUpdate)
+        .kind<Render2D>()
         .run([](flecs::iter &it) {
             while (it.next()) {
                 auto positions = it.field<Position2>(0);
@@ -88,6 +96,7 @@ Gui::Gui(flecs::world &world) {
                     if (previousText != inputs[i].text) {
                         later([func = onTextUpdates[i], entity = it.entity(i), &text = inputs[i].text](flecs::world &) {
                             func(entity, text);
+                            PlaySound(ButtonSound);
                         });
                     }
                 }

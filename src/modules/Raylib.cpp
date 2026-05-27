@@ -3,6 +3,8 @@
 #include "CameraController.hpp"
 #include "Spatial.hpp"
 #include <bit>
+#include <cstdlib>
+#include <raygui.h>
 #include <raylib.h>
 
 Raylib::Raylib(flecs::world &world) {
@@ -16,21 +18,24 @@ Raylib::Raylib(flecs::world &world) {
     world.system("Setup Window").kind(flecs::OnStart).run([](flecs::iter &) {
         InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Zappy");
         SetTargetFPS(0);
+        GuiLoadStyleDefault();
+        GuiSetStyle(DEFAULT, TEXT_SIZE, 32);
+        GuiSetStyle(DEFAULT, TEXT_SPACING, 5);
     });
 
-    world.system("Begin Frame").kind(flecs::PreUpdate).run([](flecs::iter &it) {
+    world.system("Begin Frame").kind(flecs::PreUpdate).run([](flecs::iter &) {
         if (WindowShouldClose()) {
-            return it.world().quit();
+            exit(0);
         }
         if (IsWindowMinimized() || !IsWindowFocused()) {
             return;
         }
         BeginDrawing();
-        ClearBackground(RAYWHITE);
+        ClearBackground(BLACK);
     });
 
     world.system<Position3, Size2, Color>("Render Cube")
-        .kind(flecs::PostUpdate)
+        .kind(flecs::OnUpdate)
         .with<Cube>()
         .run([](flecs::iter &it) {
             BeginMode3D(CameraController::camera());

@@ -10,9 +10,19 @@ struct world;
 struct Position2 {
     float x, y;
 
-    static Position2 center() {
-        return { WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT / 2.0f };
-    }
+    static Position2 center();
+
+    Position2 with_x(float x);
+
+    Position2 with_y(float y);
+
+    Position2 sub_x(float x);
+
+    Position2 sub_y(float y);
+
+    Position2 add_x(float x);
+
+    Position2 add_y(float y);
 };
 struct Position3 {
     float x, y, z;

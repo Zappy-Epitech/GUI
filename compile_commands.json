@@ -1,0 +1,28 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/clang++",
+      "-I.",
+      "-Ivendor/raygui/src",
+      "-I/usr/local/include",
+      "-std=c++23",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-g3",
+      "-c",
+      "-I",
+      "/home/suleyman/.local/include",
+      "-I",
+      "/home/suleyman/.local/include",
+      "-I",
+      ".",
+      "-o",
+      ".build/obj/src/modules/Gui.o",
+      "src/modules/Gui.cpp"
+    ],
+    "directory": "/home/suleyman/zappy_gui",
+    "file": "/home/suleyman/zappy_gui/src/modules/Gui.cpp",
+    "output": "/home/suleyman/zappy_gui/.build/obj/src/modules/Gui.o"
+  }
+]

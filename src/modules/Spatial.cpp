@@ -17,3 +17,31 @@ Spatial::Spatial(flecs::world &world) {
         .member<float>("width")
         .member<float>("height");
 }
+
+Position2 Position2::center() {
+    return { WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT / 2.0f };
+}
+
+Position2 Position2::with_x(float x) {
+    return { x, y };
+}
+
+Position2 Position2::with_y(float y) {
+    return { x, y };
+}
+
+Position2 Position2::sub_x(float x) {
+    return { this->x - x, y };
+}
+
+Position2 Position2::sub_y(float y) {
+    return { x, this->y - y };
+}
+
+Position2 Position2::add_x(float x) {
+    return { this->x + x, y };
+}
+
+Position2 Position2::add_y(float y) {
+    return { x, this->y + y };
+}

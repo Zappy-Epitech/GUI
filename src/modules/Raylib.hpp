@@ -5,6 +5,8 @@ namespace flecs {
 struct world;
 }
 
+struct Cube {};
+
 struct Raylib {
     Raylib(flecs::world &world);
 };

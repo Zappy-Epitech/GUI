@@ -13,14 +13,14 @@ int main() {
     world.import<Spatial>();
     world.import<Raylib>();
     world.import<Gui>();
+    world.import<Grid>();
 
-    Grid::spawn(world, 10, 10);
-
-    world.entity("Button")
-        .set(Button("Click Me !"))
-        .set(Position2{ 10, 10 })
+    world.entity("Play Button")
+        .set(Button("Play !"))
+        .set(Position2::center())
         .observe<OnClick>([](flecs::entity e) {
-            puts("Clicked");
+            Grid::spawn(e.world(), 10, 10);
+            e.destruct();
         });
 
     world.app()

@@ -1,13 +1,20 @@
 #include "Raylib.hpp"
 #include "../extern/flecs.hpp"
-#include <cstdio>
+#include "CameraController.hpp"
+#include "Spatial.hpp"
+#include <bit>
 #include <raylib.h>
 
 Raylib::Raylib(flecs::world &world) {
     world.module<Raylib>();
+    world.import<Spatial>();
+    world.import<CameraController>();
+
+    world.component<Color>();
+    world.component<Cube>();
 
     world.system("Setup Window").kind(flecs::OnStart).run([](flecs::iter &) {
-        InitWindow(1920, 1080, "Zappy");
+        InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Zappy");
         SetTargetFPS(0);
     });
 
@@ -19,10 +26,28 @@ Raylib::Raylib(flecs::world &world) {
             return;
         }
         BeginDrawing();
-        ClearBackground(BLACK);
+        ClearBackground(RAYWHITE);
     });
 
-    world.system("End Frame").kind(flecs::PostUpdate).run([](flecs::iter &it) {
+    world.system<Position3, Size2, Color>("Render Cube")
+        .kind(flecs::PostUpdate)
+        .with<Cube>()
+        .run([](flecs::iter &it) {
+            BeginMode3D(CameraController::camera());
+            while (it.next()) {
+                auto positions = it.field<Position3>(0);
+                auto sizes = it.field<Size2>(1);
+                auto colors = it.field<Color>(2);
+
+                for (auto i : it) {
+                    DrawCube(std::bit_cast<Vector3>(positions[i]), sizes[i].width, sizes[i].height, sizes[i].height, colors[i]);
+                    DrawCubeWires(std::bit_cast<Vector3>(positions[i]), sizes[i].width, sizes[i].height, sizes[i].height, RED);
+                }
+            }
+            EndMode3D();
+        });
+
+    world.system("End Frame").kind(flecs::PostUpdate).run([](flecs::iter &) {
         if (IsWindowReady() && !IsWindowMinimized() && IsWindowFocused()) {
             EndDrawing();
         }

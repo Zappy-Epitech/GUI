@@ -8,6 +8,11 @@ Spatial::Spatial(flecs::world &world) {
         .member<float>("x")
         .member<float>("y");
 
+    world.component<Position3>()
+        .member<float>("x")
+        .member<float>("y")
+        .member<float>("z");
+
     world.component<Size2>()
         .member<float>("width")
         .member<float>("height");

@@ -26,12 +26,14 @@ Gui::Gui(flecs::world &world) {
                 auto buttons = it.field<Button>(1);
 
                 for (auto i : it) {
-                    const float textWidth = strlen(buttons[i].label) * fontSize * 0.505f;
+                    const float textWidth = strlen(buttons[i].label) * fontSize * 0.5f;
                     const float width = textWidth + paddingX;
                     const float height = fontSize + paddingY;
                     Color color = RAYWHITE;
 
-                    if (CheckCollisionPointRec(position, { positions[i].x, positions[i].y, width, height })) {
+                    Rectangle rect = { positions[i].x - width * 0.5f, positions[i].y, width, height };
+
+                    if (CheckCollisionPointRec(position, rect)) {
                         if (mouseReleased) {
                             it.entity(i).emit<OnClick>();
                         }
@@ -40,13 +42,11 @@ Gui::Gui(flecs::world &world) {
                         }
                     }
 
-                    DrawRectangleRec(
-                        { positions[i].x, positions[i].y, width, height },
-                        color);
+                    DrawRectangleRec(rect, color);
 
                     DrawText(
                         buttons[i].label,
-                        positions[i].x + (width - textWidth) * 0.5f,
+                        positions[i].x - textWidth * 0.5f,
                         positions[i].y + (height - fontSize) * 0.5f,
                         fontSize,
                         BLACK);

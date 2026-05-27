@@ -10,5 +10,5 @@ struct GridCell {};
 struct Grid {
     Grid(flecs::world &world);
 
-    static void spawn(flecs::world &world, uint width, uint height);
+    static void spawn(const flecs::world &world, uint width, uint height);
 };

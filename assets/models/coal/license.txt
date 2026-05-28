@@ -1,0 +1,11 @@
+Model Information:
+* title:	Coal
+* source:	https://sketchfab.com/3d-models/coal-2984c2f197aa4090b377a352f427c6f9
+* author:	delta2520 (https://sketchfab.com/delta2520)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Coal" (https://sketchfab.com/3d-models/coal-2984c2f197aa4090b377a352f427c6f9) by delta2520 (https://sketchfab.com/delta2520) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

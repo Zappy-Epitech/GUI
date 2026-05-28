@@ -1,0 +1,11 @@
+Model Information:
+* title:	Minecraft Diamond
+* source:	https://sketchfab.com/3d-models/minecraft-diamond-f322b1f06bfd438bb20d8af16e92cc14
+* author:	William Zarek (https://sketchfab.com/bugbilly)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Minecraft Diamond" (https://sketchfab.com/3d-models/minecraft-diamond-f322b1f06bfd438bb20d8af16e92cc14) by William Zarek (https://sketchfab.com/bugbilly) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

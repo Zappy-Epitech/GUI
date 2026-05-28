@@ -1,8 +1,10 @@
 #include "Game.hpp"
 #include "../../extern/flecs.hpp"
+#include "src/MinecraftRenderer.hpp"
 #include "src/modules/CameraController.hpp"
 #include "src/modules/Grid.hpp"
 #include "src/modules/Gui.hpp"
+#include "src/modules/Raylib.hpp"
 #include "src/modules/Spatial.hpp"
 #include "src/modules/scenes/Home.hpp"
 #include <raylib.h>
@@ -14,7 +16,7 @@ Game::Game(flecs::world &world) {
     static Model SteveModel = {};
 
     if (SteveModel.meshCount == 0) {
-        SteveModel = LoadModel("./assets/steve/scene.gltf");
+        SteveModel = LoadModel("./assets/models/steve/scene.gltf");
     }
 
     world.entity()

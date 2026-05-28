@@ -2,6 +2,7 @@
 #include "../extern/flecs.hpp"
 #include "CameraController.hpp"
 #include "Spatial.hpp"
+#include "src/MinecraftRenderer.hpp"
 #include <bit>
 #include <raygui.h>
 #include <raylib.h>
@@ -68,6 +69,17 @@ Raylib::Raylib(flecs::world &world) {
                 }
             }
         });
+
+    // static Texture2D texture;
+
+    // world.system().kind(flecs::OnStart).run([](flecs::iter &) {
+    //     texture = LoadTexture("./assets/ping.png");
+    //     SetTextureFilter(texture, TEXTURE_FILTER_POINT);
+    // });
+
+    // world.system().kind<Render3D>().run([](flecs::iter &) {
+    //     DrawMinecraftPlayer(texture, Vector3(0, 0, 0), 8, 0.0f);
+    // });
 
     world.system<const Position3, const Model, const Scale>("Render Model")
         .kind<Render3D>()

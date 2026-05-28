@@ -12,7 +12,7 @@ static constexpr float cellPadding = 0.1f;
 Grid::Grid(flecs::world &world) {
     world.component<GridCell>();
     world.system().kind(flecs::OnStart).run([world](auto) {
-        Model model = LoadModel("./assets/grass/scene.gltf");
+        Model model = LoadModel("./assets/models/grass/scene.gltf");
 
         world.prefab<GridCell>()
             .set(model)

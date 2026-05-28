@@ -1,7 +1,7 @@
 #include "Grid.hpp"
-#include "../extern/flecs.hpp"
-#include "Raylib.hpp"
-#include "Spatial.hpp"
+#include "../../extern/flecs.hpp"
+#include "../Raylib.hpp"
+#include "../Spatial.hpp"
 
 #include <format>
 #include <raylib.h>

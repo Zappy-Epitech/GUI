@@ -1,8 +1,8 @@
 #include "MinecraftSkinRenderer.hpp"
-#include "../extern/flecs.hpp"
-#include "Raylib.hpp"
-#include "SkinAnimation.hpp"
-#include "Spatial.hpp"
+#include "../../extern/flecs.hpp"
+#include "../Raylib.hpp"
+#include "../SkinAnimation.hpp"
+#include "../Spatial.hpp"
 #include <bit>
 #include <raylib.h>
 #include <rlgl.h>

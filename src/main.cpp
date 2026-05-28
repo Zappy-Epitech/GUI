@@ -1,12 +1,12 @@
 #include "extern/flecs.hpp"
-#include "modules/Grid.hpp"
 #include "modules/Gui.hpp"
 #include "modules/Raylib.hpp"
 #include "modules/Spatial.hpp"
-#include "src/modules/CameraController.hpp"
-#include "src/modules/GameAssets.hpp"
-#include "src/modules/MinecraftSkinRenderer.hpp"
+#include "modules/gameplay/Grid.hpp"
 #include "src/modules/Postframe.hpp"
+#include "src/modules/gameplay/CameraController.hpp"
+#include "src/modules/gameplay/GameAssets.hpp"
+#include "src/modules/rendering/MinecraftSkinRenderer.hpp"
 #include "src/modules/scenes/Home.hpp"
 #include <cstdio>
 #include <raylib.h>

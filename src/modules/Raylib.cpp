@@ -1,7 +1,7 @@
 #include "Raylib.hpp"
 #include "../extern/flecs.hpp"
-#include "CameraController.hpp"
 #include "Spatial.hpp"
+#include "gameplay/CameraController.hpp"
 #include <bit>
 #include <raygui.h>
 #include <raylib.h>

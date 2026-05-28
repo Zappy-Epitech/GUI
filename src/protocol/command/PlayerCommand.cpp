@@ -1,9 +1,9 @@
 #include "PlayerCommand.hpp"
-#include "src/modules/GameAssets.hpp"
-#include "src/modules/MinecraftSkinRenderer.hpp"
-#include "src/modules/Player.hpp"
 #include "src/modules/SkinAnimation.hpp"
 #include "src/modules/Spatial.hpp"
+#include "src/modules/gameplay/GameAssets.hpp"
+#include "src/modules/gameplay/Player.hpp"
+#include "src/modules/rendering/MinecraftSkinRenderer.hpp"
 #include "src/protocol/ZappyProtocol.hpp"
 #include <format>
 #include <raylib.h>

@@ -1,5 +1,5 @@
 #include "CameraController.hpp"
-#include "../extern/flecs.hpp"
+#include "../../extern/flecs.hpp"
 #include "src/modules/Gui.hpp"
 #include <cmath>
 #include <raylib.h>

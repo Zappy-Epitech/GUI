@@ -1,4 +1,5 @@
 #include "CommandParsers.hpp"
+#include "src/modules/Spatial.hpp"
 
 namespace zappy {
 namespace {
@@ -40,7 +41,7 @@ std::optional<Event> parsePlayerNew(ProtocolScanner &scanner) {
     if (!id || !x || !y || !orientation || !level || !team || !isDone(scanner)) {
         return std::nullopt;
     }
-    return PlayerNew{ *id, *x, *y, *orientation, *level, *team };
+    return PlayerNew{ *id, *x, *y, (Orientation) *orientation, *level, *team };
 }
 
 std::optional<Event> parsePlayerPosition(ProtocolScanner &scanner) {
@@ -51,7 +52,7 @@ std::optional<Event> parsePlayerPosition(ProtocolScanner &scanner) {
     if (!id || !x || !y || !orientation || !isDone(scanner)) {
         return std::nullopt;
     }
-    return PlayerPosition{ *id, *x, *y, *orientation };
+    return PlayerPosition{ *id, *x, *y, (Orientation) *orientation };
 }
 
 std::optional<Event> parsePlayerLevel(ProtocolScanner &scanner) {

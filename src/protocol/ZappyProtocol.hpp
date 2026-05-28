@@ -1,4 +1,5 @@
 #pragma once
+#include "src/modules/Spatial.hpp"
 #include <optional>
 #include <string>
 #include <string_view>
@@ -36,7 +37,7 @@ struct PlayerNew {
     int id;
     int x;
     int y;
-    int orientation;
+    Orientation orientation;
     int level;
     std::string team;
 };
@@ -45,7 +46,7 @@ struct PlayerPosition {
     int id;
     int x;
     int y;
-    int orientation;
+    Orientation orientation;
 };
 
 struct PlayerLevel {

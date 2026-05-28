@@ -61,6 +61,10 @@ Position3 Position3::zero() {
     return { 0, 0, 0 };
 }
 
+Position3 Position3::from_xyz(float x, float y, float z) {
+    return { x, y, z };
+}
+
 Position3 Position3::with_x(float x) {
     return { x, y, z };
 }

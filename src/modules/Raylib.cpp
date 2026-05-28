@@ -2,7 +2,6 @@
 #include "../extern/flecs.hpp"
 #include "CameraController.hpp"
 #include "Spatial.hpp"
-#include "src/MinecraftRenderer.hpp"
 #include <bit>
 #include <raygui.h>
 #include <raylib.h>

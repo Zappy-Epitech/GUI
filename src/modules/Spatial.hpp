@@ -25,6 +25,7 @@ struct Position3 {
     float x, y, z;
 
     static Position3 zero();
+    static Position3 from_xyz(float x, float y, float z);
     Position3 with_x(float x);
     Position3 with_y(float y);
     Position3 with_z(float z);
@@ -34,6 +35,13 @@ struct Position3 {
     Position3 add_x(float x);
     Position3 add_y(float y);
     Position3 add_z(float z);
+};
+
+enum class Orientation : int {
+    NORTH = 1,
+    EAST = 2,
+    SOUTH = 3,
+    WEST = 4,
 };
 
 struct Size2 {

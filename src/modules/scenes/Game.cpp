@@ -1,6 +1,5 @@
 #include "Game.hpp"
 #include "../../extern/flecs.hpp"
-#include "src/MinecraftRenderer.hpp"
 #include "src/modules/CameraController.hpp"
 #include "src/modules/Grid.hpp"
 #include "src/modules/Gui.hpp"

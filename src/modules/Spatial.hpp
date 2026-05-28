@@ -37,7 +37,7 @@ struct Position3 {
     Position3 add_z(float z);
 };
 
-enum class Orientation : int {
+enum struct Orientation : int {
     NORTH = 1,
     EAST = 2,
     SOUTH = 3,

@@ -30,6 +30,7 @@ Gui::Gui(flecs::world &world) {
     world.component<TextInput>();
     world.component<OnClick>();
     world.component<OnTextUpdate>();
+    world.component<HasInputActive>();
     world.singleton<HasInputActive>();
 
     static Sound ButtonSound;

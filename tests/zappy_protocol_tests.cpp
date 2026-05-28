@@ -1,6 +1,7 @@
+#include "src/modules/Spatial.hpp"
 #include "src/protocol/ZappyProtocol.hpp"
-
 #include <criterion/criterion.h>
+#include <criterion/internal/test.h>
 #include <string>
 #include <variant>
 
@@ -43,7 +44,7 @@ Test(zappy_protocol, parses_new_player) {
     cr_assert_eq(event->id, 42);
     cr_assert_eq(event->x, 6);
     cr_assert_eq(event->y, 7);
-    cr_assert_eq(event->orientation, 2);
+    cr_assert_eq(event->orientation, Orientation::EAST);
     cr_assert_eq(event->level, 3);
     cr_assert_eq(event->team, std::string("TeamA"));
 }
@@ -91,6 +92,12 @@ Test(zappy_protocol, parses_egg_and_end_events) {
     const auto *end = parseAs<zappy::GameEnd>("seg TeamB");
     cr_assert_not_null(end);
     cr_assert_eq(end->winner, std::string("TeamB"));
+}
+
+Test(zappy_protocol, parses_pnw_event) {
+    const auto *event = parseAs<zappy::PlayerNew>("pnw #12 1 1 1 1 sasa");
+    cr_assert_not_null(event);
+    cr_assert_eq(event->id, 12);
 }
 
 Test(zappy_protocol, rejects_malformed_lines) {

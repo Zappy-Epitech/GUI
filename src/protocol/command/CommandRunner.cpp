@@ -1,15 +1,18 @@
 #include "CommandRunner.hpp"
 #include "src/protocol/ZappyProtocol.hpp"
 #include "src/protocol/command/PlayerCommand.hpp"
+#include <cstdio>
 #include <optional>
 #include <stdexcept>
 #include <variant>
 
-template <class... Ts> struct Overloaded : Ts... {
+template <class... Ts>
+struct Overloaded : Ts... {
     using Ts::operator()...;
 };
 
-template <class... Ts> Overloaded(Ts...) -> Overloaded<Ts...>;
+template <class... Ts>
+Overloaded(Ts...) -> Overloaded<Ts...>;
 
 auto invalid = [](const auto &) {
     throw std::invalid_argument("Unknown event type");
@@ -25,12 +28,9 @@ void runCommand(flecs::world &world, std::string &command) {
                 [&world](zappy::PlayerNew evt) {
                     applyPlayerNew(world, evt);
                 },
-                invalid
-            },
-            event.value()
-        );
+                invalid },
+            event.value());
     } else {
-
         // TODO: handle error
     }
 }

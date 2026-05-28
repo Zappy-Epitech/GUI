@@ -4,6 +4,8 @@
 #include "modules/Raylib.hpp"
 #include "modules/Spatial.hpp"
 #include "src/modules/CameraController.hpp"
+#include "src/modules/GameAssets.hpp"
+#include "src/modules/MinecraftSkinRenderer.hpp"
 #include "src/modules/Postframe.hpp"
 #include "src/modules/scenes/Home.hpp"
 #include <cstdio>
@@ -18,6 +20,9 @@ int main() {
     world.import<Raylib>();
     world.import<Gui>();
     world.import<Grid>();
+    world.import<MinecraftSkinRenderer>();
+
+    GameAssets::spawn(world);
 
     world.import<Home>();
 

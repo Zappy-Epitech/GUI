@@ -7,6 +7,8 @@ struct world;
 
 struct Cube {};
 struct Render3D {};
+struct Draw3D {};
+struct CloseRender3D {};
 struct Render2D {};
 struct PostRender {};
 

@@ -1,4 +1,5 @@
 #pragma once
+#include <raylib.h>
 
 static constexpr float WINDOW_WIDTH = 1920.0f;
 static constexpr float WINDOW_HEIGHT = 1200.0f;
@@ -11,6 +12,7 @@ struct Position2 {
     float x, y;
 
     static Position2 center();
+    static Position2 center(float width, float height);
     static Position2 bottom_center();
     static Position2 splat(float value);
 
@@ -20,6 +22,10 @@ struct Position2 {
     Position2 sub_y(float y);
     Position2 add_x(float x);
     Position2 add_y(float y);
+    Position2 div_x(float x);
+    Position2 div_y(float y);
+
+    Rectangle rect(float width, float height);
 };
 struct Position3 {
     float x, y, z;

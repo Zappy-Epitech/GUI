@@ -107,11 +107,13 @@ Gui::Gui(flecs::world &world) {
                         const OnEnter *onEnter = e.try_get<OnEnter>();
                         if (onEnter) {
                             (*onEnter)(e, inputs[i].text);
+                            PlaySound(ButtonSound);
                         }
                     }
 
                     if (previousText != inputs[i].text) {
                         auto e = it.entity(i);
+                        PlaySound(ButtonSound);
                         const OnTextUpdate *onTextUpdate = e.try_get<OnTextUpdate>();
                         if (onTextUpdate) {
                             (*onTextUpdate)(e, inputs[i].text);

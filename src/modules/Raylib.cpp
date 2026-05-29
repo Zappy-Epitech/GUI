@@ -46,6 +46,7 @@ Raylib::Raylib(flecs::world &world) {
             GuiLoadStyleDefault();
             GuiSetStyle(DEFAULT, TEXT_SIZE, 32);
             GuiSetStyle(DEFAULT, TEXT_SPACING, 5);
+            GuiSetIconScale(2);
         });
 
     world.system("BeginFrame").kind(flecs::PreUpdate).run([](flecs::iter &it) {

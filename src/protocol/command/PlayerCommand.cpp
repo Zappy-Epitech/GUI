@@ -30,6 +30,7 @@ void applyPlayerNew(flecs::world &world, zappy::PlayerNew &evt) {
         .set(gridCenterPosition(evt.x, evt.y))
         .set<Texture2D>(world.get<GameAssets>().skins[0])
         .set<MinecraftSkin>({ .scale = 0.3f })
+        .set<zappy::Resources>({})
         .set(Walking);
 }
 

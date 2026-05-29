@@ -22,6 +22,8 @@ int main() {
     world.import<Minecraft>();
     world.import<GamePlay>();
 
+    world.entity().set(Button(""));
+
     world.import<Home>();
 
     world.app()

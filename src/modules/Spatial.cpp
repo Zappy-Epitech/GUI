@@ -25,6 +25,10 @@ Position2 Position2::center() {
     return { WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT / 2.0f };
 }
 
+Position2 Position2::center(float width, float height) {
+    return { (WINDOW_WIDTH / 2.0f) - (width / 2.0f), WINDOW_HEIGHT / 2.0f - height / 2.0f };
+}
+
 Position2 Position2::bottom_center() {
     return { WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT - 100.0f };
 }
@@ -55,6 +59,18 @@ Position2 Position2::add_x(float x) {
 
 Position2 Position2::add_y(float y) {
     return { x, this->y + y };
+}
+
+Position2 Position2::div_x(float x) {
+    return { this->x / x, y };
+}
+
+Position2 Position2::div_y(float y) {
+    return { x, this->y / y };
+}
+
+Rectangle Position2::rect(float width, float height) {
+    return { x, y, width, height };
 }
 
 Position3 Position3::zero() {

@@ -32,6 +32,9 @@ void runCommand(flecs::world &world, std::string &command) {
                 [&world](zappy::MapSize evt) {
                     applyMapNew(world, evt);
                 },
+                [&world](zappy::PlayerPosition evt) {
+                    applyPlayerPosition(world, evt);
+                },
                 invalid },
             event.value());
     } else {

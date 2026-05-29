@@ -23,7 +23,7 @@ void applyPlayerNew(flecs::world &world, zappy::PlayerNew &evt) {
     const GameAssets &skins = world.get<GameAssets>();
     Texture2D skin = skins.skins[evt.id % skins.skins.size()];
 
-    world.entity(std::format("Player({}, {})", evt.id, evt.team).c_str())
+    world.entity(std::format("Player({})", evt.id).c_str())
         .set(Player{ .level = evt.level })
         .set(skin)
         .set<Orientation>(evt.orientation)
@@ -31,4 +31,10 @@ void applyPlayerNew(flecs::world &world, zappy::PlayerNew &evt) {
         .set<Texture2D>(world.get<GameAssets>().skins[0])
         .set<MinecraftSkin>({ .scale = 0.3f })
         .set(Walking);
+}
+
+void applyPlayerPosition(flecs::world &world, zappy::PlayerPosition &evt) {
+    flecs::entity player = world.lookup(std::format("Player({})", evt.id).c_str());
+
+    player.set(gridCenterPosition(evt.x, evt.y)).set<Orientation>(evt.orientation);
 }

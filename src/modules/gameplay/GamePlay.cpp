@@ -10,4 +10,5 @@ GamePlay::GamePlay(flecs::world &world) {
     world.import<CameraController>().child_of(module).disable();
     world.import<Grid>().child_of(module);
     world.import<Home>().child_of(module);
+    GameAssets::load(world);
 }

@@ -1,5 +1,4 @@
 #pragma once
-#include <sys/types.h>
 
 namespace flecs {
 struct world;
@@ -11,5 +10,5 @@ struct GridContainer {};
 struct Grid {
     Grid(flecs::world &world);
 
-    static void spawn(const flecs::world &world, uint width, uint height);
+    static void spawn(const flecs::world &world, int width, int height);
 };

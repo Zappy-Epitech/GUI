@@ -59,7 +59,8 @@ Gui::Gui(flecs::world &world) {
                     Rectangle rect = { positions[i].x - width * 0.5f, positions[i].y, width, height };
 
                     if (GuiButton(rect, buttons[i].label)) {
-                        onClicks[i](it.entity(i));
+                        auto e = it.entity(i);
+                        onClicks[i](e);
                         PlaySound(ButtonSound);
                     }
                 }
@@ -102,16 +103,18 @@ Gui::Gui(flecs::world &world) {
                     inputs[i].text.resize(std::strlen(inputs[i].text.c_str()));
 
                     if (isEnterButtonReleased) {
-                        const OnEnter *onEnter = it.entity(i).try_get<OnEnter>();
+                        auto e = it.entity(i);
+                        const OnEnter *onEnter = e.try_get<OnEnter>();
                         if (onEnter) {
-                            (*onEnter)(it.entity(i), inputs[i].text);
+                            (*onEnter)(e, inputs[i].text);
                         }
                     }
 
                     if (previousText != inputs[i].text) {
-                        const OnTextUpdate *onTextUpdate = it.entity(i).try_get<OnTextUpdate>();
+                        auto e = it.entity(i);
+                        const OnTextUpdate *onTextUpdate = e.try_get<OnTextUpdate>();
                         if (onTextUpdate) {
-                            (*onTextUpdate)(it.entity(i), inputs[i].text);
+                            (*onTextUpdate)(e, inputs[i].text);
                         }
                     }
                 }

@@ -1,4 +1,5 @@
 #include "PlayerCommand.hpp"
+#include "../../extern/flecs.hpp"
 #include "src/modules/SkinAnimation.hpp"
 #include "src/modules/Spatial.hpp"
 #include "src/modules/gameplay/GameAssets.hpp"

@@ -20,11 +20,11 @@ Grid::Grid(flecs::world &world) {
     });
 }
 
-void Grid::spawn(const flecs::world &world, uint width, uint height) {
+void Grid::spawn(const flecs::world &world, int width, int height) {
     flecs::entity grid = world.entity(std::format("Grid({}, {})", width, height).c_str()).add<GridContainer>();
 
-    for (uint x = 0; x < width; x++) {
-        for (uint y = 0; y < height; y++) {
+    for (int x = 0; x < width; x++) {
+        for (int y = 0; y < height; y++) {
             float xPosition = static_cast<float>(x) * (cellSize.width + cellPadding);
             float yPosition = static_cast<float>(y) * (cellSize.height + cellPadding);
 

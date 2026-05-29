@@ -1,6 +1,4 @@
 #pragma once
-#include "Spatial.hpp"
-
 namespace flecs {
 struct world;
 }

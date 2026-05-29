@@ -21,7 +21,7 @@ int main() {
     world.import<Grid>();
     world.import<Minecraft>();
 
-    GameAssets::spawn(world);
+    GameAssets::load(world);
 
     world.import<Home>();
 

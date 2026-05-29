@@ -1,12 +1,16 @@
 #pragma once
-#include "../extern/flecs.hpp"
 #include <cstring>
 #include <functional>
 #include <string>
 
-struct OnClick : std::function<void(flecs::entity)> {};
-struct OnEnter : std::function<void(flecs::entity, std::string &)> {};
-struct OnTextUpdate : std::function<void(flecs::entity, std::string &)> {};
+namespace flecs {
+struct world;
+struct entity;
+} // namespace flecs
+
+struct OnClick : std::function<void(flecs::entity &)> {};
+struct OnEnter : std::function<void(flecs::entity &, std::string &)> {};
+struct OnTextUpdate : std::function<void(flecs::entity &, std::string &)> {};
 struct HasInputActive {
     bool value = false;
 };

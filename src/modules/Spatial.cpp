@@ -13,6 +13,11 @@ Spatial::Spatial(flecs::world &world) {
         .member<float>("y")
         .member<float>("z");
 
+    world.component<Rotation3>()
+        .member<float>("x")
+        .member<float>("y")
+        .member<float>("z");
+
     world.component<Size2>()
         .member<float>("width")
         .member<float>("height");
@@ -115,4 +120,12 @@ Position3 Position3::add_y(float y) {
 
 Position3 Position3::add_z(float z) {
     return { x, y, this->z + z };
+}
+
+Rotation3 Rotation3::zero() {
+    return { 0, 0, 0 };
+}
+
+Rotation3 Rotation3::from_xyz(float x, float y, float z) {
+    return { x, y, z };
 }

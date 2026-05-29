@@ -43,6 +43,13 @@ struct Position3 {
     Position3 add_z(float z);
 };
 
+struct Rotation3 {
+    float x, y, z;
+
+    static Rotation3 zero();
+    static Rotation3 from_xyz(float x, float y, float z);
+};
+
 enum struct Orientation : int {
     NORTH = 1,
     EAST = 2,

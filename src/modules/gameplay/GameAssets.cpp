@@ -15,5 +15,13 @@ void GameAssets::load(flecs::world &world) {
                 Texture2D texture = LoadTexture(file.path().c_str());
                 assets.skins.push_back(texture);
             }
+
+            assets.resourceModels[0] = LoadModel("./assets/models/apple/scene.gltf");
+            assets.resourceModels[1] = LoadModel("./assets/models/emerald/scene.gltf");
+            assets.resourceModels[2] = LoadModel("./assets/models/coal/scene.gltf");
+            assets.resourceModels[3] = LoadModel("./assets/models/iron/scene.gltf");
+            assets.resourceModels[4] = LoadModel("./assets/models/gold/scene.gltf");
+            assets.resourceModels[5] = LoadModel("./assets/models/diamond/scene.gltf");
+            assets.resourceModels[6] = LoadModel("./assets/models/redstone/Redstone_Dust.gltf");
         });
 }

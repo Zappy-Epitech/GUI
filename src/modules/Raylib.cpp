@@ -5,6 +5,7 @@
 #include <bit>
 #include <raygui.h>
 #include <raylib.h>
+#include <raymath.h>
 
 Raylib::Raylib(flecs::world &world) {
     world.module<Raylib>();
@@ -81,8 +82,23 @@ Raylib::Raylib(flecs::world &world) {
 
     world.system<const Position3, const Model, const Scale>("Render Model")
         .kind<Draw3D>()
+        .without<Rotation3>()
         .each([](const Position3 &position, const Model &model, const Scale &scale) {
             DrawModel(model, std::bit_cast<Vector3>(position), scale.value, WHITE);
+        });
+
+    world.system<const Position3, const Model, const Scale, const Rotation3>("Render Rotated Model")
+        .kind<Draw3D>()
+        .each([](const Position3 &position, const Model &model, const Scale &scale, const Rotation3 &rotation) {
+            Model rotatedModel = model;
+            Matrix rotationMatrix = MatrixRotateZYX(Vector3{
+                rotation.x * DEG2RAD,
+                rotation.y * DEG2RAD,
+                rotation.z * DEG2RAD,
+            });
+            rotatedModel.transform = MatrixMultiply(rotatedModel.transform, rotationMatrix);
+
+            DrawModel(rotatedModel, std::bit_cast<Vector3>(position), scale.value, WHITE);
         });
 
     world.system("End3D")

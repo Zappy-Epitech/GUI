@@ -75,14 +75,8 @@ Game::Game(flecs::world &world) {
     world.module<Game>().child_of<GamePlay>();
     world.entity<CameraController>().enable();
 
-    static Model SteveModel = {};
-
     zappy::PlayerNew playerNew = zappy::PlayerNew{};
     applyPlayerNew(world, playerNew);
-
-    if (SteveModel.meshCount == 0) {
-        SteveModel = LoadModel("./assets/models/steve/scene.gltf");
-    }
 
     Grid::spawn(world, 10, 10);
 

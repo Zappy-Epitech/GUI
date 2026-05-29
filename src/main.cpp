@@ -5,6 +5,7 @@
 #include "modules/gameplay/Grid.hpp"
 #include "src/modules/gameplay/CameraController.hpp"
 #include "src/modules/gameplay/GameAssets.hpp"
+#include "src/modules/gameplay/GamePlay.hpp"
 #include "src/modules/minecraft/Minecraft.hpp"
 #include "src/modules/rendering/MinecraftSkinRenderer.hpp"
 #include "src/modules/scenes/Home.hpp"
@@ -18,10 +19,8 @@ int main() {
     world.import<Spatial>();
     world.import<Raylib>();
     world.import<Gui>();
-    world.import<Grid>();
     world.import<Minecraft>();
-
-    GameAssets::load(world);
+    world.import<GamePlay>();
 
     world.import<Home>();
 

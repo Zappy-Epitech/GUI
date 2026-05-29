@@ -10,8 +10,9 @@ static constexpr Size2 cellSize = { 1, 1 };
 static constexpr float cellPadding = 0.1f;
 
 Grid::Grid(flecs::world &world) {
+    world.component<GridContainer>();
     world.component<GridCell>();
-    world.system().kind(flecs::OnStart).run([world](auto) {
+    world.system("Load Grid Cell Model").kind(flecs::OnStart).run([world](auto) {
         Model model = LoadModel("./assets/models/grass/scene.gltf");
 
         world.prefab<GridCell>()

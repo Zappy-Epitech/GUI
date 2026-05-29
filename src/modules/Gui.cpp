@@ -38,7 +38,7 @@ Gui::Gui(flecs::world &world) {
 
     world.set<HasInputActive>({ false });
 
-    world.system().kind(flecs::OnStart).run([](auto) {
+    world.system("Load Button Sound").kind(flecs::OnStart).run([](auto) {
         ButtonSound = LoadSound("./assets/sounds/button.wav");
     });
 

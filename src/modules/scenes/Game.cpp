@@ -5,6 +5,7 @@
 #include "src/modules/SkinAnimation.hpp"
 #include "src/modules/Spatial.hpp"
 #include "src/modules/gameplay/CameraController.hpp"
+#include "src/modules/gameplay/GamePlay.hpp"
 #include "src/modules/gameplay/Grid.hpp"
 #include "src/modules/rendering/MinecraftSkinRenderer.hpp"
 #include "src/modules/scenes/Home.hpp"
@@ -13,8 +14,8 @@
 #include <string>
 
 Game::Game(flecs::world &world) {
-    world.module<Game>();
-    world.import<CameraController>();
+    world.module<Game>().child_of<GamePlay>();
+    world.entity<CameraController>().enable();
 
     static Model SteveModel = {};
 

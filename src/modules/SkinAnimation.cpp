@@ -39,7 +39,7 @@ static float lerp_limb(const LimbTrack &track, float t) {
 }
 
 SkinAnim::SkinAnim(flecs::world &world) {
-    world.module<SkinAnim>("SkinAnim");
+    world.module<SkinAnim>();
 
     world.component<AnimPlayer>();
     world.component<SkinPose>();

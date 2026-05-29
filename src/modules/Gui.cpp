@@ -1,7 +1,6 @@
 #include "Gui.hpp"
 #include "../extern/flecs.hpp"
 #include "Spatial.hpp"
-#include "src/modules/Postframe.hpp"
 #include "src/modules/Raylib.hpp"
 #include <cstdio>
 #include <cstring>
@@ -26,9 +25,11 @@ Gui::Gui(flecs::world &world) {
     world.module<Gui>();
     world.import<Raylib>();
     world.import<Spatial>();
+
     world.component<Button>().member(flecs::String, "label");
     world.component<TextInput>();
     world.component<OnClick>();
+    world.component<OnEnter>();
     world.component<OnTextUpdate>();
     world.component<HasInputActive>();
     world.singleton<HasInputActive>();
@@ -41,13 +42,14 @@ Gui::Gui(flecs::world &world) {
         ButtonSound = LoadSound("./assets/sounds/button.wav");
     });
 
-    world.system<Position2, Button, OnClick>("Button System")
+    world.system<const Position2, const Button, const OnClick>("Button System")
         .kind<Render2D>()
+        .immediate()
         .run([](flecs::iter &it) {
             while (it.next()) {
-                auto positions = it.field<Position2>(0);
-                auto buttons = it.field<Button>(1);
-                auto onClicks = it.field<OnClick>(2);
+                auto positions = it.field<const Position2>(0);
+                auto buttons = it.field<const Button>(1);
+                auto onClicks = it.field<const OnClick>(2);
 
                 for (auto i : it) {
                     const float textWidth = strlen(buttons[i].label) * fontSize * 0.5f;
@@ -57,10 +59,8 @@ Gui::Gui(flecs::world &world) {
                     Rectangle rect = { positions[i].x - width * 0.5f, positions[i].y, width, height };
 
                     if (GuiButton(rect, buttons[i].label)) {
-                        later([func = onClicks[i], entity = it.entity(i)](flecs::world &) {
-                            func(entity);
-                            PlaySound(ButtonSound);
-                        });
+                        onClicks[i](it.entity(i));
+                        PlaySound(ButtonSound);
                     }
                 }
             }
@@ -101,19 +101,17 @@ Gui::Gui(flecs::world &world) {
 
                     inputs[i].text.resize(std::strlen(inputs[i].text.c_str()));
 
-                    if (isEnterButtonReleased && it.entity(i).has<OnEnter>()) {
-                        later([func = it.entity(i).get<OnEnter>(), entity = it.entity(i), &text = inputs[i].text](flecs::world &) {
-                            func(entity, text);
-                        });
+                    if (isEnterButtonReleased) {
+                        const OnEnter *onEnter = it.entity(i).try_get<OnEnter>();
+                        if (onEnter) {
+                            (*onEnter)(it.entity(i), inputs[i].text);
+                        }
                     }
 
-                    if (it.entity(i).has<OnTextUpdate>()) {
-
-                        if (previousText != inputs[i].text) {
-                            later([func = it.entity(i).get<OnTextUpdate>(), entity = it.entity(i), &text = inputs[i].text](flecs::world &) {
-                                func(entity, text);
-                                PlaySound(ButtonSound);
-                            });
+                    if (previousText != inputs[i].text) {
+                        const OnTextUpdate *onTextUpdate = it.entity(i).try_get<OnTextUpdate>();
+                        if (onTextUpdate) {
+                            (*onTextUpdate)(it.entity(i), inputs[i].text);
                         }
                     }
                 }

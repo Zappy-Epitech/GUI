@@ -8,9 +8,9 @@ Home::Home(flecs::world &world) {
     world.entity("Play Button")
         .set(Button("Play !"))
         .set(Position2::center())
-        .set(OnClick([world](flecs::entity) mutable {
-            world.entity<Home>().destruct();
-            world.import<Game>();
+        .set(OnClick([](flecs::entity e) {
+            e.world().entity<Home>().destruct();
+            e.world().import<Game>();
         }));
 
     world.entity("Ip Input")

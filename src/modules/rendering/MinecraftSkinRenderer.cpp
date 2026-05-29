@@ -107,8 +107,7 @@ static void drawPlayer(Texture2D tex, Vector3 pos, float scale, const SkinPose &
 }
 
 MinecraftSkinRenderer::MinecraftSkinRenderer(flecs::world &world) {
-    world.module<MinecraftSkinRenderer>("MinecraftSkinRenderer");
-    world.import<SkinAnim>();
+    world.module<MinecraftSkinRenderer>();
     world.component<MinecraftSkin>();
 
     static const SkinPose default_pose{};

@@ -13,6 +13,7 @@ Raylib::Raylib(flecs::world &world) {
     world.component<Color>();
     world.component<Cube>();
     world.component<Model>();
+    world.component<Texture2D>();
 
     world.component<Render3D>()
         .add(flecs::Phase)

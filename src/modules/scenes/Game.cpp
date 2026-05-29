@@ -18,12 +18,12 @@
 #include <raygui.h>
 #include <raylib.h>
 #include <string>
-#include <utility>
 
 namespace {
 
 struct PlayerInventoryModal {
     std::string name;
+    int level;
     zappy::Resources resources;
 };
 
@@ -49,6 +49,7 @@ static void drawInventoryModal(const PlayerInventoryModal &player, flecs::entity
     float rowY = modalBounds.y + 30 + 58;
 
     for (const auto &[label, amount] : {
+             std::pair{ "level", player.level },
              std::pair{ "food", player.resources.food },
              std::pair{ "linemate", player.resources.linemate },
              std::pair{ "deraumere", player.resources.deraumere },
@@ -98,8 +99,7 @@ Game::Game(flecs::world &world) {
 
     Grid::spawn(world, 10, 10);
 
-    world.system<const zappy::Resources>("Draw Player Button")
-        .with<Player>()
+    world.system<const Player, const zappy::Resources>("Draw Player Button")
         .kind<Render2D>()
         .run([](flecs::iter &it) {
             static flecs::entity_t selectedPlayer = 0;
@@ -112,22 +112,25 @@ Game::Game(flecs::world &world) {
             };
 
             while (it.next()) {
-                auto resources = it.field<const zappy::Resources>(0);
+                auto players = it.field<const Player>(0);
+                auto resources = it.field<const zappy::Resources>(1);
 
                 for (auto i : it) {
-                    flecs::entity player = it.entity(i);
+                    flecs::entity entity = it.entity(i);
 
-                    if (player.id() == selectedPlayer) {
+                    if (entity.id() == selectedPlayer) {
                         selectedInventory = PlayerInventoryModal{
-                            .name = player.name().c_str(),
+                            .name = entity.name().c_str(),
+                            .level = players[i].level,
                             .resources = resources[i],
                         };
                     }
 
-                    if (selectedPlayer == 0 && GuiButton(buttonBounds, player.name().c_str())) {
-                        selectedPlayer = player.id();
+                    if (selectedPlayer == 0 && GuiButton(buttonBounds, entity.name().c_str())) {
+                        selectedPlayer = entity.id();
                         selectedInventory = PlayerInventoryModal{
-                            .name = player.name().c_str(),
+                            .name = entity.name().c_str(),
+                            .level = players[i].level,
                             .resources = resources[i],
                         };
                     }

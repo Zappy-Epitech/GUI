@@ -1,5 +1,6 @@
 #include "CommandRunner.hpp"
 #include "src/protocol/ZappyProtocol.hpp"
+#include "src/protocol/command/MapCommand.hpp"
 #include "src/protocol/command/PlayerCommand.hpp"
 #include <cstdio>
 #include <optional>
@@ -27,6 +28,9 @@ void runCommand(flecs::world &world, std::string &command) {
             Overloaded{
                 [&world](zappy::PlayerNew evt) {
                     applyPlayerNew(world, evt);
+                },
+                [&world](zappy::MapSize evt) {
+                    applyMapNew(world, evt);
                 },
                 invalid },
             event.value());

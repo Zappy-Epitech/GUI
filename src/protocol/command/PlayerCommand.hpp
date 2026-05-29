@@ -1,5 +1,8 @@
 #pragma once
 #include "../ZappyProtocol.hpp"
-#include "src/extern/flecs.hpp"
+
+namespace flecs {
+struct world;
+}
 
 void applyPlayerNew(flecs::world &world, zappy::PlayerNew &evt);

@@ -6,6 +6,7 @@ struct world;
 };
 
 struct GridCell {};
+struct GridContainer {};
 
 struct Grid {
     Grid(flecs::world &world);

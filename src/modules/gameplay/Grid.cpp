@@ -21,7 +21,7 @@ Grid::Grid(flecs::world &world) {
 }
 
 void Grid::spawn(const flecs::world &world, uint width, uint height) {
-    flecs::entity grid = world.entity(std::format("Grid({}, {})", width, height).c_str());
+    flecs::entity grid = world.entity(std::format("Grid({}, {})", width, height).c_str()).add<GridContainer>();
 
     for (uint x = 0; x < width; x++) {
         for (uint y = 0; y < height; y++) {

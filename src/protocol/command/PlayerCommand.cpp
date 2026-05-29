@@ -1,10 +1,11 @@
 #include "PlayerCommand.hpp"
-#include "src/extern/flecs.h"
-#include "src/minecraft/MinecraftAnimation.hpp"
 #include "src/core/Spatial.hpp"
+#include "src/extern/flecs.h"
 #include "src/gameplay/GameAssets.hpp"
 #include "src/gameplay/Grid.hpp"
+#include "src/gameplay/Movement.hpp"
 #include "src/gameplay/Player.hpp"
+#include "src/minecraft/MinecraftAnimation.hpp"
 #include "src/minecraft/MinecraftRenderer.hpp"
 #include "src/protocol/ZappyProtocol.hpp"
 #include <format>
@@ -26,6 +27,7 @@ void applyPlayerNew(flecs::world &world, zappy::PlayerNew &evt) {
         .set<Texture2D>(world.get<GameAssets>().skins[0])
         .set<MinecraftSkin>({ .scale = 0.3f })
         .set<zappy::Resources>({})
+        .set(Direction{ 5, 5 })
         .set(Walking);
 }
 

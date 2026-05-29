@@ -2,19 +2,16 @@
 #include "../../extern/flecs.hpp"
 #include "src/modules/Gui.hpp"
 #include "src/modules/Raylib.hpp"
-#include "src/modules/SkinAnimation.hpp"
 #include "src/modules/Spatial.hpp"
 #include "src/modules/gameplay/CameraController.hpp"
 #include "src/modules/gameplay/GamePlay.hpp"
 #include "src/modules/gameplay/Grid.hpp"
 #include "src/modules/gameplay/Player.hpp"
-#include "src/modules/rendering/MinecraftSkinRenderer.hpp"
 #include "src/modules/scenes/Home.hpp"
 #include "src/protocol/ZappyProtocol.hpp"
 #include "src/protocol/command/CommandRunner.hpp"
 #include "src/protocol/command/PlayerCommand.hpp"
 #include <format>
-#include <optional>
 #include <raygui.h>
 #include <raylib.h>
 #include <string>
@@ -34,51 +31,41 @@ static void drawResourceRow(Rectangle bounds, const char *label, int amount) {
         std::format("{}", amount).c_str());
 }
 
-static void drawInventoryModal(const PlayerInventoryModal &player, flecs::entity_t &selectedPlayer) {
-    const Rectangle modalBounds = Position2::center(400, 700).rect(400, 700);
+static void drawInventoryModal(const PlayerInventoryModal &player, flecs::entity_t &entity) {
+    const Rectangle modal = Position2::center(400, 700).rect(400, 700);
 
     DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), Fade(BLACK, 0.55f));
 
-    if (GuiWindowBox(modalBounds, player.name.c_str())) {
-        selectedPlayer = 0;
+    if (GuiWindowBox(modal, player.name.c_str())) {
+        entity = 0;
         return;
     }
 
-    const float contentX = modalBounds.x + 20;
-    const float contentWidth = modalBounds.width - 40;
-    float rowY = modalBounds.y + 30 + 58;
+    float y = modal.y + 30 + 58;
+
+    using std::pair;
 
     for (const auto &[label, amount] : {
-             std::pair{ "level", player.level },
-             std::pair{ "food", player.resources.food },
-             std::pair{ "linemate", player.resources.linemate },
-             std::pair{ "deraumere", player.resources.deraumere },
-             std::pair{ "sibur", player.resources.sibur },
-             std::pair{ "mendiane", player.resources.mendiane },
-             std::pair{ "phiras", player.resources.phiras },
-             std::pair{ "thystame", player.resources.thystame },
+             pair("level", player.level),
+             pair("food", player.resources.food),
+             pair("linemate", player.resources.linemate),
+             pair("deraumere", player.resources.deraumere),
+             pair("sibur", player.resources.sibur),
+             pair("mendiane", player.resources.mendiane),
+             pair("phiras", player.resources.phiras),
+             pair("thystame", player.resources.thystame),
          }) {
         drawResourceRow(
-            Rectangle{
-                .x = contentX,
-                .y = rowY,
-                .width = contentWidth,
-                .height = 58,
-            },
+            Rectangle(modal.x + 20, y, modal.width - 40, 58),
             label,
             amount);
-        rowY += 58 + 10;
+        y += 58 + 10;
     }
 
     if (GuiButton(
-            Rectangle{
-                .x = contentX,
-                .y = modalBounds.y + modalBounds.height - 62,
-                .width = contentWidth,
-                .height = 48,
-            },
+            Rectangle(modal.x + 20, modal.y + modal.height - 62, modal.width - 40, 48),
             "Close")) {
-        selectedPlayer = 0;
+        entity = 0;
     }
 }
 
@@ -103,13 +90,8 @@ Game::Game(flecs::world &world) {
         .kind<Render2D>()
         .run([](flecs::iter &it) {
             static flecs::entity_t selectedPlayer = 0;
-            std::optional<PlayerInventoryModal> selectedInventory;
-            Rectangle buttonBounds = {
-                .x = 100,
-                .y = 150,
-                .width = 200,
-                .height = 50,
-            };
+            static std::optional<PlayerInventoryModal> selectedInventory;
+            Rectangle buttonBounds = Position2(35, 150).rect(200, 50);
 
             while (it.next()) {
                 auto players = it.field<const Player>(0);
@@ -118,21 +100,15 @@ Game::Game(flecs::world &world) {
                 for (auto i : it) {
                     flecs::entity entity = it.entity(i);
 
+                    auto modal = PlayerInventoryModal{ entity.name().c_str(), players[i].level, resources[i] };
+
                     if (entity.id() == selectedPlayer) {
-                        selectedInventory = PlayerInventoryModal{
-                            .name = entity.name().c_str(),
-                            .level = players[i].level,
-                            .resources = resources[i],
-                        };
+                        selectedInventory = modal;
                     }
 
                     if (selectedPlayer == 0 && GuiButton(buttonBounds, entity.name().c_str())) {
                         selectedPlayer = entity.id();
-                        selectedInventory = PlayerInventoryModal{
-                            .name = entity.name().c_str(),
-                            .level = players[i].level,
-                            .resources = resources[i],
-                        };
+                        selectedInventory = modal;
                     }
                     buttonBounds.y += buttonBounds.height + 10;
                 }

@@ -1,8 +1,8 @@
 #include "Spatial.hpp"
-#include "../extern/flecs.hpp"
+#include "src/extern/flecs.h"
 
 Spatial::Spatial(flecs::world &world) {
-    world.module<Spatial>("Spatial");
+    world.module<Spatial>("spatial");
 
     world.component<Position2>()
         .member<float>("x")

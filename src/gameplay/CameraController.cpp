@@ -1,6 +1,7 @@
 #include "CameraController.hpp"
-#include "../../extern/flecs.hpp"
-#include "src/modules/Gui.hpp"
+#include "src/core/Gui.hpp"
+#include "src/extern/flecs.h"
+#include "src/gameplay/GamePlay.hpp"
 #include <cmath>
 #include <raylib.h>
 
@@ -33,9 +34,9 @@ static constexpr float minPitch = -1.35f;
 static constexpr float maxPitch = 1.35f;
 
 CameraController::CameraController(flecs::world &world) {
-    world.module<CameraController>();
+    world.module<CameraController>("cameraController").child_of<GamePlay>();
 
-    world.system("Camera Controls")
+    world.system("CameraControls")
         .kind(flecs::OnUpdate)
         .run([](flecs::iter &it) {
             if (it.world().get<HasInputActive>().value) {

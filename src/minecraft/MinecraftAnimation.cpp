@@ -1,5 +1,5 @@
-#include "SkinAnimation.hpp"
-#include "../extern/flecs.hpp"
+#include "MinecraftAnimation.hpp"
+#include "src/extern/flecs.h"
 #include <cmath>
 #include <raylib.h>
 
@@ -38,8 +38,8 @@ static float lerp_limb(const LimbTrack &track, float t) {
     return track.keys[track.count - 1].angle;
 }
 
-SkinAnim::SkinAnim(flecs::world &world) {
-    world.module<SkinAnim>();
+MinecraftAnimation::MinecraftAnimation(flecs::world &world) {
+    world.module<MinecraftAnimation>("animation");
 
     world.component<AnimPlayer>();
     world.component<SkinPose>();

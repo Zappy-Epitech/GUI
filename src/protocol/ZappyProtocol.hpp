@@ -1,5 +1,5 @@
 #pragma once
-#include "src/modules/Spatial.hpp"
+#include "src/core/Spatial.hpp"
 #include <optional>
 #include <string>
 #include <variant>

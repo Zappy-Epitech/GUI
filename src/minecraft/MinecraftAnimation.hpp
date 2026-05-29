@@ -43,11 +43,11 @@ struct SkinPose {
     float angles[4] = {};
 };
 
-struct SkinAnim {
-    SkinAnim(flecs::world &world);
+struct MinecraftAnimation {
+    MinecraftAnimation(flecs::world &world);
 };
 
-static const SkinAnimation Walking = SkinAnimation::build(0.8f)
+inline const SkinAnimation Walking = SkinAnimation::build(0.8f)
                                          .limb(Limb::LeftArm, { { 0.0f, 0 }, { 0.4f, 45 }, { 0.8f, 0 } })
                                          .limb(Limb::RightArm, { { 0.0f, 0 }, { 0.4f, -45 }, { 0.8f, 0 } })
                                          .limb(Limb::LeftLeg, { { 0.0f, -30 }, { 0.4f, 30 }, { 0.8f, -30 } })

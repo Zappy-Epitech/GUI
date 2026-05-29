@@ -1,10 +1,12 @@
 #include "GameAssets.hpp"
-#include "../../extern/flecs.hpp"
+#include "src/extern/flecs.h"
+#include "src/gameplay/GamePlay.hpp"
 #include <filesystem>
 
 void GameAssets::load(flecs::world &world) {
-    world.singleton<GameAssets>();
-    world.set<GameAssets>({});
+    world.singleton<GameAssets>()
+        .set<GameAssets>({})
+        .child_of<GamePlay>();
 
     world.system<GameAssets>("LoadAssets")
         .term_at(0)

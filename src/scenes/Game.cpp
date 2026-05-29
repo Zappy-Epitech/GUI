@@ -1,16 +1,17 @@
 #include "Game.hpp"
-#include "../../extern/flecs.hpp"
-#include "src/modules/Gui.hpp"
-#include "src/modules/Raylib.hpp"
-#include "src/modules/Spatial.hpp"
-#include "src/modules/gameplay/CameraController.hpp"
-#include "src/modules/gameplay/GamePlay.hpp"
-#include "src/modules/gameplay/Grid.hpp"
-#include "src/modules/gameplay/Player.hpp"
-#include "src/modules/scenes/Home.hpp"
+#include "src/core/Gui.hpp"
+#include "src/core/Raylib.hpp"
+#include "src/core/Spatial.hpp"
+#include "src/extern/flecs.h"
+#include "src/gameplay/CameraController.hpp"
+#include "src/gameplay/GamePlay.hpp"
+#include "src/gameplay/Grid.hpp"
+#include "src/gameplay/Player.hpp"
 #include "src/protocol/ZappyProtocol.hpp"
 #include "src/protocol/command/CommandRunner.hpp"
 #include "src/protocol/command/PlayerCommand.hpp"
+#include "src/scenes/Home.hpp"
+#include "src/scenes/Scenes.hpp"
 #include <format>
 #include <raygui.h>
 #include <raylib.h>
@@ -72,7 +73,7 @@ static void drawInventoryModal(const PlayerInventoryModal &player, flecs::entity
 } // namespace
 
 Game::Game(flecs::world &world) {
-    world.module<Game>().child_of<GamePlay>();
+    world.module<Game>("game").child_of<Scenes>();
     world.entity<CameraController>().enable();
 
     zappy::PlayerNew playerNew = zappy::PlayerNew{};
@@ -80,7 +81,7 @@ Game::Game(flecs::world &world) {
 
     Grid::spawn(world, 10, 10);
 
-    world.system<const Player, const zappy::Resources>("Draw Player Button")
+    world.system<const Player, const zappy::Resources>("DrawPlayerButton")
         .kind<Render2D>()
         .run([](flecs::iter &it) {
             static flecs::entity_t selectedPlayer = 0;
@@ -122,7 +123,7 @@ Game::Game(flecs::world &world) {
         .set(Position2::splat(100).with_y(50))
         .set(OnClick([world](flecs::entity) mutable {
             world.entity<Game>().destruct();
-            world.import<Home>();
+            world.import<Home>().child_of<Scenes>();
         }));
 
     world.entity("Command Input")

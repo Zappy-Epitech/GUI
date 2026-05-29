@@ -8,6 +8,6 @@ struct MinecraftSkin {
     float scale = 1.0f;
 };
 
-struct MinecraftSkinRenderer {
-    MinecraftSkinRenderer(flecs::world &world);
+struct MinecraftRenderer {
+    MinecraftRenderer(flecs::world &world);
 };

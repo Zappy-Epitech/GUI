@@ -1,8 +1,8 @@
-#include "MinecraftSkinRenderer.hpp"
-#include "../../extern/flecs.hpp"
-#include "../Raylib.hpp"
-#include "../SkinAnimation.hpp"
-#include "../Spatial.hpp"
+#include "MinecraftRenderer.hpp"
+#include "src/core/Raylib.hpp"
+#include "src/core/Spatial.hpp"
+#include "src/extern/flecs.h"
+#include "src/minecraft/MinecraftAnimation.hpp"
 #include <bit>
 #include <raylib.h>
 #include <rlgl.h>
@@ -106,8 +106,8 @@ static void drawPlayer(Texture2D tex, Vector3 pos, float scale, const SkinPose &
     rlPopMatrix();
 }
 
-MinecraftSkinRenderer::MinecraftSkinRenderer(flecs::world &world) {
-    world.module<MinecraftSkinRenderer>();
+MinecraftRenderer::MinecraftRenderer(flecs::world &world) {
+    world.module<MinecraftRenderer>("renderer");
     world.component<MinecraftSkin>();
 
     static const SkinPose default_pose{};

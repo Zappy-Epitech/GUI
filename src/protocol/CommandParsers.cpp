@@ -1,5 +1,5 @@
 #include "CommandParsers.hpp"
-#include "src/modules/Spatial.hpp"
+#include "src/core/Spatial.hpp"
 
 namespace zappy {
 namespace {

@@ -1,7 +1,7 @@
 #include "Grid.hpp"
-#include "../../extern/flecs.hpp"
-#include "../Raylib.hpp"
-#include "../Spatial.hpp"
+#include "src/core/Raylib.hpp"
+#include "src/core/Spatial.hpp"
+#include "src/extern/flecs.h"
 #include "src/protocol/ZappyProtocol.hpp"
 
 #include <format>
@@ -11,13 +11,15 @@ static constexpr Size2 cellSize = { 1, 1 };
 static constexpr float cellPadding = 0.1f;
 
 Grid::Grid(flecs::world &world) {
+    world.module<Grid>("grid");
+
     world.component<GridContainer>();
     world.component<GridCell>();
     world.component<GridPosition>()
         .member<int>("x")
         .member<int>("y");
 
-    world.system("Load Grid Cell Model").kind(flecs::OnStart).run([world](auto) {
+    world.system("LoadGridCellModel").kind(flecs::OnStart).run([world](auto) {
         Model model = LoadModel("./assets/models/grass/scene.gltf");
 
         world.prefab<GridCell>()
@@ -45,7 +47,6 @@ void Grid::spawn(const flecs::world &world, int width, int height) {
         for (int y = 0; y < height; y++) {
             world.entity(std::format("GridCell({}, {})", x, y).c_str())
                 .is_a<GridCell>()
-                .add<GridCell>()
                 .child_of(grid)
                 .set(GridPosition{ x, y })
                 .set<zappy::Resources>({})

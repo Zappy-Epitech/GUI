@@ -1,14 +1,14 @@
 #include "Raylib.hpp"
-#include "../extern/flecs.hpp"
 #include "Spatial.hpp"
-#include "gameplay/CameraController.hpp"
+#include "src/extern/flecs.h"
+#include "src/gameplay/CameraController.hpp"
 #include <bit>
 #include <raygui.h>
 #include <raylib.h>
 #include <raymath.h>
 
 Raylib::Raylib(flecs::world &world) {
-    world.module<Raylib>();
+    world.module<Raylib>("raylib");
     world.import<Spatial>();
 
     world.component<Color>();
@@ -36,13 +36,13 @@ Raylib::Raylib(flecs::world &world) {
         .add(flecs::Phase)
         .depends_on<Render2D>();
 
-    world.system("Setup Window")
+    world.system("SetupWindow")
         .kind(flecs::OnStart)
         .run([world](flecs::iter &) {
             SetConfigFlags(FLAG_WINDOW_ALWAYS_RUN);
             SetConfigFlags(FLAG_MSAA_4X_HINT);
             InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Zappy");
-            SetTargetFPS(120);
+            SetTargetFPS(240);
             InitAudioDevice();
             GuiLoadStyleDefault();
             GuiSetStyle(DEFAULT, TEXT_SIZE, 32);
@@ -64,7 +64,7 @@ Raylib::Raylib(flecs::world &world) {
             BeginMode3D(CameraController::camera());
         });
 
-    world.system<Position3, Size2, Color>("Render Cube")
+    world.system<Position3, Size2, Color>("RenderCube")
         .kind<Draw3D>()
         .with<Cube>()
         .run([](flecs::iter &it) {
@@ -80,14 +80,14 @@ Raylib::Raylib(flecs::world &world) {
             }
         });
 
-    world.system<const Position3, const Model, const Scale>("Render Model")
+    world.system<const Position3, const Model, const Scale>("RenderModel")
         .kind<Draw3D>()
         .without<Rotation3>()
         .each([](const Position3 &position, const Model &model, const Scale &scale) {
             DrawModel(model, std::bit_cast<Vector3>(position), scale.value, WHITE);
         });
 
-    world.system<const Position3, const Model, const Scale, const Rotation3>("Render Rotated Model")
+    world.system<const Position3, const Model, const Scale, const Rotation3>("RenderRotatedModel")
         .kind<Draw3D>()
         .each([](const Position3 &position, const Model &model, const Scale &scale, const Rotation3 &rotation) {
             Model rotatedModel = model;

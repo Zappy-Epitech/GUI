@@ -1,16 +1,18 @@
 #include "Home.hpp"
-#include "../../extern/flecs.hpp"
-#include "src/modules/Gui.hpp"
-#include "src/modules/Spatial.hpp"
-#include "src/modules/scenes/Game.hpp"
+#include "src/core/Gui.hpp"
+#include "src/core/Spatial.hpp"
+#include "src/extern/flecs.h"
+#include "src/scenes/Game.hpp"
+#include "src/scenes/Scenes.hpp"
 
 Home::Home(flecs::world &world) {
+    world.module<Home>("home").child_of<Scenes>();
     world.entity("Play Button")
         .set(Button("Play !"))
         .set(Position2::center())
         .set(OnClick([](flecs::entity e) {
             e.world().entity<Home>().destruct();
-            e.world().import<Game>();
+            e.world().import<Game>().child_of<Scenes>();
         }));
 
     world.entity("Ip Input")

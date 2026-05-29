@@ -1,9 +1,9 @@
 #pragma once
-#include "src/modules/Spatial.hpp"
+#include "src/core/Spatial.hpp"
 
 namespace flecs {
 struct world;
-};
+}
 
 struct GridCell {};
 struct GridContainer {};

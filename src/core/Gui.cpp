@@ -1,7 +1,7 @@
 #include "Gui.hpp"
-#include "../extern/flecs.hpp"
 #include "Spatial.hpp"
-#include "src/modules/Raylib.hpp"
+#include "src/core/Raylib.hpp"
+#include "src/extern/flecs.h"
 #include <cstdio>
 #include <cstring>
 #include <raygui.h>
@@ -22,7 +22,7 @@ static int textInputEditBufferSize(TextInput &input) {
 }
 
 Gui::Gui(flecs::world &world) {
-    world.module<Gui>();
+    world.module<Gui>("gui");
     world.import<Raylib>();
     world.import<Spatial>();
 
@@ -38,11 +38,11 @@ Gui::Gui(flecs::world &world) {
 
     world.set<HasInputActive>({ false });
 
-    world.system("Load Button Sound").kind(flecs::OnStart).run([](auto) {
+    world.system("LoadButtonSound").kind(flecs::OnStart).run([](auto) {
         ButtonSound = LoadSound("./assets/sounds/button.wav");
     });
 
-    world.system<const Position2, const Button, const OnClick>("Button System")
+    world.system<const Position2, const Button, const OnClick>("ButtonSystem")
         .kind<Render2D>()
         .immediate()
         .run([](flecs::iter &it) {
@@ -67,7 +67,7 @@ Gui::Gui(flecs::world &world) {
             }
         });
 
-    world.system<Position2, TextInput>("Text Input System")
+    world.system<Position2, TextInput>("TextInputSystem")
         .kind<Render2D>()
         .run([](flecs::iter &it) {
             bool isEnterButtonReleased = IsKeyPressed(KEY_ENTER);

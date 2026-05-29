@@ -1,8 +1,8 @@
 #include "MapCommand.hpp"
-#include "../../extern/flecs.hpp"
-#include "src/modules/Spatial.hpp"
-#include "src/modules/gameplay/GameAssets.hpp"
-#include "src/modules/gameplay/Grid.hpp"
+#include "src/extern/flecs.h"
+#include "src/core/Spatial.hpp"
+#include "src/gameplay/GameAssets.hpp"
+#include "src/gameplay/Grid.hpp"
 #include <array>
 #include <cstdio>
 #include <raylib.h>

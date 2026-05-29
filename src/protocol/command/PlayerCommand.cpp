@@ -38,3 +38,17 @@ void applyPlayerPosition(flecs::world &world, zappy::PlayerPosition &evt) {
 
     player.set(gridCenterPosition(evt.x, evt.y)).set<Orientation>(evt.orientation);
 }
+
+void applyPlayerLevel(flecs::world &world, zappy::PlayerLevel &evt) {
+    flecs::entity player = world.lookup(std::format("Player({})", evt.id).c_str());
+
+    player.set(Player{ .level = evt.level });
+}
+
+void applyPlayerInventory(flecs::world &world, zappy::PlayerInventory &evt) {
+    flecs::entity player = world.lookup(std::format("Player({})", evt.id).c_str());
+
+    player
+        .set(gridCenterPosition(evt.x, evt.y))
+        .set(evt.resources);
+}

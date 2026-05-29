@@ -35,6 +35,12 @@ void runCommand(flecs::world &world, std::string &command) {
                 [&world](zappy::PlayerPosition evt) {
                     applyPlayerPosition(world, evt);
                 },
+                [&world](zappy::PlayerLevel evt) {
+                    applyPlayerLevel(world, evt);
+                },
+                [&world](zappy::PlayerInventory evt) {
+                    applyPlayerInventory(world, evt);
+                },
                 invalid },
             event.value());
     } else {

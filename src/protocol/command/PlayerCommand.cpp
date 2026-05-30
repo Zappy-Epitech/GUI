@@ -47,17 +47,20 @@ void applyPlayerNew(flecs::world &world, const zappy::PlayerNew &evt) {
         .set(PlayerId{ evt.id })
         .set(Player{ .level = evt.level })
         .set(skin)
+        .set(Rotation3::zero())
         .set<Orientation>(evt.orientation)
         .set(gridCenterPosition(evt.x, evt.y))
         .set<Texture2D>(world.get<GameAssets>().skins[0])
-        .set<MinecraftSkin>({ .scale = 0.3f })
+        .set<MinecraftSkin>({ .scale = 0.35f })
         .set<zappy::Resources>({})
-        .set(Direction{ 5, 5 })
         .set(Walking);
 }
 
 void applyPlayerPosition(flecs::world &world, zappy::PlayerPosition &evt) {
-    findPlayer(world, evt.id).set(gridCenterPosition(evt.x, evt.y)).set<Orientation>(evt.orientation);
+    float rotation_y = evt.orientation == Orientation::NORTH ? 0 : evt.orientation == Orientation::SOUTH ? 180
+                                                               : evt.orientation == Orientation::EAST    ? 90
+                                                                                                         : 270;
+    findPlayer(world, evt.id).set(Direction(gridCenterPosition(evt.x, evt.y))).set<Orientation>(evt.orientation).set(Rotation3::from_xyz(0, rotation_y, 0));
 }
 
 void applyPlayerLevel(flecs::world &world, zappy::PlayerLevel &evt) {
@@ -96,9 +99,10 @@ void applyIncantationStart(flecs::world &world, zappy::IncantationStart &evt) {
 
 void applyPlayerEggLayStart(flecs::world &world, zappy::PlayerEggLayStart &evt) {
     world.entity(std::format("EggPreview({})", evt.id).c_str())
-        .set(findPlayer(world, evt.id).get<Position3>().sub_y(0.35))
+        .set(findPlayer(world, evt.id).get<Position3>().add_y(0.1))
+        .set(Rotation3::from_xyz(90, 0, 0))
         .set(world.get<GameAssets>().eggModel)
-        .set(Scale{ 0.35f })
+        .set(Scale{ 0.07f })
         .set(Lifetime{ 3.0f });
 
     addScreenMessage(world, std::format("Player #{} is laying an egg", evt.id), WHITE, 2.0f);

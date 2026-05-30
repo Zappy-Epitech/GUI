@@ -13,7 +13,7 @@ Movement::Movement(flecs::world &world) {
         .member<float>("y");
 
     // direction.y represent the direction along the z-axis
-    world.system<Position3, const Direction>()
+    world.system<Position3, const Direction>("Movement")
         .run([](flecs::iter &it) {
             while (it.next()) {
                 auto positions = it.field<Position3>(0);

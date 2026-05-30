@@ -84,10 +84,11 @@ static void limb(Texture2D tex, const PartUV &uv, float px, float ox, float oy, 
     rlPopMatrix();
 }
 
-static void drawPlayer(Texture2D tex, Vector3 pos, float scale, const SkinPose &pose) {
+static void drawPlayer(Texture2D tex, Vector3 pos, float scale, float angle, const SkinPose &pose) {
     float px = scale / 16.f;
     rlPushMatrix();
     rlTranslatef(pos.x, pos.y, pos.z);
+    rlRotatef(angle, 0, 1, 0);
 
     rlPushMatrix();
     rlTranslatef(0, 16 * px, 0);
@@ -110,20 +111,18 @@ MinecraftRenderer::MinecraftRenderer(flecs::world &world) {
     world.module<MinecraftRenderer>("renderer");
     world.component<MinecraftSkin>();
 
-    static const SkinPose default_pose{};
-
-    world.system<const Position3, const Texture2D, const MinecraftSkin, const SkinPose>("SkinRender")
-        .term_at(3)
-        .optional()
+    world.system<const Position3, const Rotation3, const Texture2D, const MinecraftSkin, const SkinPose>("SkinRender")
         .kind<Draw3D>()
         .run([](flecs::iter &it) {
             while (it.next()) {
-                auto transforms = it.field<const Position3>(0);
-                auto tex = it.field<const Texture2D>(1);
-                auto skin = it.field<const MinecraftSkin>(2);
-                auto poses = it.field<const SkinPose>(3);
+                auto positions = it.field<const Position3>(0);
+                auto rotations = it.field<const Rotation3>(1);
+                auto tex = it.field<const Texture2D>(2);
+                auto skin = it.field<const MinecraftSkin>(3);
+                auto poses = it.field<const SkinPose>(4);
+
                 for (auto i : it)
-                    drawPlayer(tex[i], std::bit_cast<Vector3>(transforms[i]), skin[i].scale, it.is_set(3) ? poses[i] : default_pose);
+                    drawPlayer(tex[i], std::bit_cast<Vector3>(positions[i]), skin[i].scale, rotations[i].y, poses[i]);
             }
         });
 }

@@ -32,6 +32,7 @@ Gui::Gui(flecs::world &world) {
     world.component<OnEnter>();
     world.component<OnTextUpdate>();
     world.component<HasInputActive>();
+    world.component<ScreenMessage>();
     world.singleton<HasInputActive>();
 
     static Sound ButtonSound;
@@ -68,6 +69,10 @@ Gui::Gui(flecs::world &world) {
         });
 
     world.system<Position2, TextInput>("TextInputSystem")
+        .with<OnEnter>()
+        .optional()
+        .with<OnTextUpdate>()
+        .optional()
         .kind<Render2D>()
         .run([](flecs::iter &it) {
             bool isEnterButtonReleased = IsKeyPressed(KEY_ENTER);
@@ -75,6 +80,8 @@ Gui::Gui(flecs::world &world) {
             while (it.next()) {
                 auto positions = it.field<Position2>(0);
                 auto inputs = it.field<TextInput>(1);
+                auto onEnters = it.field<OnEnter>(2);
+                auto onTextUpdates = it.field<OnTextUpdate>(3);
 
                 for (auto i : it) {
                     Rectangle rect = {
@@ -92,7 +99,7 @@ Gui::Gui(flecs::world &world) {
                         continue;
                     }
 
-                    std::string previousText = inputs[i].text;
+                    std::string &previousText = inputs[i].text;
                     int bufferSize = textInputEditBufferSize(inputs[i]);
 
                     if (GuiTextBox(rect, inputs[i].text.data(), bufferSize, true)) {
@@ -102,23 +109,42 @@ Gui::Gui(flecs::world &world) {
 
                     inputs[i].text.resize(std::strlen(inputs[i].text.c_str()));
 
-                    if (isEnterButtonReleased) {
+                    if (isEnterButtonReleased && it.is_set(2)) {
                         auto e = it.entity(i);
-                        const OnEnter *onEnter = e.try_get<OnEnter>();
-                        if (onEnter) {
-                            (*onEnter)(e, inputs[i].text);
-                            PlaySound(ButtonSound);
-                        }
+                        onEnters[i](e, inputs[i].text);
+                        PlaySound(ButtonSound);
                     }
 
                     if (previousText != inputs[i].text) {
                         auto e = it.entity(i);
                         PlaySound(ButtonSound);
-                        const OnTextUpdate *onTextUpdate = e.try_get<OnTextUpdate>();
-                        if (onTextUpdate) {
-                            (*onTextUpdate)(e, inputs[i].text);
+                        if (it.is_set(3)) {
+                            onTextUpdates[i](e, inputs[i].text);
                         }
                     }
+                }
+            }
+        });
+
+    world.system<const ScreenMessage, const Color>("ScreenMessageRender")
+        .kind<Render2D>()
+        .run([](flecs::iter &it) {
+            constexpr int messageFontSize = 24;
+            constexpr int lineHeight = 34;
+            int row = 0;
+
+            while (it.next()) {
+                auto messages = it.field<const ScreenMessage>(0);
+                auto colors = it.field<const Color>(1);
+
+                for (auto i : it) {
+                    int width = MeasureText(messages[i].value.c_str(), messageFontSize);
+                    int x = GetScreenWidth() / 2 - width / 2;
+                    int y = GetScreenHeight() - 150 - row * lineHeight;
+
+                    DrawRectangle(x - 10, y - 5, width + 20, messageFontSize + 10, Fade(BLACK, 0.65f));
+                    DrawText(messages[i].value.c_str(), x, y, messageFontSize, colors[i]);
+                    row++;
                 }
             }
         });

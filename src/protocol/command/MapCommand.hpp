@@ -7,3 +7,4 @@ struct world;
 
 void applyMapNew(flecs::world &world, zappy::MapSize &evt);
 void applyTileContent(flecs::world &world, zappy::TileContent &evt);
+void applyIncantationEnd(flecs::world &world, zappy::IncantationEnd &evt);

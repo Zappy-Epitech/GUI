@@ -2,7 +2,6 @@
 #include "Spatial.hpp"
 #include "src/extern/flecs.h"
 #include "src/gameplay/CameraController.hpp"
-#include <bit>
 #include <raygui.h>
 #include <raylib.h>
 #include <raymath.h>
@@ -69,13 +68,13 @@ Raylib::Raylib(flecs::world &world) {
         .with<Cube>()
         .run([](flecs::iter &it) {
             while (it.next()) {
-                auto positions = it.field<Position3>(0);
+                auto transforms = it.field<Position3>(0);
                 auto sizes = it.field<Size2>(1);
                 auto colors = it.field<Color>(2);
 
                 for (auto i : it) {
-                    DrawCube(std::bit_cast<Vector3>(positions[i]), sizes[i].width, sizes[i].height, sizes[i].height, colors[i]);
-                    DrawCubeWires(std::bit_cast<Vector3>(positions[i]), sizes[i].width, sizes[i].height, sizes[i].height, RED);
+                    DrawCube(std::bit_cast<Vector3>(transforms[i]), sizes[i].width, sizes[i].height, sizes[i].height, colors[i]);
+                    DrawCubeWires(std::bit_cast<Vector3>(transforms[i]), sizes[i].width, sizes[i].height, sizes[i].height, RED);
                 }
             }
         });
@@ -83,13 +82,13 @@ Raylib::Raylib(flecs::world &world) {
     world.system<const Position3, const Model, const Scale>("RenderModel")
         .kind<Draw3D>()
         .without<Rotation3>()
-        .each([](const Position3 &position, const Model &model, const Scale &scale) {
-            DrawModel(model, std::bit_cast<Vector3>(position), scale.value, WHITE);
+        .each([](const Position3 &transform, const Model &model, const Scale &scale) {
+            DrawModel(model, std::bit_cast<Vector3>(transform), scale.value, WHITE);
         });
 
     world.system<const Position3, const Model, const Scale, const Rotation3>("RenderRotatedModel")
         .kind<Draw3D>()
-        .each([](const Position3 &position, const Model &model, const Scale &scale, const Rotation3 &rotation) {
+        .each([](const Position3 &transform, const Model &model, const Scale &scale, const Rotation3 &rotation) {
             Model rotatedModel = model;
             Matrix rotationMatrix = MatrixRotateZYX(Vector3{
                 rotation.x * DEG2RAD,
@@ -98,7 +97,7 @@ Raylib::Raylib(flecs::world &world) {
             });
             rotatedModel.transform = MatrixMultiply(rotatedModel.transform, rotationMatrix);
 
-            DrawModel(rotatedModel, std::bit_cast<Vector3>(position), scale.value, WHITE);
+            DrawModel(rotatedModel, std::bit_cast<Vector3>(transform), scale.value, WHITE);
         });
 
     world.system("End3D")

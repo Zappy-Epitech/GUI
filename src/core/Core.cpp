@@ -5,8 +5,25 @@
 #include "src/extern/flecs.h"
 
 Core::Core(flecs::world &world) {
-    flecs::entity mod = world.module<Core>("core");
-    world.import<Spatial>().child_of(mod);
-    world.import<Raylib>().child_of(mod);
-    world.import<Gui>().child_of(mod);
+    flecs::entity module = world.module<Core>("core");
+    world.import<Spatial>().child_of(module);
+    world.import<Raylib>().child_of(module);
+    world.import<Gui>().child_of(module);
+
+    world.component<Lifetime>();
+
+    world.system<Lifetime>("LifetimeSystem")
+        .kind(flecs::PostUpdate)
+        .run([](flecs::iter &it) {
+            while (it.next()) {
+                auto lifetimes = it.field<Lifetime>(0);
+
+                for (auto i : it) {
+                    lifetimes[i].remaining -= it.delta_time();
+                    if (lifetimes[i].remaining <= 0.0f) {
+                        it.entity(i).destruct();
+                    }
+                }
+            }
+        });
 }

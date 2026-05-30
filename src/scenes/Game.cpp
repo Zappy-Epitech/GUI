@@ -12,6 +12,7 @@
 #include "src/protocol/command/PlayerCommand.hpp"
 #include "src/scenes/Home.hpp"
 #include "src/scenes/Scenes.hpp"
+#include <climits>
 #include <format>
 #include <raygui.h>
 #include <raylib.h>
@@ -74,9 +75,23 @@ static void drawInventoryModal(const PlayerInventoryModal &player, flecs::entity
 
 Game::Game(flecs::world &world) {
     world.module<Game>("game").child_of<Scenes>();
+
+    world.component<Player>()
+        .member<int>("level");
+
+    world.component<PlayerId>()
+        .member<int>("id");
+
     world.entity<CameraController>().enable();
 
-    zappy::PlayerNew playerNew = zappy::PlayerNew{};
+    zappy::PlayerNew playerNew = zappy::PlayerNew{
+        .id = 0,
+        .x = 0,
+        .y = 0,
+        .orientation = Orientation::NORTH,
+        .level = 1,
+        .team = "debug",
+    };
     applyPlayerNew(world, playerNew);
 
     Grid::spawn(world, 10, 10);

@@ -24,6 +24,8 @@ Spatial::Spatial(flecs::world &world) {
 
     world.component<Scale>()
         .member<float>("scale");
+
+    world.component<Orientation>();
 }
 
 Position2 Position2::center() {

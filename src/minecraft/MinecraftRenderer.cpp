@@ -118,12 +118,12 @@ MinecraftRenderer::MinecraftRenderer(flecs::world &world) {
         .kind<Draw3D>()
         .run([](flecs::iter &it) {
             while (it.next()) {
-                auto pos = it.field<const Position3>(0);
+                auto transforms = it.field<const Position3>(0);
                 auto tex = it.field<const Texture2D>(1);
                 auto skin = it.field<const MinecraftSkin>(2);
                 auto poses = it.field<const SkinPose>(3);
                 for (auto i : it)
-                    drawPlayer(tex[i], std::bit_cast<Vector3>(pos[i]), skin[i].scale, it.is_set(3) ? poses[i] : default_pose);
+                    drawPlayer(tex[i], std::bit_cast<Vector3>(transforms[i]), skin[i].scale, it.is_set(3) ? poses[i] : default_pose);
             }
         });
 }

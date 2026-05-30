@@ -1,4 +1,4 @@
-#include "src/modules/Spatial.hpp"
+#include "src/core/Spatial.hpp"
 #include "src/protocol/ZappyProtocol.hpp"
 #include <criterion/criterion.h>
 #include <criterion/internal/test.h>

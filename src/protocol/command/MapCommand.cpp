@@ -1,10 +1,14 @@
 #include "MapCommand.hpp"
-#include "src/extern/flecs.h"
+#include "src/core/Core.hpp"
+#include "src/core/Gui.hpp"
 #include "src/core/Spatial.hpp"
+#include "src/extern/flecs.h"
 #include "src/gameplay/GameAssets.hpp"
 #include "src/gameplay/Grid.hpp"
+#include "src/gameplay/WorldLookup.hpp"
 #include <array>
 #include <cstdio>
+#include <format>
 #include <raylib.h>
 
 namespace {
@@ -25,20 +29,6 @@ static const std::array<int, 7> &resourceAmounts(const zappy::Resources &resourc
     return *reinterpret_cast<const std::array<int, 7> *>(&resources);
 }
 
-static flecs::entity findTile(flecs::world &world, int x, int y) {
-    flecs::entity found;
-
-    world.query_builder<const GridPosition>()
-        .build()
-        .each([&](flecs::entity tile, const GridPosition &position) {
-            if (position.x == x && position.y == y) {
-                found = tile;
-            }
-        });
-
-    return found;
-}
-
 static void clearTileResources(flecs::entity tile) {
     for (const char *name : resourceNames) {
         flecs::entity resource = tile.lookup(name);
@@ -52,16 +42,14 @@ static void clearTileResources(flecs::entity tile) {
 static void spawnTileResource(
     flecs::world &world,
     flecs::entity tile,
-    Vector2 position,
     int resource,
     const Model &model) {
-    Position3 base = Grid::topPosition(position.x, position.y);
     Position3 offset = resourceOffsets[resource];
 
     world.entity()
         .child_of(tile)
         .set_name(resourceNames[resource])
-        .set(base.add_x(offset.x).add_y(offset.y).add_z(offset.z))
+        .set(Position3{ offset.x, 0.45f + offset.y, offset.z })
         .set(model)
         .set(Rotation3::from_xyz(90, 0, 0))
         .set(Scale{ 0.83f });
@@ -95,7 +83,20 @@ void applyTileContent(flecs::world &world, zappy::TileContent &evt) {
 
     for (int resourceIndex = 0; resourceIndex < static_cast<int>(amounts.size()); resourceIndex++) {
         if (amounts[resourceIndex] > 0) {
-            spawnTileResource(world, tile, Vector2(evt.x, evt.y), resourceIndex, assets.resourceModels[resourceIndex]);
+            spawnTileResource(world, tile, resourceIndex, assets.resourceModels[resourceIndex]);
         }
     }
+}
+
+void applyIncantationEnd(flecs::world &world, zappy::IncantationEnd &evt) {
+    flecs::entity tile = findTile(world, evt.x, evt.y);
+
+    if (!tile) {
+        return;
+    }
+
+    world.entity()
+        .set(ScreenMessage{ std::format("Incantation at ({}, {}) {}", evt.x, evt.y, evt.success ? "succeeded" : "failed") })
+        .set<Color>(evt.success ? GREEN : RED)
+        .set(Lifetime{ 2.0f });
 }

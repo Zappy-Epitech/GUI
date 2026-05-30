@@ -33,6 +33,10 @@ struct TextInput {
     }
 };
 
+struct ScreenMessage {
+    std::string value;
+};
+
 struct Gui {
     Gui(flecs::world &world);
 };

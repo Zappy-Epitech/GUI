@@ -32,15 +32,15 @@ struct Position3 {
 
     static Position3 zero();
     static Position3 from_xyz(float x, float y, float z);
-    Position3 with_x(float x);
-    Position3 with_y(float y);
-    Position3 with_z(float z);
-    Position3 sub_x(float x);
-    Position3 sub_y(float y);
-    Position3 sub_z(float z);
-    Position3 add_x(float x);
-    Position3 add_y(float y);
-    Position3 add_z(float z);
+    Position3 with_x(float x) const;
+    Position3 with_y(float y) const;
+    Position3 with_z(float z) const;
+    Position3 sub_x(float x) const;
+    Position3 sub_y(float y) const;
+    Position3 sub_z(float z) const;
+    Position3 add_x(float x) const;
+    Position3 add_y(float y) const;
+    Position3 add_z(float z) const;
 };
 
 struct Rotation3 {

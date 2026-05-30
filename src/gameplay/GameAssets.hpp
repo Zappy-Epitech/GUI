@@ -10,6 +10,7 @@ struct world;
 struct GameAssets {
     std::vector<Texture2D> skins;
     std::array<Model, 7> resourceModels = {};
+    Model eggModel = {};
 
     static void load(flecs::world &world);
 };

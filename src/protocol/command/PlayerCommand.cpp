@@ -57,34 +57,54 @@ void applyPlayerNew(flecs::world &world, const zappy::PlayerNew &evt) {
 }
 
 void applyPlayerPosition(flecs::world &world, zappy::PlayerPosition &evt) {
-    flecs::entity player = findPlayer(world, evt.id);
-
-    player.set(gridCenterPosition(evt.x, evt.y)).set<Orientation>(evt.orientation);
+    findPlayer(world, evt.id).set(gridCenterPosition(evt.x, evt.y)).set<Orientation>(evt.orientation);
 }
 
 void applyPlayerLevel(flecs::world &world, zappy::PlayerLevel &evt) {
-    flecs::entity player = findPlayer(world, evt.id);
-
-    player.set(Player{ .level = evt.level });
+    findPlayer(world, evt.id).set(Player{ .level = evt.level });
 }
 
 void applyPlayerInventory(flecs::world &world, zappy::PlayerInventory &evt) {
-    flecs::entity player = findPlayer(world, evt.id);
-
-    player
+    findPlayer(world, evt.id)
         .set(gridCenterPosition(evt.x, evt.y))
         .set(evt.resources);
+}
+
+void applyPlayerExpelled(flecs::world &world, zappy::PlayerExpelled &evt) {
+    addScreenMessage(world, std::format("Player #{} was expelled", evt.id), ORANGE, 2.0f);
 }
 
 void applyPlayerBroadcast(flecs::world &world, zappy::PlayerBroadcast &evt) {
     addScreenMessage(world, std::format("Player #{}: {}", evt.id, evt.message), WHITE, 4.0f);
 }
 
-void applyPlayerResourceDrop(flecs::world &world, zappy::PlayerResourceDrop &evt) {
-    if (evt.resource < 0 || evt.resource >= static_cast<int>(resourceNames.size())) {
-        return;
+void applyIncantationStart(flecs::world &world, zappy::IncantationStart &evt) {
+    for (int id : evt.playerIds) {
+        flecs::entity player = findPlayer(world, id);
+
+        if (player) {
+            player.add<Incantating>();
+        }
     }
 
+    addScreenMessage(
+        world,
+        std::format("Incantation level {} at ({}, {})", evt.level, evt.x, evt.y),
+        YELLOW,
+        2.0f);
+}
+
+void applyPlayerEggLayStart(flecs::world &world, zappy::PlayerEggLayStart &evt) {
+    world.entity(std::format("EggPreview({})", evt.id).c_str())
+        .set(findPlayer(world, evt.id).get<Position3>().sub_y(0.35))
+        .set(world.get<GameAssets>().eggModel)
+        .set(Scale{ 0.35f })
+        .set(Lifetime{ 3.0f });
+
+    addScreenMessage(world, std::format("Player #{} is laying an egg", evt.id), WHITE, 2.0f);
+}
+
+void applyPlayerResourceDrop(flecs::world &world, zappy::PlayerResourceDrop &evt) {
     addScreenMessage(
         world,
         std::format("Player #{} dropped {}", evt.id, resourceNames[evt.resource]),

@@ -7,3 +7,5 @@ struct Player {
 struct PlayerId {
     int value;
 };
+
+struct Incantating {};

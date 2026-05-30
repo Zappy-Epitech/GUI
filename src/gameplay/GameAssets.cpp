@@ -25,5 +25,6 @@ void GameAssets::load(flecs::world &world) {
             assets.resourceModels[4] = LoadModel("./assets/models/gold/scene.gltf");
             assets.resourceModels[5] = LoadModel("./assets/models/diamond/scene.gltf");
             assets.resourceModels[6] = LoadModel("./assets/models/redstone/Redstone_Dust.gltf");
+            assets.eggModel = LoadModel("./assets/models/egg/scene.gltf");
         });
 }

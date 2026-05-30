@@ -5,8 +5,10 @@
 #include "src/extern/flecs.h"
 #include "src/gameplay/GameAssets.hpp"
 #include "src/gameplay/Grid.hpp"
+#include "src/gameplay/Player.hpp"
 #include "src/gameplay/WorldLookup.hpp"
 #include <array>
+#include <cmath>
 #include <cstdio>
 #include <format>
 #include <raylib.h>
@@ -99,4 +101,14 @@ void applyIncantationEnd(flecs::world &world, zappy::IncantationEnd &evt) {
         .set(ScreenMessage{ std::format("Incantation at ({}, {}) {}", evt.x, evt.y, evt.success ? "succeeded" : "failed") })
         .set<Color>(evt.success ? GREEN : RED)
         .set(Lifetime{ 2.0f });
+
+    Position3 tilePosition = Grid::position(evt.x, evt.y).with_y(1.0f);
+    world.query_builder<const Player, const Position3>()
+        .with<Incantating>()
+        .build()
+        .each([&](flecs::entity player, const Player &, const Position3 &position) {
+            if (std::abs(position.x - tilePosition.x) < 0.01f && std::abs(position.z - tilePosition.z) < 0.01f) {
+                player.remove<Incantating>();
+            }
+        });
 }

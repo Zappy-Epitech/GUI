@@ -32,6 +32,7 @@ Game::Game(flecs::world &world) {
 
     world.component<Player>().member<int>("level");
     world.component<PlayerId>().member<int>("id");
+    world.component<Incantating>();
     world.entity<CameraController>().enable();
 
     world.set<ListState>({});

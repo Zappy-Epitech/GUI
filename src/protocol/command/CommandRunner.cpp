@@ -48,11 +48,20 @@ void runCommand(flecs::world &world, std::string &command) {
                 [&world](zappy::PlayerInventory evt) {
                     applyPlayerInventory(world, evt);
                 },
+                [&world](zappy::PlayerExpelled evt) {
+                    applyPlayerExpelled(world, evt);
+                },
                 [&world](zappy::PlayerBroadcast evt) {
                     applyPlayerBroadcast(world, evt);
                 },
+                [&world](zappy::IncantationStart evt) {
+                    applyIncantationStart(world, evt);
+                },
                 [&world](zappy::IncantationEnd evt) {
                     applyIncantationEnd(world, evt);
+                },
+                [&world](zappy::PlayerEggLayStart evt) {
+                    applyPlayerEggLayStart(world, evt);
                 },
                 [&world](zappy::PlayerResourceDrop evt) {
                     applyPlayerResourceDrop(world, evt);

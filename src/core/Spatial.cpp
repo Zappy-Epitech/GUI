@@ -88,39 +88,39 @@ Position3 Position3::from_xyz(float x, float y, float z) {
     return { x, y, z };
 }
 
-Position3 Position3::with_x(float x) {
+Position3 Position3::with_x(float x) const {
     return { x, y, z };
 }
 
-Position3 Position3::with_y(float y) {
+Position3 Position3::with_y(float y) const {
     return { x, y, z };
 }
 
-Position3 Position3::with_z(float z) {
+Position3 Position3::with_z(float z) const {
     return { x, y, z };
 }
 
-Position3 Position3::sub_x(float x) {
+Position3 Position3::sub_x(float x) const {
     return { this->x - x, y, z };
 }
 
-Position3 Position3::sub_y(float y) {
+Position3 Position3::sub_y(float y) const {
     return { x, this->y - y, z };
 }
 
-Position3 Position3::sub_z(float z) {
+Position3 Position3::sub_z(float z) const {
     return { x, y, this->z - z };
 }
 
-Position3 Position3::add_x(float x) {
+Position3 Position3::add_x(float x) const {
     return { this->x + x, y, z };
 }
 
-Position3 Position3::add_y(float y) {
+Position3 Position3::add_y(float y) const {
     return { x, this->y + y, z };
 }
 
-Position3 Position3::add_z(float z) {
+Position3 Position3::add_z(float z) const {
     return { x, y, this->z + z };
 }
 

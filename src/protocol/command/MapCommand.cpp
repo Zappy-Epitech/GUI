@@ -12,6 +12,7 @@
 #include <cstdio>
 #include <format>
 #include <raylib.h>
+#include <vector>
 
 namespace {
 
@@ -103,12 +104,18 @@ void applyIncantationEnd(flecs::world &world, zappy::IncantationEnd &evt) {
         .set(Lifetime{ 2.0f });
 
     Position3 tilePosition = Grid::position(evt.x, evt.y).with_y(1.0f);
+    std::vector<flecs::entity> incantatingPlayers;
+
     world.query_builder<const Player, const Position3>()
         .with<Incantating>()
         .build()
         .each([&](flecs::entity player, const Player &, const Position3 &position) {
             if (std::abs(position.x - tilePosition.x) < 0.01f && std::abs(position.z - tilePosition.z) < 0.01f) {
-                player.remove<Incantating>();
+                incantatingPlayers.push_back(player);
             }
         });
+
+    for (flecs::entity player : incantatingPlayers) {
+        player.remove<Incantating>();
+    }
 }

@@ -7,6 +7,7 @@
 #include "src/gameplay/Grid.hpp"
 #include "src/gameplay/Movement.hpp"
 #include "src/gameplay/Player.hpp"
+#include "src/gameplay/Team.hpp"
 #include "src/gameplay/WorldLookup.hpp"
 #include "src/minecraft/MinecraftAnimation.hpp"
 #include "src/minecraft/MinecraftRenderer.hpp"
@@ -35,12 +36,14 @@ static void addScreenMessage(flecs::world &world, const std::string &text, Color
 
 } // namespace
 
-void applyPlayerNew(flecs::world &world, zappy::PlayerNew &evt) {
+void applyPlayerNew(flecs::world &world, const zappy::PlayerNew &evt) {
     const GameAssets &skins = world.get<GameAssets>();
     Texture2D skin = skins.skins[evt.id % skins.skins.size()];
+    flecs::entity team = findOrCreateTeam(world, evt.team);
 
     world.entity(std::format("Player({})", evt.id).c_str())
         .child_of<Game>()
+        .add<BelongsTo>(team)
         .set(PlayerId{ evt.id })
         .set(Player{ .level = evt.level })
         .set(skin)

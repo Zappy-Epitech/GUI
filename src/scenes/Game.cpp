@@ -7,135 +7,144 @@
 #include "src/gameplay/GamePlay.hpp"
 #include "src/gameplay/Grid.hpp"
 #include "src/gameplay/Player.hpp"
+#include "src/gameplay/Team.hpp"
 #include "src/protocol/ZappyProtocol.hpp"
 #include "src/protocol/command/CommandRunner.hpp"
 #include "src/protocol/command/PlayerCommand.hpp"
 #include "src/scenes/Home.hpp"
 #include "src/scenes/Scenes.hpp"
-#include <climits>
 #include <format>
+#include <optional>
 #include <raygui.h>
 #include <raylib.h>
 #include <string>
 
-namespace {
-
-struct PlayerInventoryModal {
-    std::string name;
-    int level;
-    zappy::Resources resources;
+struct ListState {
+    flecs::entity_t openedTeam = 0;
+    flecs::entity_t selectedPlayer = 0;
+    std::optional<zappy::Resources> resources;
+    int level = 0;
+    std::string playerName;
 };
-
-static void drawResourceRow(Rectangle bounds, const char *label, int amount) {
-    GuiLabel(Position2(bounds.x + 16, bounds.y).rect(bounds.width * 0.65f, bounds.height), label);
-    GuiLabel(
-        Position2(bounds.x + bounds.width - 96, bounds.y).rect(80, bounds.height),
-        std::format("{}", amount).c_str());
-}
-
-static void drawInventoryModal(const PlayerInventoryModal &player, flecs::entity_t &entity) {
-    const Rectangle modal = Position2::center(400, 700).rect(400, 700);
-
-    DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), Fade(BLACK, 0.55f));
-
-    if (GuiWindowBox(modal, player.name.c_str())) {
-        entity = 0;
-        return;
-    }
-
-    float y = modal.y + 30 + 58;
-
-    using std::pair;
-
-    for (const auto &[label, amount] : {
-             pair("level", player.level),
-             pair("food", player.resources.food),
-             pair("linemate", player.resources.linemate),
-             pair("deraumere", player.resources.deraumere),
-             pair("sibur", player.resources.sibur),
-             pair("mendiane", player.resources.mendiane),
-             pair("phiras", player.resources.phiras),
-             pair("thystame", player.resources.thystame),
-         }) {
-        drawResourceRow(
-            Rectangle(modal.x + 20, y, modal.width - 40, 58),
-            label,
-            amount);
-        y += 58 + 10;
-    }
-
-    if (GuiButton(
-            Rectangle(modal.x + 20, modal.y + modal.height - 62, modal.width - 40, 48),
-            "Close")) {
-        entity = 0;
-    }
-}
-
-} // namespace
 
 Game::Game(flecs::world &world) {
     world.module<Game>("game").child_of<Scenes>();
 
-    world.component<Player>()
-        .member<int>("level");
-
-    world.component<PlayerId>()
-        .member<int>("id");
-
+    world.component<Player>().member<int>("level");
+    world.component<PlayerId>().member<int>("id");
     world.entity<CameraController>().enable();
 
-    zappy::PlayerNew playerNew = zappy::PlayerNew{
-        .id = 0,
-        .x = 0,
-        .y = 0,
-        .orientation = Orientation::NORTH,
-        .level = 1,
-        .team = "debug",
-    };
-    applyPlayerNew(world, playerNew);
+    world.set<ListState>({});
+
+    world.observer<const Player, const zappy::Resources>()
+        .event(flecs::OnSet)
+        .each([world](flecs::entity e, const Player &p, const zappy::Resources &r) {
+            auto &state = world.get_mut<ListState>();
+            if (e.id() == state.selectedPlayer) {
+                state.playerName = e.name().c_str();
+                state.level = p.level;
+                state.resources = r;
+            }
+        });
+
+    world.observer<const Player>()
+        .event(flecs::OnRemove)
+        .each([world](flecs::entity e, const Player &) {
+            auto &state = world.get_mut<ListState>();
+            if (e.id() == state.selectedPlayer)
+                state.selectedPlayer = 0;
+        });
+
+    applyPlayerNew(world, zappy::PlayerNew::withIdAndTeam(0, "debug"));
 
     Grid::spawn(world, 10, 10);
 
-    world.system<const Player, const zappy::Resources>("DrawPlayerButton")
+    world.system<const Team>("DrawTeamButtons")
         .kind<Render2D>()
-        .run([](flecs::iter &it) {
-            static flecs::entity_t selectedPlayer = 0;
-            static std::optional<PlayerInventoryModal> selectedInventory;
-            Rectangle buttonBounds = Position2(35, 150).rect(200, 50);
+        .run([world](flecs::iter &it) {
+            auto &state = world.get_mut<ListState>();
+            Rectangle btn = { 200, 25, 200, 42 };
 
             while (it.next()) {
-                auto players = it.field<const Player>(0);
-                auto resources = it.field<const zappy::Resources>(1);
-
+                auto teams = it.field<const Team>(0);
                 for (auto i : it) {
-                    flecs::entity entity = it.entity(i);
-
-                    auto modal = PlayerInventoryModal{ entity.name().c_str(), players[i].level, resources[i] };
-
-                    if (entity.id() == selectedPlayer) {
-                        selectedInventory = modal;
+                    if (GuiButton(btn, teams[i].name.c_str())) {
+                        state.openedTeam = (state.openedTeam == it.entity(i).id()) ? 0 : it.entity(i).id();
                     }
-
-                    if (selectedPlayer == 0 && GuiButton(buttonBounds, entity.name().c_str())) {
-                        selectedPlayer = entity.id();
-                        selectedInventory = modal;
-                    }
-                    buttonBounds.y += buttonBounds.height + 10;
+                    btn.x += btn.width + 10;
                 }
             }
+        });
 
-            if (selectedPlayer != 0) {
-                if (selectedInventory.has_value()) {
-                    drawInventoryModal(selectedInventory.value(), selectedPlayer);
-                } else {
-                    selectedPlayer = 0;
+    world.system<const Player, const zappy::Resources>("DrawPlayerList")
+        .kind<Render2D>()
+        .run([world](flecs::iter &it) {
+            if (auto &state = world.get_mut<ListState>(); state.openedTeam != 0) {
+                const Rectangle panel = { 200, 72, 200, 240 };
+
+                DrawRectangleLinesEx(panel, 1.0f, Fade(WHITE, 0.35f));
+
+                Rectangle btn = { panel.x + 8, panel.y + 8, panel.width - 16, 36 };
+
+                while (it.next()) {
+                    auto players = it.field<const Player>(0);
+                    auto resources = it.field<const zappy::Resources>(1);
+
+                    for (auto i : it) {
+                        auto e = it.entity(i);
+                        if (e.has<BelongsTo>(state.openedTeam)) {
+                            if (GuiButton(btn, e.name().c_str())) {
+                                state.selectedPlayer = e.id();
+                                state.playerName = e.name().c_str();
+                                state.level = players[i].level;
+                                state.resources = resources[i];
+                            }
+                            btn.y += btn.height + 6;
+                        }
+                    }
                 }
+            }
+        });
+
+    world.system("DrawInventoryModal")
+        .kind<Render2D>()
+        .run([world](flecs::iter &) {
+            if (auto &state = world.get_mut<ListState>(); state.selectedPlayer != 0 && state.resources.has_value()) {
+                const Rectangle modal = Position2::center(400, 700).rect(400, 700);
+
+                DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), Fade(BLACK, 0.55f));
+
+                if (GuiWindowBox(modal, state.playerName.c_str())) {
+                    state.selectedPlayer = 0;
+                    return;
+                }
+
+                const auto &r = state.resources.value();
+                float y = modal.y + 30 + 58;
+
+                for (const auto &[label, amount] : {
+                         std::pair("level", state.level),
+                         std::pair("food", r.food),
+                         std::pair("linemate", r.linemate),
+                         std::pair("deraumere", r.deraumere),
+                         std::pair("sibur", r.sibur),
+                         std::pair("mendiane", r.mendiane),
+                         std::pair("phiras", r.phiras),
+                         std::pair("thystame", r.thystame),
+                     }) {
+                    GuiLabel(Position2(modal.x + 16, y).rect(modal.width * 0.65f, 58), label);
+                    GuiLabel(Position2(modal.x + modal.width - 96, y).rect(80, 58), std::format("{}", amount).c_str());
+                    y += 68;
+                }
+
+                if (GuiButton(Rectangle{ modal.x + 20, modal.y + modal.height - 62, modal.width - 40, 48 }, "Close"))
+                    state.selectedPlayer = 0;
             }
         });
 
     world.entity("Exit Button")
         .set(Button("Exit"))
-        .set(Position2::splat(100).with_y(50))
+        .set(Position2::splat(100).with_y(25))
         .set(OnClick([world](flecs::entity) mutable {
             world.entity<Game>().destruct();
             world.import<Home>().child_of<Scenes>();

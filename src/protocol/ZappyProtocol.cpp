@@ -19,4 +19,8 @@ std::optional<Event> ZappyProtocol::parseLine(std::string_view line) {
     return std::nullopt;
 }
 
+PlayerNew PlayerNew::withIdAndTeam(int id, const std::string &team) {
+    return { .id = id, .x = 3, .y = 3, .orientation = Orientation::NORTH, .level = 1, .team = team };
+}
+
 } // namespace zappy

@@ -39,6 +39,8 @@ struct PlayerNew {
     Orientation orientation;
     int level;
     std::string team;
+
+    static PlayerNew withIdAndTeam(int id, const std::string &team);
 };
 
 struct PlayerPosition {

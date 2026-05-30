@@ -2,6 +2,7 @@
 #include "src/protocol/ZappyProtocol.hpp"
 #include "src/protocol/command/MapCommand.hpp"
 #include "src/protocol/command/PlayerCommand.hpp"
+#include "src/protocol/command/TeamCommand.hpp"
 #include <cstdio>
 #include <optional>
 #include <stdexcept>
@@ -34,6 +35,9 @@ void runCommand(flecs::world &world, std::string &command) {
                 },
                 [&world](zappy::TileContent evt) {
                     applyTileContent(world, evt);
+                },
+                [&world](zappy::TeamName evt) {
+                    applyTeamName(world, evt);
                 },
                 [&world](zappy::PlayerPosition evt) {
                     applyPlayerPosition(world, evt);

@@ -64,7 +64,8 @@ void applyPlayerPosition(flecs::world &world, zappy::PlayerPosition &evt) {
 }
 
 void applyPlayerLevel(flecs::world &world, zappy::PlayerLevel &evt) {
-    findPlayer(world, evt.id).set(Player{ .level = evt.level });
+    findPlayer(world, evt.id)
+        .set(Player{ .level = evt.level });
 }
 
 void applyPlayerInventory(flecs::world &world, zappy::PlayerInventory &evt) {

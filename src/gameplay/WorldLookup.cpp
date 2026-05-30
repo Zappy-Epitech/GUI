@@ -32,6 +32,7 @@ flecs::entity findOrCreateTeam(flecs::world &world, const std::string &name) {
         return team;
     }
 
-    return world.entity(std::format("Team({})", name).c_str())
+    return world.entity(std::format("{}", name).c_str())
+        .child_of<Teams>()
         .set(Team{ name });
 }

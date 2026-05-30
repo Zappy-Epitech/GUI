@@ -13,6 +13,15 @@ static constexpr float cellPadding = 0.1f;
 Grid::Grid(flecs::world &world) {
     world.module<Grid>("grid");
 
+    world.component<zappy::Resources>("Resources")
+        .member<int>("food")
+        .member<int>("linemate")
+        .member<int>("deraumere")
+        .member<int>("sibur")
+        .member<int>("mendiane")
+        .member<int>("phiras")
+        .member<int>("thystame");
+
     world.component<GridContainer>();
     world.component<GridCell>();
     world.component<GridPosition>()

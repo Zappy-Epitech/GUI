@@ -28,16 +28,15 @@ struct ListState {
 };
 
 Game::Game(flecs::world &world) {
-    world.module<Game>("game").child_of<Scenes>();
+    auto module = world.module<Game>("game").child_of<Scenes>();
 
     world.component<Player>().member<int>("level");
     world.component<PlayerId>().member<int>("id");
     world.component<Incantating>();
+    world.singleton<ListState>().set<ListState>({}).child_of(module);
     world.entity<CameraController>().enable();
 
-    world.set<ListState>({});
-
-    world.observer<const Player, const zappy::Resources>()
+    world.observer<const Player, const zappy::Resources>("OnSetPlayerResources")
         .event(flecs::OnSet)
         .each([world](flecs::entity e, const Player &p, const zappy::Resources &r) {
             auto &state = world.get_mut<ListState>();
@@ -48,7 +47,7 @@ Game::Game(flecs::world &world) {
             }
         });
 
-    world.observer<const Player>()
+    world.observer<const Player>("OnRemovePlayer")
         .event(flecs::OnRemove)
         .each([world](flecs::entity e, const Player &) {
             auto &state = world.get_mut<ListState>();
@@ -56,7 +55,7 @@ Game::Game(flecs::world &world) {
                 state.selectedPlayer = 0;
         });
 
-    applyPlayerNew(world, zappy::PlayerNew::withIdAndTeam(0, "debug"));
+    applyPlayerNew(world, zappy::PlayerNew::withIdAndTeam(0, "dream"));
 
     Grid::spawn(world, 10, 10);
 

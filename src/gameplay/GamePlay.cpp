@@ -6,6 +6,7 @@
 #include "src/gameplay/Movement.hpp"
 #include "src/gameplay/Team.hpp"
 
+/// Imports gameplay modules.
 GamePlay::GamePlay(flecs::world &world) {
     flecs::entity module = world.module<GamePlay>("gameplay");
     world.import<Grid>().child_of(module);

@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cmath>
 
+/// Registers movement interpolation systems.
 Movement::Movement(flecs::world &world) {
     world.module<Movement>("movement").child_of<GamePlay>();
 

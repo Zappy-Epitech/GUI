@@ -2,6 +2,7 @@
 #include "src/extern/flecs.h"
 #include "src/gameplay/GamePlay.hpp"
 
+/// Registers team components.
 Teams::Teams(flecs::world &world) {
     world.module<Teams>("teams");
 

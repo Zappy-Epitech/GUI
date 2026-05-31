@@ -4,6 +4,7 @@
 namespace zappy {
 namespace {
 
+/// Parses map size arguments.
 std::optional<Event> parseMapSize(ProtocolScanner &scanner) {
     auto width = takeInt(scanner);
     auto height = takeInt(scanner);
@@ -13,6 +14,7 @@ std::optional<Event> parseMapSize(ProtocolScanner &scanner) {
     return MapSize{ *width, *height };
 }
 
+/// Parses tile content arguments.
 std::optional<Event> parseTileContent(ProtocolScanner &scanner) {
     auto x = takeInt(scanner);
     auto y = takeInt(scanner);
@@ -23,6 +25,7 @@ std::optional<Event> parseTileContent(ProtocolScanner &scanner) {
     return TileContent{ *x, *y, *resources };
 }
 
+/// Parses team name arguments.
 std::optional<Event> parseTeamName(ProtocolScanner &scanner) {
     auto name = takeString(scanner);
     if (!name || !isDone(scanner)) {
@@ -31,6 +34,7 @@ std::optional<Event> parseTeamName(ProtocolScanner &scanner) {
     return TeamName{ *name };
 }
 
+/// Parses new player arguments.
 std::optional<Event> parsePlayerNew(ProtocolScanner &scanner) {
     auto id = takeId(scanner);
     auto x = takeInt(scanner);
@@ -44,6 +48,7 @@ std::optional<Event> parsePlayerNew(ProtocolScanner &scanner) {
     return PlayerNew{ *id, *x, *y, (Orientation) *orientation, *level, *team };
 }
 
+/// Parses player position arguments.
 std::optional<Event> parsePlayerPosition(ProtocolScanner &scanner) {
     auto id = takeId(scanner);
     auto x = takeInt(scanner);
@@ -55,6 +60,7 @@ std::optional<Event> parsePlayerPosition(ProtocolScanner &scanner) {
     return PlayerPosition{ *id, *x, *y, (Orientation) *orientation };
 }
 
+/// Parses player level arguments.
 std::optional<Event> parsePlayerLevel(ProtocolScanner &scanner) {
     auto id = takeId(scanner);
     auto level = takeInt(scanner);
@@ -64,6 +70,7 @@ std::optional<Event> parsePlayerLevel(ProtocolScanner &scanner) {
     return PlayerLevel{ *id, *level };
 }
 
+/// Parses player inventory arguments.
 std::optional<Event> parsePlayerInventory(ProtocolScanner &scanner) {
     auto id = takeId(scanner);
     auto x = takeInt(scanner);
@@ -75,6 +82,7 @@ std::optional<Event> parsePlayerInventory(ProtocolScanner &scanner) {
     return PlayerInventory{ *id, *x, *y, *resources };
 }
 
+/// Parses a player id event.
 template <typename EventType>
 std::optional<Event> parsePlayerId(ProtocolScanner &scanner) {
     auto id = takeId(scanner);
@@ -84,6 +92,7 @@ std::optional<Event> parsePlayerId(ProtocolScanner &scanner) {
     return EventType{ *id };
 }
 
+/// Parses a player resource event.
 template <typename EventType>
 std::optional<Event> parsePlayerResource(ProtocolScanner &scanner) {
     auto id = takeId(scanner);
@@ -94,6 +103,7 @@ std::optional<Event> parsePlayerResource(ProtocolScanner &scanner) {
     return EventType{ *id, *resource };
 }
 
+/// Parses player broadcast arguments.
 std::optional<Event> parsePlayerBroadcast(ProtocolScanner &scanner) {
     auto id = takeId(scanner);
     auto message = takeMessage(scanner);
@@ -103,6 +113,7 @@ std::optional<Event> parsePlayerBroadcast(ProtocolScanner &scanner) {
     return PlayerBroadcast{ *id, *message };
 }
 
+/// Parses incantation start arguments.
 std::optional<Event> parseIncantationStart(ProtocolScanner &scanner) {
     auto x = takeInt(scanner);
     auto y = takeInt(scanner);
@@ -125,6 +136,7 @@ std::optional<Event> parseIncantationStart(ProtocolScanner &scanner) {
     return IncantationStart{ *x, *y, *level, ids };
 }
 
+/// Parses incantation end arguments.
 std::optional<Event> parseIncantationEnd(ProtocolScanner &scanner) {
     auto x = takeInt(scanner);
     auto y = takeInt(scanner);
@@ -135,6 +147,7 @@ std::optional<Event> parseIncantationEnd(ProtocolScanner &scanner) {
     return IncantationEnd{ *x, *y, *result != 0 };
 }
 
+/// Parses new egg arguments.
 std::optional<Event> parseEggNew(ProtocolScanner &scanner) {
     auto id = takeId(scanner);
     auto playerId = takeId(scanner);
@@ -146,6 +159,7 @@ std::optional<Event> parseEggNew(ProtocolScanner &scanner) {
     return EggNew{ *id, *playerId, *x, *y };
 }
 
+/// Parses an egg id event.
 template <typename EventType>
 std::optional<Event> parseEggId(ProtocolScanner &scanner) {
     auto id = takeId(scanner);
@@ -155,6 +169,7 @@ std::optional<Event> parseEggId(ProtocolScanner &scanner) {
     return EventType{ *id };
 }
 
+/// Parses a time unit value.
 std::optional<Event> parseTimeUnit(ProtocolScanner &scanner) {
     auto value = takeInt(scanner);
     if (!value || !isDone(scanner)) {
@@ -163,6 +178,7 @@ std::optional<Event> parseTimeUnit(ProtocolScanner &scanner) {
     return TimeUnit{ *value };
 }
 
+/// Parses game end arguments.
 std::optional<Event> parseGameEnd(ProtocolScanner &scanner) {
     auto winner = takeString(scanner);
     if (!winner || !isDone(scanner)) {
@@ -171,6 +187,7 @@ std::optional<Event> parseGameEnd(ProtocolScanner &scanner) {
     return GameEnd{ *winner };
 }
 
+/// Parses a server message.
 std::optional<Event> parseServerMessage(ProtocolScanner &scanner) {
     auto message = takeMessage(scanner);
     if (!message) {
@@ -179,6 +196,7 @@ std::optional<Event> parseServerMessage(ProtocolScanner &scanner) {
     return ServerMessage{ *message };
 }
 
+/// Parses an empty event.
 template <typename EventType>
 std::optional<Event> parseEmpty(ProtocolScanner &scanner) {
     if (!isDone(scanner)) {

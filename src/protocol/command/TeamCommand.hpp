@@ -6,4 +6,5 @@ namespace flecs {
 struct world;
 }
 
+/// Applies a team name event.
 void applyTeamName(flecs::world &world, zappy::TeamName &evt);

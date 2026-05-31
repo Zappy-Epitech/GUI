@@ -4,6 +4,7 @@
 #include "src/core/Spatial.hpp"
 #include "src/extern/flecs.h"
 
+/// Imports core modules and lifetime cleanup.
 Core::Core(flecs::world &world) {
     flecs::entity module = world.module<Core>("core");
     world.import<Spatial>().child_of(module);

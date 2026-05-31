@@ -5,6 +5,7 @@
 #include "src/minecraft/Minecraft.hpp"
 #include "src/scenes/Scenes.hpp"
 
+/// Starts the Zappy GUI application.
 int main() {
     flecs::world world;
 

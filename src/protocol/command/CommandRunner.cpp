@@ -8,6 +8,7 @@
 #include <stdexcept>
 #include <variant>
 
+/// Combines variant visitors.
 template <class... Ts>
 struct Overloaded : Ts... {
     using Ts::operator()...;
@@ -16,10 +17,12 @@ struct Overloaded : Ts... {
 template <class... Ts>
 Overloaded(Ts...) -> Overloaded<Ts...>;
 
+/// Reports unsupported events.
 auto invalid = [](const auto &) {
     throw std::invalid_argument("Unknown event type");
 };
 
+/// Parses and applies one command.
 void runCommand(flecs::world &world, std::string &command) {
     std::optional<zappy::Event> event =
         zappy::ZappyProtocol::parseLine(command);

@@ -6,6 +6,7 @@
 #include <raylib.h>
 #include <raymath.h>
 
+/// Registers Raylib phases and render systems.
 Raylib::Raylib(flecs::world &world) {
     world.module<Raylib>("raylib");
     world.import<Spatial>();

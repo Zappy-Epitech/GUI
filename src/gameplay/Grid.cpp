@@ -7,9 +7,12 @@
 #include <format>
 #include <raylib.h>
 
+/// The size of each grid cell.
 static constexpr Size2 cellSize = { 1, 1 };
+/// The padding between grid cells.
 static constexpr float cellPadding = 0.1f;
 
+/// Registers grid components and prefabs.
 Grid::Grid(flecs::world &world) {
     world.module<Grid>("grid");
 
@@ -37,6 +40,7 @@ Grid::Grid(flecs::world &world) {
     });
 }
 
+/// Returns a world position for grid coordinates.
 Position3 Grid::position(int x, int y) {
     return Position3{
         static_cast<float>(x) * (cellSize.width + cellPadding),
@@ -45,10 +49,12 @@ Position3 Grid::position(int x, int y) {
     };
 }
 
+/// Returns a position above a grid tile.
 Position3 Grid::topPosition(int x, int y) {
     return Grid::position(x, y).with_y(0.45f);
 }
 
+/// Spawns all grid tiles.
 void Grid::spawn(const flecs::world &world, int width, int height) {
     flecs::entity grid = world.entity(std::format("Grid({}, {})", width, height).c_str()).add<GridContainer>();
 

@@ -3,6 +3,7 @@
 #include <cmath>
 #include <raylib.h>
 
+/// Creates an animation clip.
 SkinAnimation SkinAnimation::build(float duration, bool loop) {
     SkinAnimation anim{};
     anim.duration = duration;
@@ -10,6 +11,7 @@ SkinAnimation SkinAnimation::build(float duration, bool loop) {
     return anim;
 }
 
+/// Adds keyframes for one limb.
 SkinAnimation &SkinAnimation::limb(Limb l, std::initializer_list<Keyframe> keys) {
     LimbTrack &track = tracks[static_cast<uint8_t>(l)];
     track.count = 0;
@@ -21,6 +23,7 @@ SkinAnimation &SkinAnimation::limb(Limb l, std::initializer_list<Keyframe> keys)
     return *this;
 }
 
+/// Interpolates a limb angle.
 static float lerp_limb(const LimbTrack &track, float t) {
     if (track.count == 0)
         return 0.0f;
@@ -38,6 +41,7 @@ static float lerp_limb(const LimbTrack &track, float t) {
     return track.keys[track.count - 1].angle;
 }
 
+/// Registers skin animation systems.
 MinecraftAnimation::MinecraftAnimation(flecs::world &world) {
     world.module<MinecraftAnimation>("animation");
 

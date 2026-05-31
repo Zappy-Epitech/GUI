@@ -7,12 +7,18 @@
 #include <raygui.h>
 #include <raylib.h>
 
+/// The font size for GUI text.
 static constexpr float fontSize = 40.0f;
+/// The horizontal padding for GUI elements.
 static constexpr float paddingX = 24.0f * 2.;
+/// The vertical padding for GUI elements.
 static constexpr float paddingY = 14.0f * 2.;
+/// The width of text input fields.
 static constexpr float textInputWidth = 320.0f;
+/// The height of text input fields.
 static constexpr float textInputHeight = 40.0f;
 
+/// Prepares the editable text buffer size.
 static int textInputEditBufferSize(TextInput &input) {
     if (input.text.capacity() <= input.text.size() + 1) {
         input.text.reserve((input.text.size() + 1) * 2);
@@ -21,6 +27,7 @@ static int textInputEditBufferSize(TextInput &input) {
     return static_cast<int>(input.text.size() + 1);
 }
 
+/// Registers GUI components and render systems.
 Gui::Gui(flecs::world &world) {
     world.module<Gui>("gui");
     world.import<Raylib>();

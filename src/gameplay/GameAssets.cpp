@@ -3,6 +3,7 @@
 #include "src/gameplay/GamePlay.hpp"
 #include <filesystem>
 
+/// Loads skins and resource models.
 void GameAssets::load(flecs::world &world) {
     world.singleton<GameAssets>()
         .set<GameAssets>({})

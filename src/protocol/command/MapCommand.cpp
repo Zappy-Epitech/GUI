@@ -16,8 +16,10 @@
 
 namespace {
 
+/// The names of the resources.
 static const std::array<const char *, 7> resourceNames = { "food", "linemate", "deraumere", "sibur", "mendiane", "phiras", "thystame" };
 
+/// The offsets of the resources.
 static const std::array<Position3, 7> resourceOffsets = {
     Position3{ 0.00f, 0.00f, 0.00f },
     Position3{ -0.25f, 0.00f, -0.25f },
@@ -28,10 +30,12 @@ static const std::array<Position3, 7> resourceOffsets = {
     Position3{ 0.25f, 0.00f, 0.25f },
 };
 
+/// Views resources as an indexed array.
 static const std::array<int, 7> &resourceAmounts(const zappy::Resources &resources) {
     return *reinterpret_cast<const std::array<int, 7> *>(&resources);
 }
 
+/// Removes rendered resources from a tile.
 static void clearTileResources(flecs::entity tile) {
     for (const char *name : resourceNames) {
         flecs::entity resource = tile.lookup(name);
@@ -42,6 +46,7 @@ static void clearTileResources(flecs::entity tile) {
     }
 }
 
+/// Spawns one rendered resource.
 static void spawnTileResource(
     flecs::world &world,
     flecs::entity tile,
@@ -60,6 +65,7 @@ static void spawnTileResource(
 
 } // namespace
 
+/// Applies a new map size.
 void applyMapNew(flecs::world &world, zappy::MapSize &evt) {
     world.query_builder()
         .with<GridContainer>()
@@ -71,6 +77,7 @@ void applyMapNew(flecs::world &world, zappy::MapSize &evt) {
     Grid::spawn(world, evt.width, evt.height);
 }
 
+/// Applies tile resource content.
 void applyTileContent(flecs::world &world, zappy::TileContent &evt) {
     flecs::entity tile = findTile(world, evt.x, evt.y);
 
@@ -91,6 +98,7 @@ void applyTileContent(flecs::world &world, zappy::TileContent &evt) {
     }
 }
 
+/// Applies incantation completion.
 void applyIncantationEnd(flecs::world &world, zappy::IncantationEnd &evt) {
     flecs::entity tile = findTile(world, evt.x, evt.y);
 

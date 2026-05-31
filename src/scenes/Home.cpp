@@ -5,6 +5,7 @@
 #include "src/scenes/Game.hpp"
 #include "src/scenes/Scenes.hpp"
 
+/// Registers the home scene.
 Home::Home(flecs::world &world) {
     world.module<Home>("home").child_of<Scenes>();
     world.entity("Play Button")

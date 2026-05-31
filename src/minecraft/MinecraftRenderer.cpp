@@ -7,13 +7,16 @@
 #include <raylib.h>
 #include <rlgl.h>
 
+/// Stores one face UV rectangle.
 struct FaceUV {
     float x, y, w, h;
 };
+/// Stores UVs for a body part.
 struct PartUV {
     FaceUV right, front, left, back, top, bottom;
 };
 
+/// The UVs for all part of minecraft skin.
 static constexpr PartUV HEAD = { { 0, 8, 8, 8 }, { 8, 8, 8, 8 }, { 16, 8, 8, 8 }, { 24, 8, 8, 8 }, { 8, 0, 8, 8 }, { 16, 0, 8, 8 } };
 static constexpr PartUV BODY = { { 16, 20, 4, 12 }, { 20, 20, 8, 12 }, { 28, 20, 4, 12 }, { 32, 20, 8, 12 }, { 20, 16, 8, 4 }, { 28, 16, 8, 4 } };
 static constexpr PartUV RARM = { { 40, 20, 4, 12 }, { 44, 20, 4, 12 }, { 48, 20, 4, 12 }, { 52, 20, 4, 12 }, { 44, 16, 4, 4 }, { 48, 16, 4, 4 } };
@@ -21,6 +24,7 @@ static constexpr PartUV LARM = { { 32, 52, 4, 12 }, { 36, 52, 4, 12 }, { 40, 52,
 static constexpr PartUV RLEG = { { 0, 20, 4, 12 }, { 4, 20, 4, 12 }, { 8, 20, 4, 12 }, { 12, 20, 4, 12 }, { 4, 16, 4, 4 }, { 8, 16, 4, 4 } };
 static constexpr PartUV LLEG = { { 16, 52, 4, 12 }, { 20, 52, 4, 12 }, { 24, 52, 4, 12 }, { 28, 52, 4, 12 }, { 20, 48, 4, 4 }, { 24, 48, 4, 4 } };
 
+/// Draws a textured cuboid.
 static void skinCube(Texture2D tex, const PartUV &uv, float w, float h, float d) {
     const float tw = (float)tex.width;
     const float th = (float)tex.height;
@@ -75,6 +79,7 @@ static void skinCube(Texture2D tex, const PartUV &uv, float w, float h, float d)
     rlSetTexture(0);
 }
 
+/// Draws one animated limb.
 static void limb(Texture2D tex, const PartUV &uv, float px, float ox, float oy, float oz, float angle, float w, float h, float d) {
     rlPushMatrix();
     rlTranslatef(ox, oy, oz);
@@ -84,6 +89,7 @@ static void limb(Texture2D tex, const PartUV &uv, float px, float ox, float oy, 
     rlPopMatrix();
 }
 
+/// Draws a Minecraft-style player.
 static void drawPlayer(Texture2D tex, Vector3 pos, float scale, float angle, const SkinPose &pose) {
     float px = scale / 16.f;
     rlPushMatrix();
@@ -107,6 +113,7 @@ static void drawPlayer(Texture2D tex, Vector3 pos, float scale, float angle, con
     rlPopMatrix();
 }
 
+/// Registers skin rendering systems.
 MinecraftRenderer::MinecraftRenderer(flecs::world &world) {
     world.module<MinecraftRenderer>("renderer");
     world.component<MinecraftSkin>();

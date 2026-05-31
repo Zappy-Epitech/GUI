@@ -6,8 +6,11 @@
 #include <raylib.h>
 
 namespace {
+
+/// The grid center position for the camera.
 static constexpr Vector3 gridCenter = { 4.95f, 0.0f, 4.95f };
 
+/// The controlled camera instance.
 static Camera controlledCamera = {
     Vector3{ gridCenter.x, 8.0f, -10.0f },
     gridCenter,
@@ -16,13 +19,18 @@ static Camera controlledCamera = {
     CAMERA_PERSPECTIVE,
 };
 
+/// The camera yaw angle.
 static float cameraYaw = 0.0f;
+
+/// The camera pitch angle.
 static float cameraPitch = -0.491532f;
 
+/// Checks forward movement input.
 static bool isForwardDown() {
     return IsKeyDown(KEY_W);
 }
 
+/// Checks left movement input.
 static bool isLeftDown() {
     return IsKeyDown(KEY_A);
 }
@@ -33,6 +41,7 @@ static constexpr float lookSpeed = 1.8f;
 static constexpr float minPitch = -1.35f;
 static constexpr float maxPitch = 1.35f;
 
+/// Registers camera control systems.
 CameraController::CameraController(flecs::world &world) {
     world.module<CameraController>("cameraController").child_of<GamePlay>();
 
@@ -113,6 +122,7 @@ CameraController::CameraController(flecs::world &world) {
         });
 }
 
+/// Returns the shared camera.
 Camera &CameraController::camera() {
     return controlledCamera;
 }

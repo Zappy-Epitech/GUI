@@ -19,6 +19,7 @@
 #include <raylib.h>
 #include <string>
 
+/// Stores game UI selection state.
 struct ListState {
     flecs::entity_t openedTeam = 0;
     flecs::entity_t selectedPlayer = 0;
@@ -27,6 +28,7 @@ struct ListState {
     std::string playerName;
 };
 
+/// Registers the game scene.
 Game::Game(flecs::world &world) {
     auto module = world.module<Game>("game").child_of<Scenes>();
 

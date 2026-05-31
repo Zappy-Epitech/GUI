@@ -1,0 +1,9 @@
+#pragma once
+#include <string>
+
+namespace flecs {
+struct world;
+}
+
+/// Parses and applies one server command.
+void runCommand(flecs::world &world, std::string &command);

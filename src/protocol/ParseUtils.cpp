@@ -2,6 +2,7 @@
 
 namespace zappy {
 
+/// Removes trailing line endings.
 std::string_view trimLine(std::string_view line) {
     while (!line.empty() && (line.back() == '\n' || line.back() == '\r')) {
         line.remove_suffix(1);
@@ -9,6 +10,7 @@ std::string_view trimLine(std::string_view line) {
     return line;
 }
 
+/// Reads the next token.
 std::optional<std::string_view> takeToken(ProtocolScanner &scanner) {
     scanner.skipSpaces();
     auto token = scanner.takeWhile([](char value) {
@@ -20,16 +22,19 @@ std::optional<std::string_view> takeToken(ProtocolScanner &scanner) {
     return token;
 }
 
+/// Reads the next integer.
 std::optional<int> takeInt(ProtocolScanner &scanner) {
     scanner.skipSpaces();
     return scanner.takeInteger<int>();
 }
 
+/// Reads the next player id.
 std::optional<int> takeId(ProtocolScanner &scanner) {
     scanner.skipSpaces();
     return scanner.takePrefixedInteger<int>('#');
 }
 
+/// Reads the next token as a string.
 std::optional<std::string> takeString(ProtocolScanner &scanner) {
     auto token = takeToken(scanner);
     if (!token) {
@@ -38,6 +43,7 @@ std::optional<std::string> takeString(ProtocolScanner &scanner) {
     return std::string(*token);
 }
 
+/// Reads the remaining message text.
 std::optional<std::string> takeMessage(ProtocolScanner &scanner) {
     if (!scanner.takeSpace()) {
         return std::nullopt;
@@ -45,11 +51,13 @@ std::optional<std::string> takeMessage(ProtocolScanner &scanner) {
     return std::string(scanner.takeRest());
 }
 
+/// Checks for trailing arguments.
 bool isDone(ProtocolScanner &scanner) {
     scanner.skipSpaces();
     return scanner.isDone();
 }
 
+/// Reads all resource values.
 std::optional<Resources> takeResources(ProtocolScanner &scanner) {
     auto food = takeInt(scanner);
     auto linemate = takeInt(scanner);

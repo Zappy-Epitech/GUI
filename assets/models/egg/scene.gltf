@@ -1,0 +1,583 @@
+{
+  "accessors": [
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 39,
+      "max": [
+        7.8140869140625,
+        1.0000001192092896,
+        7.424901962280273
+      ],
+      "min": [
+        -6.408926010131836,
+        -0.9999998211860657,
+        -8.843446731567383
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 468,
+      "componentType": 5126,
+      "count": 39,
+      "max": [
+        0.0,
+        1.0,
+        1.178615954833262e-10
+      ],
+      "min": [
+        0.0,
+        -1.0,
+        0.0
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 39,
+      "max": [
+        0.625,
+        0.5
+      ],
+      "min": [
+        0.625,
+        0.5
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "componentType": 5125,
+      "count": 60,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 936,
+      "componentType": 5126,
+      "count": 310,
+      "max": [
+        9.812570571899414,
+        0.9999999403953552,
+        11.36927604675293
+      ],
+      "min": [
+        -10.43028450012207,
+        -1.000000238418579,
+        -10.824397087097168
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 4656,
+      "componentType": 5126,
+      "count": 310,
+      "max": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "min": [
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 312,
+      "componentType": 5126,
+      "count": 310,
+      "max": [
+        0.6250000596046448,
+        0.625
+      ],
+      "min": [
+        0.0,
+        0.0
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 240,
+      "componentType": 5125,
+      "count": 720,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 8376,
+      "componentType": 5126,
+      "count": 90,
+      "max": [
+        7.8140869140625,
+        0.9999998211860657,
+        9.412866592407227
+      ],
+      "min": [
+        -8.418037414550781,
+        -1.000000238418579,
+        -8.834878921508789
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 9456,
+      "componentType": 5126,
+      "count": 90,
+      "max": [
+        0.0,
+        1.0,
+        0.0007265175227075815
+      ],
+      "min": [
+        -0.00021767446014564484,
+        -1.0,
+        -0.0011955344816669822
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 2792,
+      "componentType": 5126,
+      "count": 90,
+      "max": [
+        0.6250000596046448,
+        0.5
+      ],
+      "min": [
+        0.0,
+        0.0
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 3120,
+      "componentType": 5125,
+      "count": 216,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 10536,
+      "componentType": 5126,
+      "count": 20,
+      "max": [
+        -2.2777087688446045,
+        1.0027395486831665,
+        7.359275817871094
+      ],
+      "min": [
+        -6.435266494750977,
+        -1.0027414560317993,
+        1.3238098621368408
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 10776,
+      "componentType": 5126,
+      "count": 20,
+      "max": [
+        -0.00035656156251206994,
+        0.9999998211860657,
+        0.0013787918724119663
+      ],
+      "min": [
+        -0.0006473909597843885,
+        -0.9999998211860657,
+        0.0002101682184729725
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 3512,
+      "componentType": 5126,
+      "count": 20,
+      "max": [
+        0.625,
+        0.5
+      ],
+      "min": [
+        0.625,
+        0.5
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 3984,
+      "componentType": 5125,
+      "count": 48,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 11016,
+      "componentType": 5126,
+      "count": 46,
+      "max": [
+        3.815927267074585,
+        1.0027401447296143,
+        9.41286563873291
+      ],
+      "min": [
+        -8.418036460876465,
+        -1.0027408599853516,
+        -6.863956451416016
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 11568,
+      "componentType": 5126,
+      "count": 46,
+      "max": [
+        -5.487026101036463e-06,
+        1.0,
+        -3.5348737583262846e-05
+      ],
+      "min": [
+        -5.487036560225533e-06,
+        -1.0,
+        -3.535005816956982e-05
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 3672,
+      "componentType": 5126,
+      "count": 46,
+      "max": [
+        0.6250000596046448,
+        0.5
+      ],
+      "min": [
+        0.6249999403953552,
+        0.5
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 4176,
+      "componentType": 5125,
+      "count": 126,
+      "type": "SCALAR"
+    }
+  ],
+  "asset": {
+    "extras": {
+      "author": "MythicaI (https://sketchfab.com/MythicaI)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/minecraft-egg-14ba67863e4940d89337f9562298d66e",
+      "title": "Minecraft Egg"
+    },
+    "generator": "Sketchfab-15.12.0",
+    "version": "2.0"
+  },
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 4680,
+      "name": "floatBufferViews",
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 4040,
+      "byteOffset": 4680,
+      "byteStride": 8,
+      "name": "floatBufferViews",
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 12120,
+      "byteOffset": 8720,
+      "byteStride": 12,
+      "name": "floatBufferViews",
+      "target": 34962
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 20840,
+      "uri": "scene.bin"
+    }
+  ],
+  "materials": [
+    {
+      "doubleSided": true,
+      "name": "Corner_Black",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.270498,
+          0.223228,
+          0.104617,
+          1.0
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.9497524471390939
+      }
+    },
+    {
+      "doubleSided": true,
+      "name": "Center_Black",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.0908416,
+          0.0761853,
+          0.043735,
+          1.0
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.9827915970144053
+      }
+    },
+    {
+      "doubleSided": true,
+      "name": "Center_Dark",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.450786,
+          0.376262,
+          0.205079,
+          1.0
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.9150861258197067
+      }
+    },
+    {
+      "doubleSided": true,
+      "name": "White",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.871367,
+          0.791297,
+          0.564712,
+          1.0
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.8229122609489017
+      }
+    },
+    {
+      "doubleSided": true,
+      "name": "Center_White",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.73791,
+          0.617206,
+          0.327778,
+          1.0
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.8609230633731799
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "Minecraft_Egg_Corner_Black_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 1,
+            "POSITION": 0,
+            "TEXCOORD_0": 2
+          },
+          "indices": 3,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "Minecraft_Egg_Center_Black_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 5,
+            "POSITION": 4,
+            "TEXCOORD_0": 6
+          },
+          "indices": 7,
+          "material": 1,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "Minecraft_Egg_Center_Dark_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 9,
+            "POSITION": 8,
+            "TEXCOORD_0": 10
+          },
+          "indices": 11,
+          "material": 2,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "Minecraft_Egg_White_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 13,
+            "POSITION": 12,
+            "TEXCOORD_0": 14
+          },
+          "indices": 15,
+          "material": 3,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "Minecraft_Egg_Center_White_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 17,
+            "POSITION": 16,
+            "TEXCOORD_0": 18
+          },
+          "indices": 19,
+          "material": 4,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "children": [
+        1
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.220446049250313e-16,
+        -1.0,
+        0.0,
+        0.0,
+        1.0,
+        2.220446049250313e-16,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "Sketchfab_model"
+    },
+    {
+      "children": [
+        2
+      ],
+      "matrix": [
+        0.009999999776482582,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.009999999776482582,
+        0.0,
+        0.0,
+        -0.009999999776482582,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "0441b59cd70b40f09198b31b28199d46.fbx"
+    },
+    {
+      "children": [
+        3
+      ],
+      "name": "RootNode"
+    },
+    {
+      "children": [
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "matrix": [
+        15.51792049407959,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -2.5281901496438708e-06,
+        -15.517920494079386,
+        0.0,
+        0.0,
+        15.517920494079386,
+        -2.5281901496438708e-06,
+        0.0,
+        4.498875141143799,
+        -19.883901596069336,
+        2.17839715332957e-06,
+        1.0
+      ],
+      "name": "Minecraft_Egg"
+    },
+    {
+      "mesh": 0,
+      "name": "Minecraft_Egg_Corner_Black_0"
+    },
+    {
+      "mesh": 1,
+      "name": "Minecraft_Egg_Center_Black_0"
+    },
+    {
+      "mesh": 2,
+      "name": "Minecraft_Egg_Center_Dark_0"
+    },
+    {
+      "mesh": 3,
+      "name": "Minecraft_Egg_White_0"
+    },
+    {
+      "mesh": 4,
+      "name": "Minecraft_Egg_Center_White_0"
+    }
+  ],
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Sketchfab_Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ]
+}

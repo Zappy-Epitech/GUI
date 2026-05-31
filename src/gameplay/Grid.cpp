@@ -1,0 +1,71 @@
+#include "Grid.hpp"
+#include "src/core/Raylib.hpp"
+#include "src/core/Spatial.hpp"
+#include "src/extern/flecs.h"
+#include "src/protocol/ZappyProtocol.hpp"
+
+#include <format>
+#include <raylib.h>
+
+/// The size of each grid cell.
+static constexpr Size2 cellSize = { 1, 1 };
+/// The padding between grid cells.
+static constexpr float cellPadding = 0.1f;
+
+/// Registers grid components and prefabs.
+Grid::Grid(flecs::world &world) {
+    world.module<Grid>("grid");
+
+    world.component<zappy::Resources>("Resources")
+        .member<int>("food")
+        .member<int>("linemate")
+        .member<int>("deraumere")
+        .member<int>("sibur")
+        .member<int>("mendiane")
+        .member<int>("phiras")
+        .member<int>("thystame");
+
+    world.component<GridContainer>();
+    world.component<GridCell>();
+    world.component<GridPosition>()
+        .member<int>("x")
+        .member<int>("y");
+
+    world.system("LoadGridCellModel").kind(flecs::OnStart).run([world](auto) {
+        Model model = LoadModel("./assets/models/grass/scene.gltf");
+
+        world.prefab<GridCell>()
+            .set(model)
+            .set(Scale{ 0.4 });
+    });
+}
+
+/// Returns a world position for grid coordinates.
+Position3 Grid::position(int x, int y) {
+    return Position3{
+        static_cast<float>(x) * (cellSize.width + cellPadding),
+        0.0f,
+        static_cast<float>(y) * (cellSize.height + cellPadding),
+    };
+}
+
+/// Returns a position above a grid tile.
+Position3 Grid::topPosition(int x, int y) {
+    return Grid::position(x, y).with_y(0.45f);
+}
+
+/// Spawns all grid tiles.
+void Grid::spawn(const flecs::world &world, int width, int height) {
+    flecs::entity grid = world.entity(std::format("Grid({}, {})", width, height).c_str()).add<GridContainer>();
+
+    for (int x = 0; x < width; x++) {
+        for (int y = 0; y < height; y++) {
+            world.entity(std::format("GridCell({}, {})", x, y).c_str())
+                .is_a<GridCell>()
+                .child_of(grid)
+                .set(GridPosition{ x, y })
+                .set<zappy::Resources>({})
+                .set(Grid::position(x, y));
+        }
+    }
+}

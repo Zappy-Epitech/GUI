@@ -7,25 +7,32 @@
 
 namespace parsing {
 
+/// Reads tokens from a string view.
 template <typename Char = char>
 class Scanner {
   public:
+    /// View type scanned by this scanner.
     using View = std::basic_string_view<Char>;
 
+    /// Creates a scanner from a view.
     explicit Scanner(View input) : _input(input) {
     }
 
+    /// Creates a scanner from a string.
     explicit Scanner(const Char *input) : _input(input) {
     }
 
+    /// Checks whether all input was consumed.
     [[nodiscard]] bool isDone() const {
         return _cursor >= _input.size();
     }
 
+    /// Returns the current cursor position.
     [[nodiscard]] size_t position() const {
         return _cursor;
     }
 
+    /// Returns the current character.
     [[nodiscard]] std::optional<Char> peek() const {
         if (isDone()) {
             return std::nullopt;
@@ -33,6 +40,7 @@ class Scanner {
         return _input[_cursor];
     }
 
+    /// Consumes one expected character.
     bool take(Char expected) {
         if (peek() != expected) {
             return false;
@@ -41,6 +49,7 @@ class Scanner {
         return true;
     }
 
+    /// Consumes an expected literal.
     bool takeLiteral(View expected) {
         if (_input.substr(_cursor, expected.size()) != expected) {
             return false;
@@ -49,6 +58,7 @@ class Scanner {
         return true;
     }
 
+    /// Consumes characters while a predicate matches.
     template <typename Predicate>
     View takeWhile(Predicate predicate) {
         const size_t start = _cursor;
@@ -58,6 +68,7 @@ class Scanner {
         return _input.substr(start, _cursor - start);
     }
 
+    /// Consumes characters until a predicate matches.
     template <typename Predicate>
     View takeUntil(Predicate predicate) {
         return takeWhile([&](Char value) {
@@ -65,24 +76,28 @@ class Scanner {
         });
     }
 
+    /// Consumes the remaining input.
     View takeRest() {
         const size_t start = _cursor;
         _cursor = _input.size();
         return _input.substr(start);
     }
 
+    /// Skips spaces and tabs.
     void skipSpaces() {
         takeWhile([](Char value) {
             return value == ' ' || value == '\t';
         });
     }
 
+    /// Consumes at least one space or tab.
     bool takeSpace() {
         const size_t start = _cursor;
         skipSpaces();
         return _cursor > start;
     }
 
+    /// Reads an integer value.
     template <std::integral Number>
     std::optional<Number> takeInteger() {
         const size_t start = _cursor;
@@ -109,6 +124,7 @@ class Scanner {
         return value;
     }
 
+    /// Reads an integer with a prefix.
     template <std::integral Number>
     std::optional<Number> takePrefixedInteger(Char prefix) {
         const size_t start = _cursor;

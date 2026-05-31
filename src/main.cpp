@@ -1,30 +1,24 @@
-#include "extern/flecs.hpp"
-#include "modules/Grid.hpp"
-#include "modules/Gui.hpp"
-#include "modules/Raylib.hpp"
-#include "modules/Spatial.hpp"
-#include "src/modules/CameraController.hpp"
-#include "src/modules/Postframe.hpp"
-#include "src/modules/scenes/Home.hpp"
-#include <cstdio>
-#include <raylib.h>
-#include <sys/types.h>
+#include "src/core/Core.hpp"
+#include "src/core/Spatial.hpp"
+#include "src/extern/flecs.h"
+#include "src/gameplay/GamePlay.hpp"
+#include "src/minecraft/Minecraft.hpp"
+#include "src/scenes/Scenes.hpp"
 
+/// Starts the Zappy GUI application.
 int main() {
     flecs::world world;
 
-    world.import<Later>();
-    world.import<Spatial>();
-    world.import<Raylib>();
-    world.import<Gui>();
-    world.import<Grid>();
+    world.import<Core>();
+    world.import<Minecraft>();
+    world.import<GamePlay>();
+    world.import<Scenes>();
 
-    world.import<Home>();
-
+    world.shrink();
     world.app()
-        .target_fps(90)
+        .target_fps(120)
         .enable_stats()
         .enable_rest()
-        .threads(4)
+        .threads(0)
         .run();
 }

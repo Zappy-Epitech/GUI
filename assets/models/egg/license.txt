@@ -1,0 +1,11 @@
+Model Information:
+* title:	Minecraft Egg
+* source:	https://sketchfab.com/3d-models/minecraft-egg-14ba67863e4940d89337f9562298d66e
+* author:	MythicaI (https://sketchfab.com/MythicaI)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Minecraft Egg" (https://sketchfab.com/3d-models/minecraft-egg-14ba67863e4940d89337f9562298d66e) by MythicaI (https://sketchfab.com/MythicaI) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

@@ -9,8 +9,12 @@
 Game::Game(flecs::world &world) {
     auto module = world.module<Game>("game").child_of<AppScenes>();
 
-    world.component<Player>().member<int>("level");
-    world.component<PlayerId>().member<int>("id");
+    world.component<Player>()
+        .member<int>("level");
+
+    world.component<PlayerId>()
+        .member<int>("id");
+
     world.component<Incantating>();
 
     world.import<GameUi>().child_of(module);

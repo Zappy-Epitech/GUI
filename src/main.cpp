@@ -51,8 +51,10 @@ int main() {
 
     world.app()
         .target_fps(120)
+#ifndef NDEBUG
         .enable_stats()
         .enable_rest()
+#endif
         .threads(4)
         .run();
 }

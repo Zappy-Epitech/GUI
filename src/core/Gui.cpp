@@ -34,7 +34,9 @@ Gui::Gui(flecs::world &world) {
     world.import<Raylib>();
     world.import<Spatial>();
 
-    world.component<Button>().member(flecs::String, "label");
+    world.component<Button>()
+        .member(flecs::String, "label");
+
     world.component<TextInput>();
     world.component<OnClick>();
     world.component<OnEnter>();

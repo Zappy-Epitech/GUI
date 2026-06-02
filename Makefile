@@ -2,6 +2,8 @@ NAME        := bin/app
 PERF_NAME   := bin/app_perf
 TEST_NAME   := bin/tests
 
+MAKEFLAGS   += -j$(shell nproc)
+
 CXX         := clang++
 CC          := clang
 
@@ -12,10 +14,12 @@ DEBUG       := -g3
 DEPFLAGS    := -MMD -MP
 PERF_OPT    := -O3 -ffast-math -march=native -mtune=native -flto=thin \
                -fomit-frame-pointer -ffunction-sections -fdata-sections \
-               -DNDEBUG -pipe
+               -DNDEBUG -pipe -DFLECS_CUSTOM_BUILD -DFLECS_CPP -DFLECS_MODULE -DFLECS_SYSTEM -DFLECS_PIPELINE -DFLECS_TIMER -DFLECS_META -DFLECS_APP
 
-CXXFLAGS    := $(CXXSTD) $(WARNINGS) $(DEBUG) $(DEPFLAGS)
-CFLAGS      := $(CSTD) $(WARNINGS) $(DEBUG) $(DEPFLAGS)
+CXXFLAGS        := $(CXXSTD) $(WARNINGS) $(DEBUG) $(DEPFLAGS)
+CFLAGS          := $(CSTD) $(WARNINGS) $(DEBUG) $(DEPFLAGS)
+EXTERN_CXXFLAGS := $(CXXSTD) $(DEPFLAGS)
+EXTERN_CFLAGS   := $(CSTD) $(DEPFLAGS)
 CPPFLAGS    := -I. $(shell pkg-config --cflags raylib) \
                -DFLECS_HI_COMPONENT_ID=128 \
                -DFLECS_ENTITY_PAGE_BITS=8 \
@@ -78,9 +82,13 @@ $(OBJ_DIR)/src/extern/%.o: src/extern/%.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -w -c $< -o $@
 
+$(OBJ_DIR)/src/extern/%.o: src/extern/%.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(CPPFLAGS) $(EXTERN_CXXFLAGS) -w -c $< -o $@
+
 $(OBJ_DIR)/src/extern/%.o: src/extern/%.c
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -w -c $< -o $@
+	$(CC) $(CPPFLAGS) $(EXTERN_CFLAGS) -w -c $< -o $@
 
 $(OBJ_DIR)/%.o: %.cpp
 	@mkdir -p $(dir $@)
@@ -95,6 +103,7 @@ $(BIN_DIR):
 
 clean:
 	rm -rf $(OBJ_DIR)
+	rm -rf ./.build
 
 fclean: clean
 	rm -rf $(BIN_DIR)

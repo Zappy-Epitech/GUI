@@ -1,5 +1,4 @@
 #pragma once
-#include <cstring>
 #include <functional>
 #include <string>
 
@@ -24,14 +23,14 @@ struct HasInputActive {
 
 /// Stores a button label.
 struct Button {
-    char *label = strdup("No Label");
+    std::string label = "No Label";
 
     /// Creates a default button label.
     Button() {
     }
 
     /// Creates a button with a label.
-    Button(const char *label) : label(strdup(label)) {
+    Button(const char *label) : label(label) {
     }
 };
 

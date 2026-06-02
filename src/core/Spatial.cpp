@@ -24,7 +24,7 @@ Spatial::Spatial(flecs::world &world) {
         .member<float>("height");
 
     world.component<Scale>()
-        .member<float>("scale");
+        .member<float>("value");
 
     world.component<Orientation>();
 }

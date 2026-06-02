@@ -4,6 +4,7 @@
 #include "src/extern/flecs.h"
 #include <cstdio>
 #include <cstring>
+#include <functional>
 #include <raygui.h>
 #include <raylib.h>
 
@@ -52,7 +53,6 @@ Gui::Gui(flecs::world &world) {
 
     world.system<const Position2, const Button, const OnClick>("ButtonSystem")
         .kind<Render2D>()
-        .immediate()
         .run([](flecs::iter &it) {
             while (it.next()) {
                 auto positions = it.field<const Position2>(0);
@@ -60,13 +60,13 @@ Gui::Gui(flecs::world &world) {
                 auto onClicks = it.field<const OnClick>(2);
 
                 for (auto i : it) {
-                    const float textWidth = strlen(buttons[i].label) * fontSize * 0.5f;
+                    const float textWidth = buttons[i].label.size() * fontSize * 0.5f;
                     const float width = textWidth + paddingX;
                     const float height = fontSize + paddingY;
 
                     Rectangle rect = { positions[i].x - width * 0.5f, positions[i].y, width, height };
 
-                    if (GuiButton(rect, buttons[i].label)) {
+                    if (GuiButton(rect, buttons[i].label.c_str())) {
                         auto e = it.entity(i);
                         onClicks[i](e);
                         PlaySound(ButtonSound);
@@ -75,7 +75,7 @@ Gui::Gui(flecs::world &world) {
             }
         });
 
-    world.system<Position2, TextInput>("TextInputSystem")
+    world.system<const Position2, TextInput>("TextInputSystem")
         .with<OnEnter>()
         .optional()
         .with<OnTextUpdate>()
@@ -85,10 +85,10 @@ Gui::Gui(flecs::world &world) {
             bool isEnterButtonReleased = IsKeyPressed(KEY_ENTER);
 
             while (it.next()) {
-                auto positions = it.field<Position2>(0);
+                auto positions = it.field<const Position2>(0);
                 auto inputs = it.field<TextInput>(1);
-                auto onEnters = it.field<OnEnter>(2);
-                auto onTextUpdates = it.field<OnTextUpdate>(3);
+                auto onEnters = it.field<const OnEnter>(2);
+                auto onTextUpdates = it.field<const OnTextUpdate>(3);
 
                 for (auto i : it) {
                     Rectangle rect = {

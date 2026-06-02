@@ -48,7 +48,7 @@ static void clearTileResources(flecs::entity tile) {
 
 /// Spawns one rendered resource.
 static void spawnTileResource(
-    flecs::world &world,
+    const flecs::world &world,
     flecs::entity tile,
     int resource,
     const Model &model) {
@@ -66,7 +66,7 @@ static void spawnTileResource(
 } // namespace
 
 /// Applies a new map size.
-void applyMapNew(flecs::world &world, zappy::MapSize &evt) {
+void applyMapNew(const flecs::world &world, zappy::MapSize &evt) {
     world.query_builder()
         .with<GridContainer>()
         .build()
@@ -78,7 +78,7 @@ void applyMapNew(flecs::world &world, zappy::MapSize &evt) {
 }
 
 /// Applies tile resource content.
-void applyTileContent(flecs::world &world, zappy::TileContent &evt) {
+void applyTileContent(const flecs::world &world, zappy::TileContent &evt) {
     flecs::entity tile = findTile(world, evt.x, evt.y);
 
     if (!tile) {
@@ -99,7 +99,7 @@ void applyTileContent(flecs::world &world, zappy::TileContent &evt) {
 }
 
 /// Applies incantation completion.
-void applyIncantationEnd(flecs::world &world, zappy::IncantationEnd &evt) {
+void applyIncantationEnd(const flecs::world &world, zappy::IncantationEnd &evt) {
     flecs::entity tile = findTile(world, evt.x, evt.y);
 
     if (!tile) {

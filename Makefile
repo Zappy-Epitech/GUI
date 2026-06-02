@@ -1,4 +1,5 @@
 NAME        := bin/app
+PERF_NAME   := bin/app_perf
 TEST_NAME   := bin/tests
 
 CXX         := clang++
@@ -9,6 +10,9 @@ CSTD        := -std=gnu99
 WARNINGS    := -Wall -Wextra -Wpedantic
 DEBUG       := -g3
 DEPFLAGS    := -MMD -MP
+PERF_OPT    := -O3 -ffast-math -march=native -mtune=native -flto=thin \
+               -fomit-frame-pointer -ffunction-sections -fdata-sections \
+               -DNDEBUG -pipe
 
 CXXFLAGS    := $(CXXSTD) $(WARNINGS) $(DEBUG) $(DEPFLAGS)
 CFLAGS      := $(CSTD) $(WARNINGS) $(DEBUG) $(DEPFLAGS)
@@ -18,6 +22,7 @@ CPPFLAGS    := -I. $(shell pkg-config --cflags raylib) \
                -DFLECS_ID_DESC_MAX=16 \
                -DFLECS_EVENT_DESC_MAX=4
 LDFLAGS     :=
+PERF_LDFLAGS:= -flto=thin -Wl,-O2 -Wl,--gc-sections -Wl,--as-needed
 LDLIBS      := $(shell pkg-config --libs raylib)
 
 TEST_LDLIBS := -lcriterion
@@ -48,7 +53,7 @@ TEST_OBJ    := $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(TEST_SRC))
 
 DEPS        := $(OBJ:.o=.d) $(TEST_OBJ:.o=.d)
 
-.PHONY: all build run test clean fclean re
+.PHONY: all build run test perf clean fclean re
 
 all: build
 
@@ -60,6 +65,9 @@ run: $(NAME)
 test: $(TEST_NAME)
 	./$(TEST_NAME)
 
+perf:
+	$(MAKE) build NAME="$(PERF_NAME)" OBJ_DIR=".build/perf/obj" CXXFLAGS="$(CXXSTD) $(WARNINGS) $(PERF_OPT) $(DEPFLAGS)" CFLAGS="$(CSTD) $(WARNINGS) $(PERF_OPT) $(DEPFLAGS)" LDFLAGS="$(PERF_LDFLAGS)"
+
 $(NAME): $(OBJ) | $(BIN_DIR)
 	$(CXX) $^ -o $@ $(LDFLAGS) $(LDLIBS)
 
@@ -68,11 +76,11 @@ $(TEST_NAME): $(LIB_OBJ) $(TEST_OBJ) | $(BIN_DIR)
 
 $(OBJ_DIR)/src/extern/%.o: src/extern/%.cpp
 	@mkdir -p $(dir $@)
-	$(CXX) $(CPPFLAGS) $(CXXSTD) $(DEBUG) $(DEPFLAGS) -w -c $< -o $@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -w -c $< -o $@
 
 $(OBJ_DIR)/src/extern/%.o: src/extern/%.c
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CSTD) $(DEBUG) $(DEPFLAGS) -w -c $< -o $@
+	$(CC) $(CPPFLAGS) $(CFLAGS) -w -c $< -o $@
 
 $(OBJ_DIR)/%.o: %.cpp
 	@mkdir -p $(dir $@)

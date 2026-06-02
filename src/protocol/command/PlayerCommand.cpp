@@ -130,3 +130,23 @@ void applyPlayerResourceDrop(flecs::world &world, zappy::PlayerResourceDrop &evt
         resourceColors[evt.resource],
         2.0f);
 }
+
+/// Applies a player resource collect event.
+void applyPlayerResourceCollect(flecs::world &world, zappy::PlayerResourceCollect &evt) {
+    addScreenMessage(
+        world,
+        std::format("Player #{} collected {}", evt.id, resourceNames[evt.resource]),
+        resourceColors[evt.resource],
+        2.0f);
+}
+
+/// Applies a player death event.
+void applyPlayerDeath(flecs::world &world, zappy::PlayerDeath &evt) {
+    flecs::entity player = findPlayer(world, evt.id);
+
+    if (player) {
+        player.destruct();
+    }
+
+    addScreenMessage(world, std::format("Player #{} died", evt.id), RED, 2.0f);
+}

@@ -31,3 +31,9 @@ void applyPlayerEggLayStart(flecs::world &world, zappy::PlayerEggLayStart &evt);
 
 /// Applies a player resource drop event.
 void applyPlayerResourceDrop(flecs::world &world, zappy::PlayerResourceDrop &evt);
+
+/// Applies a player resource collect event.
+void applyPlayerResourceCollect(flecs::world &world, zappy::PlayerResourceCollect &evt);
+
+/// Applies a player death event.
+void applyPlayerDeath(flecs::world &world, zappy::PlayerDeath &evt);

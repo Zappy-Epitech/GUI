@@ -69,6 +69,12 @@ void runCommand(flecs::world &world, std::string &command) {
                 [&world](zappy::PlayerResourceDrop evt) {
                     applyPlayerResourceDrop(world, evt);
                 },
+                [&world](zappy::PlayerResourceCollect evt) {
+                    applyPlayerResourceCollect(world, evt);
+                },
+                [&world](zappy::PlayerDeath evt) {
+                    applyPlayerDeath(world, evt);
+                },
                 invalid },
             event.value());
     } else {

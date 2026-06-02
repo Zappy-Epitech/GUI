@@ -146,6 +146,25 @@ Test(command_application, applies_incantation_start_and_end) {
     cr_assert(hasMessage(world, "Incantation at (0, 0) succeeded"));
 }
 
+Test(command_application, applies_player_resource_collect) {
+    flecs::world world = makeWorld();
+    spawnPlayer(world, 6);
+
+    run(world, "pgt #6 3");
+
+    cr_assert(hasMessage(world, "Player #6 collected sibur"));
+}
+
+Test(command_application, applies_player_death) {
+    flecs::world world = makeWorld();
+    spawnPlayer(world, 7);
+
+    run(world, "pdi #7");
+
+    cr_assert(!findPlayer(world, 7));
+    cr_assert(hasMessage(world, "Player #7 died"));
+}
+
 Test(command_application, applies_player_egg_lay_start) {
     flecs::world world = makeWorld();
     spawnPlayer(world, 5);

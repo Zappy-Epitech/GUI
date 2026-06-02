@@ -1,6 +1,7 @@
 #include "PlayerCommand.hpp"
 #include "src/core/Core.hpp"
 #include "src/core/Gui.hpp"
+#include "src/core/Scenes.hpp"
 #include "src/core/Spatial.hpp"
 #include "src/extern/flecs.h"
 #include "src/gameplay/GameAssets.hpp"
@@ -32,23 +33,29 @@ static Position3 gridCenterPosition(int x, int y) {
 }
 
 /// Adds a temporary screen message.
-static void addScreenMessage(flecs::world &world, const std::string &text, Color color, float lifetime) {
+static void addScreenMessage(const flecs::world &world, const std::string &text, Color color, float lifetime) {
     world.entity()
         .set(ScreenMessage{ text })
         .set<Color>(color)
-        .set(Lifetime{ lifetime });
+        .set(Lifetime{ lifetime })
+        .add<DespawnOnExit>(sceneId<Game>(world));
 }
 
 } // namespace
 
 /// Applies a new player event.
-void applyPlayerNew(flecs::world &world, const zappy::PlayerNew &evt) {
+void applyPlayerNew(const flecs::world &world, const zappy::PlayerNew &evt) {
     const GameAssets &skins = world.get<GameAssets>();
     Texture2D skin = skins.skins[evt.id % skins.skins.size()];
     flecs::entity team = findOrCreateTeam(world, evt.team);
 
-    world.entity(std::format("Player({})", evt.id).c_str())
-        .child_of<Game>()
+    flecs::entity player = findPlayer(world, evt.id);
+
+    if (!player) {
+        player = world.entity(std::format("Player({})", evt.id).c_str());
+    }
+
+    player
         .add<BelongsTo>(team)
         .set(PlayerId{ evt.id })
         .set(Player{ .level = evt.level })
@@ -59,11 +66,12 @@ void applyPlayerNew(flecs::world &world, const zappy::PlayerNew &evt) {
         .set<Texture2D>(world.get<GameAssets>().skins[0])
         .set<MinecraftSkin>({ .scale = 0.35f })
         .set<zappy::Resources>({})
-        .set(Walking);
+        .set(Walking)
+        .add<DespawnOnExit>(sceneId<Game>(world));
 }
 
 /// Applies a player position event.
-void applyPlayerPosition(flecs::world &world, zappy::PlayerPosition &evt) {
+void applyPlayerPosition(const flecs::world &world, zappy::PlayerPosition &evt) {
     float rotation_y = evt.orientation == Orientation::NORTH ? 0 : evt.orientation == Orientation::SOUTH ? 180
                                                                : evt.orientation == Orientation::EAST    ? 90
                                                                                                          : 270;
@@ -71,30 +79,30 @@ void applyPlayerPosition(flecs::world &world, zappy::PlayerPosition &evt) {
 }
 
 /// Applies a player level event.
-void applyPlayerLevel(flecs::world &world, zappy::PlayerLevel &evt) {
+void applyPlayerLevel(const flecs::world &world, zappy::PlayerLevel &evt) {
     findPlayer(world, evt.id)
         .set(Player{ .level = evt.level });
 }
 
 /// Applies a player inventory event.
-void applyPlayerInventory(flecs::world &world, zappy::PlayerInventory &evt) {
+void applyPlayerInventory(const flecs::world &world, zappy::PlayerInventory &evt) {
     findPlayer(world, evt.id)
         .set(gridCenterPosition(evt.x, evt.y))
         .set(evt.resources);
 }
 
 /// Applies a player expulsion event.
-void applyPlayerExpelled(flecs::world &world, zappy::PlayerExpelled &evt) {
+void applyPlayerExpelled(const flecs::world &world, zappy::PlayerExpelled &evt) {
     addScreenMessage(world, std::format("Player #{} was expelled", evt.id), ORANGE, 2.0f);
 }
 
 /// Applies a player broadcast event.
-void applyPlayerBroadcast(flecs::world &world, zappy::PlayerBroadcast &evt) {
+void applyPlayerBroadcast(const flecs::world &world, zappy::PlayerBroadcast &evt) {
     addScreenMessage(world, std::format("Player #{}: {}", evt.id, evt.message), WHITE, 4.0f);
 }
 
 /// Applies an incantation start event.
-void applyIncantationStart(flecs::world &world, zappy::IncantationStart &evt) {
+void applyIncantationStart(const flecs::world &world, zappy::IncantationStart &evt) {
     for (int id : evt.playerIds) {
         flecs::entity player = findPlayer(world, id);
 
@@ -111,19 +119,20 @@ void applyIncantationStart(flecs::world &world, zappy::IncantationStart &evt) {
 }
 
 /// Applies an egg laying start event.
-void applyPlayerEggLayStart(flecs::world &world, zappy::PlayerEggLayStart &evt) {
+void applyPlayerEggLayStart(const flecs::world &world, zappy::PlayerEggLayStart &evt) {
     world.entity(std::format("EggPreview({})", evt.id).c_str())
         .set(findPlayer(world, evt.id).get<Position3>().add_y(0.1))
         .set(Rotation3::from_xyz(90, 0, 0))
         .set(world.get<GameAssets>().eggModel)
         .set(Scale{ 0.07f })
-        .set(Lifetime{ 3.0f });
+        .set(Lifetime{ 3.0f })
+        .add<DespawnOnExit>(sceneId<Game>(world));
 
     addScreenMessage(world, std::format("Player #{} is laying an egg", evt.id), WHITE, 2.0f);
 }
 
 /// Applies a player resource drop event.
-void applyPlayerResourceDrop(flecs::world &world, zappy::PlayerResourceDrop &evt) {
+void applyPlayerResourceDrop(const flecs::world &world, zappy::PlayerResourceDrop &evt) {
     addScreenMessage(
         world,
         std::format("Player #{} dropped {}", evt.id, resourceNames[evt.resource]),

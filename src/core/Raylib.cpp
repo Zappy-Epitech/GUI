@@ -2,9 +2,15 @@
 #include "Spatial.hpp"
 #include "src/extern/flecs.h"
 #include "src/gameplay/CameraController.hpp"
+#include <bit>
 #include <raygui.h>
 #include <raylib.h>
 #include <raymath.h>
+#include <type_traits>
+
+static_assert(sizeof(Position3) == sizeof(Vector3));
+static_assert(std::is_trivially_copyable_v<Position3>);
+static_assert(std::is_trivially_copyable_v<Vector3>);
 
 /// Registers Raylib phases and render systems.
 Raylib::Raylib(flecs::world &world) {
@@ -74,8 +80,8 @@ Raylib::Raylib(flecs::world &world) {
                 auto colors = it.field<Color>(2);
 
                 for (auto i : it) {
-                    DrawCube(std::bit_cast<Vector3>(transforms[i]), sizes[i].width, sizes[i].height, sizes[i].height, colors[i]);
-                    DrawCubeWires(std::bit_cast<Vector3>(transforms[i]), sizes[i].width, sizes[i].height, sizes[i].height, RED);
+                    DrawCube(std::bit_cast<Vector3>(transforms[i]), sizes[i].width, sizes[i].height, sizes[i].width, colors[i]);
+                    DrawCubeWires(std::bit_cast<Vector3>(transforms[i]), sizes[i].width, sizes[i].height, sizes[i].width, RED);
                 }
             }
         });

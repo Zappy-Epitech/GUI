@@ -46,6 +46,7 @@ CameraController::CameraController(flecs::world &world) {
     world.module<CameraController>("cameraController").child_of<GamePlay>();
 
     world.system("CameraControls")
+        .read<HasInputActive>()
         .kind(flecs::OnUpdate)
         .run([](flecs::iter &it) {
             if (it.world().get<HasInputActive>().value) {

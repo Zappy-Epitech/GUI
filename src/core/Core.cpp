@@ -1,6 +1,7 @@
 #include "Core.hpp"
 #include "src/core/Gui.hpp"
 #include "src/core/Raylib.hpp"
+#include "src/core/Scenes.hpp"
 #include "src/core/Spatial.hpp"
 #include "src/extern/flecs.h"
 
@@ -10,6 +11,7 @@ Core::Core(flecs::world &world) {
     world.import<Spatial>().child_of(module);
     world.import<Raylib>().child_of(module);
     world.import<Gui>().child_of(module);
+    world.import<Scenes>().child_of(module);
 
     world.component<Lifetime>();
 

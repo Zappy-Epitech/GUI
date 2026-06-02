@@ -10,6 +10,9 @@ struct entity;
 /// Finds a player entity by id.
 flecs::entity findPlayer(flecs::world &world, int id);
 
+/// Finds an egg entity by id.
+flecs::entity findEgg(flecs::world &world, int id);
+
 /// Finds a tile entity by coordinates.
 flecs::entity findTile(flecs::world &world, int x, int y);
 

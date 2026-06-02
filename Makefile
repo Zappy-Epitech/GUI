@@ -12,7 +12,7 @@ DEPFLAGS    := -MMD -MP
 
 CXXFLAGS    := $(CXXSTD) $(WARNINGS) $(DEBUG) $(DEPFLAGS)
 CFLAGS      := $(CSTD) $(WARNINGS) $(DEBUG) $(DEPFLAGS)
-CPPFLAGS    := -I. $(shell pkg-config --cflags raylib) \
+CPPFLAGS    := -I. -I./src/extern/ $(shell pkg-config --cflags raylib) \
                -DFLECS_HI_COMPONENT_ID=128 \
                -DFLECS_ENTITY_PAGE_BITS=8 \
                -DFLECS_ID_DESC_MAX=16 \

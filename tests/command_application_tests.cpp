@@ -5,6 +5,7 @@
 #include "src/gameplay/GameAssets.hpp"
 #include "src/gameplay/Grid.hpp"
 #include "src/gameplay/Movement.hpp"
+#include "src/gameplay/Egg.hpp"
 #include "src/gameplay/Player.hpp"
 #include "src/gameplay/Team.hpp"
 #include "src/gameplay/WorldLookup.hpp"
@@ -26,6 +27,7 @@ static flecs::world makeWorld() {
     world.import<Teams>();
     world.component<Player>();
     world.component<PlayerId>();
+    world.component<EggId>();
     world.component<Incantating>();
     world.component<ScreenMessage>();
     world.component<Lifetime>();
@@ -163,6 +165,37 @@ Test(command_application, applies_player_death) {
 
     cr_assert(!findPlayer(world, 7));
     cr_assert(hasMessage(world, "Player #7 died"));
+}
+
+Test(command_application, applies_egg_new) {
+    flecs::world world = makeWorld();
+    run(world, "msz 2 2");
+    spawnPlayer(world, 2);
+    run(world, "pfk #2");
+
+    run(world, "enw #7 #2 1 1");
+
+    cr_assert(!world.lookup("EggPreview(2)"));
+    flecs::entity egg = findEgg(world, 7);
+    cr_assert(egg);
+    cr_assert_eq(egg.get<EggId>().value, 7);
+    cr_assert(egg.has<Model>());
+    cr_assert(hasMessage(world, "Egg #7 laid at (1, 1) by player #2"));
+}
+
+Test(command_application, applies_egg_hatched_and_death) {
+    flecs::world world = makeWorld();
+    run(world, "msz 2 2");
+    run(world, "enw #3 #1 0 0");
+
+    run(world, "ebo #3");
+    cr_assert(!findEgg(world, 3));
+    cr_assert(hasMessage(world, "Egg #3 hatched"));
+
+    run(world, "enw #4 #1 1 1");
+    run(world, "edi #4");
+    cr_assert(!findEgg(world, 4));
+    cr_assert(hasMessage(world, "Egg #4 died"));
 }
 
 Test(command_application, applies_player_egg_lay_start) {

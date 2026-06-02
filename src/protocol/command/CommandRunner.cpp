@@ -1,5 +1,6 @@
 #include "CommandRunner.hpp"
 #include "src/protocol/ZappyProtocol.hpp"
+#include "src/protocol/command/EggCommand.hpp"
 #include "src/protocol/command/MapCommand.hpp"
 #include "src/protocol/command/PlayerCommand.hpp"
 #include "src/protocol/command/TeamCommand.hpp"
@@ -74,6 +75,15 @@ void runCommand(flecs::world &world, std::string &command) {
                 },
                 [&world](zappy::PlayerDeath evt) {
                     applyPlayerDeath(world, evt);
+                },
+                [&world](zappy::EggNew evt) {
+                    applyEggNew(world, evt);
+                },
+                [&world](zappy::EggHatched evt) {
+                    applyEggHatched(world, evt);
+                },
+                [&world](zappy::EggDeath evt) {
+                    applyEggDeath(world, evt);
                 },
                 invalid },
             event.value());

@@ -6,10 +6,15 @@ namespace net {
 
 /// High-level category for errors returned by the networking layer.
 enum class ErrorCode {
+    /// Error reported by a POSIX syscall.
     System,
+    /// Error reported by getaddrinfo().
     Dns,
+    /// Operation exceeded its configured timeout.
     Timeout,
+    /// Peer closed or invalidated the connection.
     Disconnected,
+    /// API was used in an invalid state.
     InvalidState
 };
 
@@ -18,8 +23,11 @@ enum class ErrorCode {
 /// nativeCode stores errno for system errors or getaddrinfo()'s return code
 /// for DNS errors. message is ready to display or log.
 struct Error {
+    /// High-level error category.
     ErrorCode code = ErrorCode::System;
+    /// errno or getaddrinfo() code, depending on category.
     int nativeCode = 0;
+    /// Display-ready error message.
     std::string message;
 };
 

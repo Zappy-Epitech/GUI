@@ -6,6 +6,7 @@
 namespace net {
 namespace {
 
+/// Initial GUI queries sent after GRAPHIC to populate the world.
 constexpr std::array<std::string_view, 4> bootstrapCommands = {
     "msz\n",
     "mct\n",
@@ -13,6 +14,7 @@ constexpr std::array<std::string_view, 4> bootstrapCommands = {
     "sgt\n",
 };
 
+/// Sends GRAPHIC and the initial state requests required by the protocol.
 Result<void> sendBootstrap(TcpClient &client) {
     if (auto sent = client.send("GRAPHIC\n"); !sent) {
         return sent;
@@ -29,6 +31,7 @@ Result<void> sendBootstrap(TcpClient &client) {
 
 } // namespace
 
+/// Ensures an outgoing command is newline-terminated.
 std::string ZappySession::formatCommand(std::string command) {
     if (command.empty() || command.back() != '\n') {
         command.push_back('\n');
@@ -36,6 +39,7 @@ std::string ZappySession::formatCommand(std::string command) {
     return command;
 }
 
+/// Handles the WELCOME handshake or forwards protocol lines.
 Result<ZappyLineAction> ZappySession::handleLine(TcpClient &client, std::string_view line) {
     if (!graphicSent && line == "WELCOME") {
         if (auto sent = sendBootstrap(client); !sent) {

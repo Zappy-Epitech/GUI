@@ -32,13 +32,19 @@ struct TcpClientOptions {
 /// thread when the caller must never block rendering.
 class TcpClient {
   public:
+    /// Creates a disconnected client wrapper.
     TcpClient() = default;
+    /// Lets SocketHandle close any owned descriptor.
     ~TcpClient() = default;
 
+    /// Prevents copying the socket owner.
     TcpClient(const TcpClient &) = delete;
+    /// Prevents assigning the socket owner.
     TcpClient &operator=(const TcpClient &) = delete;
 
+    /// Moves socket ownership from another client.
     TcpClient(TcpClient &&other) noexcept = default;
+    /// Replaces this socket with another client's socket.
     TcpClient &operator=(TcpClient &&other) noexcept = default;
 
     /// Resolves host, connects to port, configures socket options, and returns
@@ -67,9 +73,12 @@ class TcpClient {
     void disconnect() noexcept;
 
   private:
+    /// Takes ownership of a connected socket.
     explicit TcpClient(SocketHandle socket, TcpClientOptions options) noexcept;
 
+    /// Owned socket descriptor.
     SocketHandle socket;
+    /// Timeouts and TCP options used by operations.
     TcpClientOptions options = {};
 };
 

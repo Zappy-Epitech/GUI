@@ -2,10 +2,12 @@
 
 namespace net {
 
+/// Appends a raw TCP chunk.
 void LineBuffer::append(std::string_view chunk) {
     buffer += chunk;
 }
 
+/// Extracts one newline-terminated line if available.
 bool LineBuffer::popLine(std::string &out) {
     const std::size_t pos = buffer.find('\n');
     if (pos == std::string::npos) {
@@ -22,6 +24,7 @@ bool LineBuffer::popLine(std::string &out) {
     return true;
 }
 
+/// Drops buffered partial data.
 void LineBuffer::clear() {
     buffer.clear();
 }

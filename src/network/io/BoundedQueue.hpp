@@ -10,6 +10,7 @@ namespace net {
 template <typename T, std::size_t MaxSize>
 class BoundedQueue {
   public:
+    /// Pushes a value, dropping the oldest one if full.
     void push(T value) {
         if (values.size() >= MaxSize) {
             values.pop_front();
@@ -17,6 +18,7 @@ class BoundedQueue {
         values.push_back(std::move(value));
     }
 
+    /// Pops the oldest value into out.
     bool pop(T &out) {
         if (values.empty()) {
             return false;
@@ -26,11 +28,13 @@ class BoundedQueue {
         return true;
     }
 
+    /// Removes all queued values.
     void clear() {
         values.clear();
     }
 
   private:
+    /// Stored FIFO values.
     std::deque<T> values;
 };
 

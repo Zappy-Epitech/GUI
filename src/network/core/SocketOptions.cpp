@@ -7,6 +7,7 @@
 
 namespace net {
 
+/// Puts the socket descriptor in non-blocking mode.
 Result<void> setNonBlocking(int fd) {
     const int flags = ::fcntl(fd, F_GETFL, 0);
     if (flags < 0) {
@@ -20,6 +21,7 @@ Result<void> setNonBlocking(int fd) {
     return {};
 }
 
+/// Enables or disables one boolean socket option.
 Result<void> setSocketOption(int fd, int level, int name, bool enabled, std::string_view context) {
     const int value = enabled ? 1 : 0;
 
@@ -30,6 +32,7 @@ Result<void> setSocketOption(int fd, int level, int name, bool enabled, std::str
     return {};
 }
 
+/// Applies the socket options used by TcpClient.
 Result<void> configureTcpSocket(int fd, bool tcpNoDelay, bool keepAlive) {
     if (auto result = setSocketOption(fd, IPPROTO_TCP, TCP_NODELAY, tcpNoDelay, "setsockopt(TCP_NODELAY)"); !result) {
         return result;

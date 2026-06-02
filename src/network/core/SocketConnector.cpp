@@ -9,6 +9,7 @@
 
 namespace net {
 
+/// Opens, configures, and connects a socket for one resolved address.
 Result<SocketHandle> connectSocket(const addrinfo &address, const TcpClientOptions &options) {
     SocketHandle socket(::socket(address.ai_family, address.ai_socktype, address.ai_protocol));
 

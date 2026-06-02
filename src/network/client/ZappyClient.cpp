@@ -11,6 +11,7 @@
 namespace net {
 namespace {
 
+/// Builds TCP options tuned for the GUI worker loop.
 TcpClientOptions zappyTcpOptions() {
     return {
         .connectTimeout = std::chrono::seconds(1),
@@ -144,11 +145,13 @@ void ZappyClient::setStatus(ClientStatus status, std::string message) {
     this->statusMessage = std::move(message);
 }
 
+/// Records a failure for the ECS thread and marks the client in error.
 void ZappyClient::fail(std::string message) {
     this->pushError(message);
     this->setStatus(ClientStatus::Error, std::move(message));
 }
 
+/// Receives TCP data, completes lines, and handles the GUI handshake.
 bool ZappyClient::receiveAvailable(TcpClient &client, LineBuffer &lines, ZappySession &session) {
     auto chunk = client.receiveString();
 
@@ -184,6 +187,7 @@ bool ZappyClient::receiveAvailable(TcpClient &client, LineBuffer &lines, ZappySe
     return true;
 }
 
+/// Flushes all commands queued by the ECS thread to the socket.
 bool ZappyClient::flushOutgoing(TcpClient &client) {
     std::string command;
 

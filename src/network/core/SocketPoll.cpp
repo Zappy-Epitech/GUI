@@ -8,6 +8,7 @@
 namespace net {
 namespace {
 
+/// Converts chrono timeouts to poll()'s integer timeout format.
 int toPollTimeout(std::chrono::milliseconds timeout) {
     if (timeout.count() < 0) {
         return -1;
@@ -20,6 +21,7 @@ int toPollTimeout(std::chrono::milliseconds timeout) {
     return static_cast<int>(timeout.count());
 }
 
+/// Waits for the requested poll events or returns a network error.
 Result<void> waitFor(int fd, short events, std::chrono::milliseconds timeout, std::string_view context) {
     pollfd item{
         .fd = fd,
@@ -52,6 +54,7 @@ Result<void> waitFor(int fd, short events, std::chrono::milliseconds timeout, st
 
 } // namespace
 
+/// Returns any pending asynchronous socket error.
 Result<void> checkSocketError(int fd, std::string_view context) {
     int socketError = 0;
     socklen_t length = sizeof(socketError);
@@ -68,10 +71,12 @@ Result<void> checkSocketError(int fd, std::string_view context) {
     return {};
 }
 
+/// Waits until a socket can be read.
 Result<void> waitReadable(int fd, std::chrono::milliseconds timeout, std::string_view context) {
     return waitFor(fd, POLLIN, timeout, context);
 }
 
+/// Waits until a socket can be written.
 Result<void> waitWritable(int fd, std::chrono::milliseconds timeout, std::string_view context) {
     return waitFor(fd, POLLOUT, timeout, context);
 }

@@ -7,6 +7,7 @@
 #include "src/gameplay/Movement.hpp"
 #include "src/gameplay/Egg.hpp"
 #include "src/gameplay/Player.hpp"
+#include "src/gameplay/Simulation.hpp"
 #include "src/gameplay/Team.hpp"
 #include "src/gameplay/WorldLookup.hpp"
 #include "src/minecraft/MinecraftRenderer.hpp"
@@ -210,4 +211,38 @@ Test(command_application, applies_player_egg_lay_start) {
     cr_assert(egg.has<Scale>());
     cr_assert(egg.has<Lifetime>());
     cr_assert(hasMessage(world, "Player #5 is laying an egg"));
+}
+
+Test(command_application, applies_time_unit) {
+    flecs::world world = makeWorld();
+
+    run(world, "sgt 100");
+    cr_assert_eq(world.get<SimulationTime>().timeUnit, 100);
+
+    run(world, "sst 42");
+    cr_assert_eq(world.get<SimulationTime>().timeUnit, 42);
+    cr_assert(hasMessage(world, "Time unit set to 42"));
+}
+
+Test(command_application, applies_game_end) {
+    flecs::world world = makeWorld();
+
+    run(world, "seg TeamB");
+
+    const auto &result = world.get<GameResult>();
+    cr_assert(result.finished);
+    cr_assert_eq(result.winner, std::string("TeamB"));
+    cr_assert(hasMessage(world, "Team TeamB wins!"));
+}
+
+Test(command_application, applies_server_status_messages) {
+    flecs::world world = makeWorld();
+
+    run(world, "smg maintenance soon");
+    run(world, "suc");
+    run(world, "sbp");
+
+    cr_assert(hasMessage(world, "Server: maintenance soon"));
+    cr_assert(hasMessage(world, "Server: unknown command"));
+    cr_assert(hasMessage(world, "Server: bad parameter"));
 }

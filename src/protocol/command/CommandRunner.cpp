@@ -3,6 +3,7 @@
 #include "src/protocol/command/EggCommand.hpp"
 #include "src/protocol/command/MapCommand.hpp"
 #include "src/protocol/command/PlayerCommand.hpp"
+#include "src/protocol/command/ServerCommand.hpp"
 #include "src/protocol/command/TeamCommand.hpp"
 #include <cstdio>
 #include <optional>
@@ -84,6 +85,21 @@ void runCommand(flecs::world &world, std::string &command) {
                 },
                 [&world](zappy::EggDeath evt) {
                     applyEggDeath(world, evt);
+                },
+                [&world](zappy::TimeUnit evt) {
+                    applyTimeUnit(world, evt);
+                },
+                [&world](zappy::GameEnd evt) {
+                    applyGameEnd(world, evt);
+                },
+                [&world](zappy::ServerMessage evt) {
+                    applyServerMessage(world, evt);
+                },
+                [&world](zappy::UnknownCommand evt) {
+                    applyUnknownCommand(world, evt);
+                },
+                [&world](zappy::BadParameter evt) {
+                    applyBadParameter(world, evt);
                 },
                 invalid },
             event.value());

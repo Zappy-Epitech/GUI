@@ -6,4 +6,4 @@ struct world;
 }
 
 /// Parses and applies one server command.
-void runCommand(flecs::world &world, std::string &command);
+void runCommand(const flecs::world &world, std::string &command);

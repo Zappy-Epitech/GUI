@@ -1,8 +1,10 @@
 #include "Grid.hpp"
 #include "src/core/Raylib.hpp"
+#include "src/core/Scenes.hpp"
 #include "src/core/Spatial.hpp"
 #include "src/extern/flecs.h"
 #include "src/protocol/ZappyProtocol.hpp"
+#include "src/scenes/Game.hpp"
 
 #include <format>
 #include <raylib.h>
@@ -31,13 +33,15 @@ Grid::Grid(flecs::world &world) {
         .member<int>("x")
         .member<int>("y");
 
-    world.system("LoadGridCellModel").kind(flecs::OnStart).run([world](auto) {
-        Model model = LoadModel("./assets/models/grass/scene.gltf");
+    world.system("LoadGridCellModel")
+        .kind(flecs::OnStart)
+        .run([world](auto) {
+            Model model = LoadModel("./assets/models/grass/scene.gltf");
 
-        world.prefab<GridCell>()
-            .set(model)
-            .set(Scale{ 0.4 });
-    });
+            world.prefab<GridCell>()
+                .set(model)
+                .set(Scale{ 0.4 });
+        });
 }
 
 /// Returns a world position for grid coordinates.
@@ -56,7 +60,9 @@ Position3 Grid::topPosition(int x, int y) {
 
 /// Spawns all grid tiles.
 void Grid::spawn(const flecs::world &world, int width, int height) {
-    flecs::entity grid = world.entity(std::format("Grid({}, {})", width, height).c_str()).add<GridContainer>();
+    flecs::entity grid = world.entity(std::format("Grid({}, {})", width, height).c_str())
+                             .add<GridContainer>()
+                             .add<DespawnOnExit>(sceneId<Game>(world));
 
     for (int x = 0; x < width; x++) {
         for (int y = 0; y < height; y++) {
@@ -65,7 +71,8 @@ void Grid::spawn(const flecs::world &world, int width, int height) {
                 .child_of(grid)
                 .set(GridPosition{ x, y })
                 .set<zappy::Resources>({})
-                .set(Grid::position(x, y));
+                .set(Grid::position(x, y))
+                .add<DespawnOnExit>(sceneId<Game>(world));
         }
     }
 }

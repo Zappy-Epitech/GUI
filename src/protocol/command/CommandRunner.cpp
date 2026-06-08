@@ -25,7 +25,7 @@ auto invalid = [](const auto &) {
 };
 
 /// Parses and applies one command.
-void runCommand(flecs::world &world, std::string &command) {
+void runCommand(const flecs::world &world, std::string &command) {
     std::optional<zappy::Event> event =
         zappy::ZappyProtocol::parseLine(command);
 

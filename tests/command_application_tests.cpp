@@ -5,7 +5,9 @@
 #include "src/gameplay/GameAssets.hpp"
 #include "src/gameplay/Grid.hpp"
 #include "src/gameplay/Movement.hpp"
+#include "src/gameplay/Egg.hpp"
 #include "src/gameplay/Player.hpp"
+#include "src/gameplay/Simulation.hpp"
 #include "src/gameplay/Team.hpp"
 #include "src/gameplay/WorldLookup.hpp"
 #include "src/minecraft/MinecraftRenderer.hpp"
@@ -26,6 +28,7 @@ static flecs::world makeWorld() {
     world.import<Teams>();
     world.component<Player>();
     world.component<PlayerId>();
+    world.component<EggId>();
     world.component<Incantating>();
     world.component<ScreenMessage>();
     world.component<Lifetime>();
@@ -146,6 +149,56 @@ Test(command_application, applies_incantation_start_and_end) {
     cr_assert(hasMessage(world, "Incantation at (0, 0) succeeded"));
 }
 
+Test(command_application, applies_player_resource_collect) {
+    flecs::world world = makeWorld();
+    spawnPlayer(world, 6);
+
+    run(world, "pgt #6 3");
+
+    cr_assert(hasMessage(world, "Player #6 collected sibur"));
+}
+
+Test(command_application, applies_player_death) {
+    flecs::world world = makeWorld();
+    spawnPlayer(world, 7);
+
+    run(world, "pdi #7");
+
+    cr_assert(!findPlayer(world, 7));
+    cr_assert(hasMessage(world, "Player #7 died"));
+}
+
+Test(command_application, applies_egg_new) {
+    flecs::world world = makeWorld();
+    run(world, "msz 2 2");
+    spawnPlayer(world, 2);
+    run(world, "pfk #2");
+
+    run(world, "enw #7 #2 1 1");
+
+    cr_assert(!world.lookup("EggPreview(2)"));
+    flecs::entity egg = findEgg(world, 7);
+    cr_assert(egg);
+    cr_assert_eq(egg.get<EggId>().value, 7);
+    cr_assert(egg.has<Model>());
+    cr_assert(hasMessage(world, "Egg #7 laid at (1, 1) by player #2"));
+}
+
+Test(command_application, applies_egg_hatched_and_death) {
+    flecs::world world = makeWorld();
+    run(world, "msz 2 2");
+    run(world, "enw #3 #1 0 0");
+
+    run(world, "ebo #3");
+    cr_assert(!findEgg(world, 3));
+    cr_assert(hasMessage(world, "Egg #3 hatched"));
+
+    run(world, "enw #4 #1 1 1");
+    run(world, "edi #4");
+    cr_assert(!findEgg(world, 4));
+    cr_assert(hasMessage(world, "Egg #4 died"));
+}
+
 Test(command_application, applies_player_egg_lay_start) {
     flecs::world world = makeWorld();
     spawnPlayer(world, 5);
@@ -158,4 +211,38 @@ Test(command_application, applies_player_egg_lay_start) {
     cr_assert(egg.has<Scale>());
     cr_assert(egg.has<Lifetime>());
     cr_assert(hasMessage(world, "Player #5 is laying an egg"));
+}
+
+Test(command_application, applies_time_unit) {
+    flecs::world world = makeWorld();
+
+    run(world, "sgt 100");
+    cr_assert_eq(world.get<SimulationTime>().timeUnit, 100);
+
+    run(world, "sst 42");
+    cr_assert_eq(world.get<SimulationTime>().timeUnit, 42);
+    cr_assert(hasMessage(world, "Time unit set to 42"));
+}
+
+Test(command_application, applies_game_end) {
+    flecs::world world = makeWorld();
+
+    run(world, "seg TeamB");
+
+    const auto &result = world.get<GameResult>();
+    cr_assert(result.finished);
+    cr_assert_eq(result.winner, std::string("TeamB"));
+    cr_assert(hasMessage(world, "Team TeamB wins!"));
+}
+
+Test(command_application, applies_server_status_messages) {
+    flecs::world world = makeWorld();
+
+    run(world, "smg maintenance soon");
+    run(world, "suc");
+    run(world, "sbp");
+
+    cr_assert(hasMessage(world, "Server: maintenance soon"));
+    cr_assert(hasMessage(world, "Server: unknown command"));
+    cr_assert(hasMessage(world, "Server: bad parameter"));
 }

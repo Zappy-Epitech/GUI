@@ -1,7 +1,9 @@
 #include "CommandRunner.hpp"
 #include "src/protocol/ZappyProtocol.hpp"
+#include "src/protocol/command/EggCommand.hpp"
 #include "src/protocol/command/MapCommand.hpp"
 #include "src/protocol/command/PlayerCommand.hpp"
+#include "src/protocol/command/ServerCommand.hpp"
 #include "src/protocol/command/TeamCommand.hpp"
 #include <cstdio>
 #include <optional>
@@ -68,6 +70,36 @@ void runCommand(const flecs::world &world, std::string &command) {
                 },
                 [&world](zappy::PlayerResourceDrop evt) {
                     applyPlayerResourceDrop(world, evt);
+                },
+                [&world](zappy::PlayerResourceCollect evt) {
+                    applyPlayerResourceCollect(world, evt);
+                },
+                [&world](zappy::PlayerDeath evt) {
+                    applyPlayerDeath(world, evt);
+                },
+                [&world](zappy::EggNew evt) {
+                    applyEggNew(world, evt);
+                },
+                [&world](zappy::EggHatched evt) {
+                    applyEggHatched(world, evt);
+                },
+                [&world](zappy::EggDeath evt) {
+                    applyEggDeath(world, evt);
+                },
+                [&world](zappy::TimeUnit evt) {
+                    applyTimeUnit(world, evt);
+                },
+                [&world](zappy::GameEnd evt) {
+                    applyGameEnd(world, evt);
+                },
+                [&world](zappy::ServerMessage evt) {
+                    applyServerMessage(world, evt);
+                },
+                [&world](zappy::UnknownCommand evt) {
+                    applyUnknownCommand(world, evt);
+                },
+                [&world](zappy::BadParameter evt) {
+                    applyBadParameter(world, evt);
                 },
                 invalid },
             event.value());

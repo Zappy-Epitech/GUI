@@ -1,5 +1,6 @@
 #include "WorldLookup.hpp"
 #include "src/extern/flecs.h"
+#include "src/gameplay/Egg.hpp"
 #include "src/gameplay/Grid.hpp"
 #include "src/gameplay/Player.hpp"
 #include "src/gameplay/Team.hpp"
@@ -13,6 +14,13 @@ flecs::entity findPlayer(const flecs::world &world, int id) {
         .find([id](PlayerId &playerId) {
             return playerId.value == id;
         });
+}
+
+/// Finds an egg entity by id.
+flecs::entity findEgg(flecs::world &world, int id) {
+    return world.query<EggId>().find([id](EggId &eggId) {
+        return eggId.value == id;
+    });
 }
 
 /// Finds a tile entity by coordinates.

@@ -108,7 +108,7 @@ Gui::Gui(flecs::world &world) {
                         continue;
                     }
 
-                    std::string &previousText = inputs[i].text;
+                    std::string previousText = inputs[i].text;
                     int bufferSize = textInputEditBufferSize(inputs[i]);
 
                     if (GuiTextBox(rect, inputs[i].text.data(), bufferSize, true)) {

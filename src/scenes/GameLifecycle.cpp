@@ -47,9 +47,6 @@ GameLifecycle::GameLifecycle(flecs::world &world) {
                 text.clear();
             }))
             .add<DespawnOnExit>(sceneId<Game>(world));
-
-        applyPlayerNew(world, zappy::PlayerNew::withIdAndTeam(0, "dream"));
-        Grid::spawn(world, 10, 10);
     });
 
     onExitScene<Game>(world, "ExitGame", [](flecs::world &world) {

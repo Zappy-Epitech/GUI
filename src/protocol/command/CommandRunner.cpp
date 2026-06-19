@@ -5,9 +5,10 @@
 #include "src/protocol/command/PlayerCommand.hpp"
 #include "src/protocol/command/ServerCommand.hpp"
 #include "src/protocol/command/TeamCommand.hpp"
-#include <cstdio>
+#include <cstdlib>
+#include <iostream>
 #include <optional>
-#include <stdexcept>
+#include <print>
 #include <variant>
 
 /// Combines variant visitors.
@@ -21,13 +22,15 @@ Overloaded(Ts...) -> Overloaded<Ts...>;
 
 /// Reports unsupported events.
 auto invalid = [](const auto &) {
-    throw std::invalid_argument("Unknown event type");
+    exit(1);
 };
 
 /// Parses and applies one command.
 void runCommand(const flecs::world &world, std::string &command) {
+    std::println("{}", command);
     std::optional<zappy::Event> event =
         zappy::ZappyProtocol::parseLine(command);
+
 
     if (event.has_value()) {
         std::visit(

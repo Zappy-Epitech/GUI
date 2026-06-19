@@ -75,6 +75,7 @@ CameraController::CameraController(flecs::world &world) {
                 cameraPitch = maxPitch;
             }
 
+
             Vector3 forward = {
                 std::sin(cameraYaw),
                 0.0f,

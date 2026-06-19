@@ -11,7 +11,7 @@ struct entity;
 flecs::entity findPlayer(const flecs::world &world, int id);
 
 /// Finds an egg entity by id.
-flecs::entity findEgg(flecs::world &world, int id);
+flecs::entity findEgg(const flecs::world &world, int id);
 
 /// Finds a tile entity by coordinates.
 flecs::entity findTile(const flecs::world &world, int x, int y);

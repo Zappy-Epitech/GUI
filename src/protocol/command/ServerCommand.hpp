@@ -6,16 +6,16 @@ struct world;
 }
 
 /// Applies a time unit event.
-void applyTimeUnit(flecs::world &world, zappy::TimeUnit &evt);
+void applyTimeUnit(const flecs::world &world, zappy::TimeUnit &evt);
 
 /// Applies a game end event.
-void applyGameEnd(flecs::world &world, zappy::GameEnd &evt);
+void applyGameEnd(const flecs::world &world, zappy::GameEnd &evt);
 
 /// Applies a server message event.
-void applyServerMessage(flecs::world &world, zappy::ServerMessage &evt);
+void applyServerMessage(const flecs::world &world, zappy::ServerMessage &evt);
 
 /// Applies an unknown command event.
-void applyUnknownCommand(flecs::world &world, zappy::UnknownCommand &evt);
+void applyUnknownCommand(const flecs::world &world, zappy::UnknownCommand &evt);
 
 /// Applies a bad parameter event.
-void applyBadParameter(flecs::world &world, zappy::BadParameter &evt);
+void applyBadParameter(const flecs::world &world, zappy::BadParameter &evt);

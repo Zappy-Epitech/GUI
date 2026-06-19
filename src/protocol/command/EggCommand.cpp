@@ -20,7 +20,7 @@ static Position3 eggPosition(int x, int y) {
 }
 
 /// Adds a temporary screen message.
-static void addScreenMessage(flecs::world &world, const std::string &text, Color color, float lifetime) {
+static void addScreenMessage(const flecs::world &world, const std::string &text, Color color, float lifetime) {
     world.entity()
         .set(ScreenMessage{ text })
         .set<Color>(color)
@@ -28,7 +28,7 @@ static void addScreenMessage(flecs::world &world, const std::string &text, Color
 }
 
 /// Removes a laying preview for a player if present.
-static void clearEggPreview(flecs::world &world, int playerId) {
+static void clearEggPreview(const flecs::world &world, int playerId) {
     if (flecs::entity preview = world.lookup(std::format("EggPreview({})", playerId).c_str()); preview) {
         preview.destruct();
     }
@@ -37,7 +37,7 @@ static void clearEggPreview(flecs::world &world, int playerId) {
 } // namespace
 
 /// Applies a new egg event.
-void applyEggNew(flecs::world &world, zappy::EggNew &evt) {
+void applyEggNew(const flecs::world &world, zappy::EggNew &evt) {
     clearEggPreview(world, evt.playerId);
 
     if (flecs::entity existing = findEgg(world, evt.id); existing) {
@@ -62,7 +62,7 @@ void applyEggNew(flecs::world &world, zappy::EggNew &evt) {
 }
 
 /// Applies an egg hatched event.
-void applyEggHatched(flecs::world &world, zappy::EggHatched &evt) {
+void applyEggHatched(const flecs::world &world, zappy::EggHatched &evt) {
     if (flecs::entity egg = findEgg(world, evt.id); egg) {
         egg.destruct();
     }
@@ -71,7 +71,7 @@ void applyEggHatched(flecs::world &world, zappy::EggHatched &evt) {
 }
 
 /// Applies an egg death event.
-void applyEggDeath(flecs::world &world, zappy::EggDeath &evt) {
+void applyEggDeath(const flecs::world &world, zappy::EggDeath &evt) {
     if (flecs::entity egg = findEgg(world, evt.id); egg) {
         egg.destruct();
     }

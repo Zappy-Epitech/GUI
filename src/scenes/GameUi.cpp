@@ -123,4 +123,9 @@ GameUi::GameUi(flecs::world &world) {
             }
         })
         .add<InScene>(sceneId<Game>(world));
+
+
+    // world.system("FreqSlider").run([](flecs::iter &) {
+    //     GuiSlider({}, const char *textLeft, const char *textRight, float *value, float minValue, float maxValue)
+    // });
 }

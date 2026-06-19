@@ -75,6 +75,7 @@ NetworkModule::NetworkModule(flecs::world &world) {
     world.system("NetworkDrain")
         .read<NetworkClientHandle>()
         .kind(flecs::PreUpdate)
+        .immediate(true)
         .run([](flecs::iter &it) {
             flecs::world world = it.world();
             auto &handle = world.get_mut<NetworkClientHandle>();
@@ -106,7 +107,9 @@ NetworkModule::NetworkModule(flecs::world &world) {
             // prevents a large network burst from monopolizing one render tick.
             while (budget-- > 0 && handle.client->pollLine(line)) {
                 try {
+                    world.defer_suspend();
                     runCommand(world, line);
+                    world.defer_resume();
                 } catch (const std::exception &err) {
                     world.entity()
                         .set(ScreenMessage{ std::format("Protocol error: {}", err.what()) })

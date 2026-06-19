@@ -17,7 +17,7 @@ flecs::entity findPlayer(const flecs::world &world, int id) {
 }
 
 /// Finds an egg entity by id.
-flecs::entity findEgg(flecs::world &world, int id) {
+flecs::entity findEgg(const flecs::world &world, int id) {
     return world.query<EggId>().find([id](EggId &eggId) {
         return eggId.value == id;
     });

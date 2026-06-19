@@ -2,9 +2,9 @@
 #include <raylib.h>
 
 /// The window width in pixels.
-static constexpr float WINDOW_WIDTH = 1920.0f;
+static constexpr float WINDOW_WIDTH = 1280.0f;
 /// The window height in pixels.
-static constexpr float WINDOW_HEIGHT = 1200.0f;
+static constexpr float WINDOW_HEIGHT = 720.0f;
 
 namespace flecs {
 struct world;
@@ -71,6 +71,8 @@ struct Position3 {
     /// Returns a copy advanced on z.
     Position3 add_z(float z) const;
 };
+
+using Size3 = Position3;
 
 /// Stores Euler rotation values.
 struct Rotation3 {

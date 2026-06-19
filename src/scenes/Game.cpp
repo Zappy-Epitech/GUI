@@ -4,6 +4,8 @@
 #include "src/scenes/AppScenes.hpp"
 #include "src/scenes/GameLifecycle.hpp"
 #include "src/scenes/GameUi.hpp"
+#include "src/core/Scenes.hpp"
+#include <raylib.h>
 
 /// Registers the game scene.
 Game::Game(flecs::world &world) {

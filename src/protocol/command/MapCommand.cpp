@@ -9,7 +9,6 @@
 #include "src/gameplay/WorldLookup.hpp"
 #include <array>
 #include <cmath>
-#include <cstdio>
 #include <format>
 #include <raylib.h>
 #include <vector>
@@ -19,15 +18,22 @@ namespace {
 /// The names of the resources.
 static const std::array<const char *, 7> resourceNames = { "food", "linemate", "deraumere", "sibur", "mendiane", "phiras", "thystame" };
 
-/// The offsets of the resources.
-static const std::array<Position3, 7> resourceOffsets = {
-    Position3{ 0.00f, 0.00f, 0.00f },
-    Position3{ -0.25f, 0.00f, -0.25f },
-    Position3{ 0.25f, 0.00f, -0.25f },
-    Position3{ -0.25f, 0.00f, 0.00f },
-    Position3{ 0.25f, 0.00f, 0.00f },
-    Position3{ -0.25f, 0.00f, 0.25f },
-    Position3{ 0.25f, 0.00f, 0.25f },
+struct ResourceVisual {
+    Position3 position;
+    Rotation3 rotation;
+    float size;
+};
+
+/// The per-resource transforms normalize heterogeneous GLTF origins and sizes.
+/// Position is relative to the tile origin after model rotation and scaling.
+static const std::array<ResourceVisual, 7> resourceVisuals = {
+    ResourceVisual{ Position3{ 0.00000f, 0.54455f, -0.12000f }, Rotation3{ -90.0f, 0.0f, -30.0f }, 0.12800f },   // food / apple
+    ResourceVisual{ Position3{ -0.25000f, 0.47000f, -0.37000f }, Rotation3{ 90.0f, 0.0f, 0.0f }, 0.32000f },     // linemate / emerald
+    ResourceVisual{ Position3{ 0.25003f, 0.55470f, -0.37000f }, Rotation3{ 90.0f, 0.0f, 30.0f }, 0.14769f },      // deraumere / coal
+    ResourceVisual{ Position3{ -0.24993f, 0.45947f, -0.00030f }, Rotation3{ 90.0f, 0.0f, 0.0f }, 0.04808f },    // sibur / iron
+    ResourceVisual{ Position3{ 0.25007f, 0.45947f, -0.00030f }, Rotation3{ 90.0f, 0.0f, 0.0f }, 0.04808f },     // mendiane / gold
+    ResourceVisual{ Position3{ -0.23174f, 0.57001f, 0.12982f }, Rotation3{ 90.0f, 0.0f, 90.0f }, 0.02503f },    // phiras / diamond
+    ResourceVisual{ Position3{ 0.28956f, 0.01370f, 0.24902f }, Rotation3{ 90.0f, 0.0f, 26.0f }, 0.32929f },     // thystame / redstone
 };
 
 /// Views resources as an indexed array.
@@ -46,23 +52,34 @@ static void clearTileResources(flecs::entity tile) {
     }
 }
 
+struct Linemate{};
+struct Deraumere{};
+struct Sibure{};
+struct Mendiane{};
+struct Phiras{};
+struct Thystame{};
+
 /// Spawns one rendered resource.
 static void spawnTileResource(
     const flecs::world &world,
     flecs::entity tile,
     int resource,
     const Model &model) {
-    Position3 offset = resourceOffsets[resource];
+    const Position3 &tilePosition = tile.get<Position3>();
+    const ResourceVisual &visual = resourceVisuals[resource];
 
     world.entity()
         .child_of(tile)
         .set_name(resourceNames[resource])
-        .set(Position3{ offset.x, 0.45f + offset.y, offset.z })
+        .set(Position3{
+            tilePosition.x + visual.position.x,
+            tilePosition.y + visual.position.y + 0.45f,
+            tilePosition.z + visual.position.z,
+        })
         .set(model)
-        .set(Rotation3::from_xyz(90, 0, 0))
-        .set(Scale{ 0.83f });
+        .set(visual.rotation)
+        .set(Scale{ visual.size });
 }
-
 } // namespace
 
 /// Applies a new map size.

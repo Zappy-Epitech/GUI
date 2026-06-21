@@ -24,6 +24,25 @@ static constexpr PartUV LARM = { { 32, 52, 4, 12 }, { 36, 52, 4, 12 }, { 40, 52,
 static constexpr PartUV RLEG = { { 0, 20, 4, 12 }, { 4, 20, 4, 12 }, { 8, 20, 4, 12 }, { 12, 20, 4, 12 }, { 4, 16, 4, 4 }, { 8, 16, 4, 4 } };
 static constexpr PartUV LLEG = { { 16, 52, 4, 12 }, { 20, 52, 4, 12 }, { 24, 52, 4, 12 }, { 28, 52, 4, 12 }, { 20, 48, 4, 4 }, { 24, 48, 4, 4 } };
 
+/// Draws the front face of a Minecraft skin head in 2D.
+void DrawMinecraftHead(Texture2D skin, Rectangle bounds) {
+    if (skin.id == 0 || skin.width <= 0 || skin.height <= 0) {
+        DrawRectangleRec(bounds, Fade(GRAY, 0.65f));
+        DrawRectangleLinesEx(bounds, 1.0f, Fade(WHITE, 0.45f));
+        return;
+    }
+
+    const float px = static_cast<float>(skin.width) / 64.0f;
+    const Rectangle head = { 8.0f * px, 8.0f * px, 8.0f * px, 8.0f * px };
+    const Rectangle overlay = { 40.0f * px, 8.0f * px, 8.0f * px, 8.0f * px };
+
+    DrawTexturePro(skin, head, bounds, Vector2{ 0.0f, 0.0f }, 0.0f, WHITE);
+    if (skin.width >= static_cast<int>(48.0f * px) && skin.height >= static_cast<int>(16.0f * px)) {
+        DrawTexturePro(skin, overlay, bounds, Vector2{ 0.0f, 0.0f }, 0.0f, WHITE);
+    }
+    DrawRectangleLinesEx(bounds, 1.0f, Fade(BLACK, 0.35f));
+}
+
 /// Draws a textured cuboid.
 static void skinCube(Texture2D tex, const PartUV &uv, float w, float h, float d) {
     const float tw = (float)tex.width;

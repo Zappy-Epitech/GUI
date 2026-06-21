@@ -1,10 +1,10 @@
 #include "Game.hpp"
+#include "src/core/Scenes.hpp"
 #include "src/extern/flecs.h"
 #include "src/gameplay/Player.hpp"
 #include "src/scenes/AppScenes.hpp"
 #include "src/scenes/GameLifecycle.hpp"
 #include "src/scenes/GameUi.hpp"
-#include "src/core/Scenes.hpp"
 #include <raylib.h>
 
 /// Registers the game scene.
@@ -16,6 +16,8 @@ Game::Game(flecs::world &world) {
 
     world.component<PlayerId>()
         .member<int>("id");
+
+    world.component<PlayerSkin>();
 
     world.component<Incantating>();
 

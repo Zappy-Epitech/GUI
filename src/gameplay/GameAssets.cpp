@@ -1,7 +1,9 @@
 #include "GameAssets.hpp"
 #include "src/extern/flecs.h"
 #include "src/gameplay/GamePlay.hpp"
+#include <algorithm>
 #include <filesystem>
+#include <vector>
 
 /// Loads skins and resource models.
 void GameAssets::load(flecs::world &world) {
@@ -14,9 +16,17 @@ void GameAssets::load(flecs::world &world) {
         .self()
         .kind(flecs::OnStart)
         .each([](GameAssets &assets) {
+            std::vector<std::filesystem::path> skinPaths;
             for (const auto &file : std::filesystem::directory_iterator("./assets/skins/")) {
-                Texture2D texture = LoadTexture(file.path().c_str());
-                assets.skins.push_back(texture);
+                if (file.is_regular_file()) {
+                    skinPaths.push_back(file.path());
+                }
+            }
+
+            std::sort(skinPaths.begin(), skinPaths.end());
+            for (const auto &path : skinPaths) {
+                Texture2D texture = LoadTexture(path.c_str());
+                assets.skins.push_back(SkinAsset{ path.stem().string(), texture });
             }
 
             assets.resourceModels[0] = LoadModel("./assets/models/apple/scene.gltf");

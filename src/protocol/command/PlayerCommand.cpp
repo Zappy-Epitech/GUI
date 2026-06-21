@@ -45,8 +45,9 @@ static void addScreenMessage(const flecs::world &world, const std::string &text,
 
 /// Applies a new player event.
 void applyPlayerNew(const flecs::world &world, const zappy::PlayerNew &evt) {
-    const GameAssets &skins = world.get<GameAssets>();
-    Texture2D skin = skins.skins[evt.id % skins.skins.size()];
+    const GameAssets &assets = world.get<GameAssets>();
+    const std::size_t skinIndex = assets.skins.empty() ? 0 : static_cast<std::size_t>(evt.id) % assets.skins.size();
+    const Texture2D skin = assets.skins.empty() ? Texture2D{} : assets.skins[skinIndex].texture;
     flecs::entity team = findOrCreateTeam(world, evt.team);
 
     flecs::entity player = findPlayer(world, evt.id);
@@ -59,11 +60,11 @@ void applyPlayerNew(const flecs::world &world, const zappy::PlayerNew &evt) {
         .add<BelongsTo>(team)
         .set(PlayerId{ evt.id })
         .set(Player{ .level = evt.level })
+        .set(PlayerSkin{ skinIndex })
         .set(skin)
         .set(Rotation3::zero())
         .set<Orientation>(evt.orientation)
         .set(gridCenterPosition(evt.x, evt.y))
-        .set<Texture2D>(world.get<GameAssets>().skins[0])
         .set<MinecraftSkin>({ .scale = 0.35f })
         .set<zappy::Resources>({})
         .set(Walking)

@@ -2,10 +2,10 @@
 #include "src/core/Gui.hpp"
 #include "src/core/Spatial.hpp"
 #include "src/extern/flecs.h"
+#include "src/gameplay/Egg.hpp"
 #include "src/gameplay/GameAssets.hpp"
 #include "src/gameplay/Grid.hpp"
 #include "src/gameplay/Movement.hpp"
-#include "src/gameplay/Egg.hpp"
 #include "src/gameplay/Player.hpp"
 #include "src/gameplay/Simulation.hpp"
 #include "src/gameplay/Team.hpp"
@@ -28,6 +28,7 @@ static flecs::world makeWorld() {
     world.import<Teams>();
     world.component<Player>();
     world.component<PlayerId>();
+    world.component<PlayerSkin>();
     world.component<EggId>();
     world.component<Incantating>();
     world.component<ScreenMessage>();
@@ -35,7 +36,8 @@ static flecs::world makeWorld() {
     world.component<Color>();
 
     GameAssets assets;
-    assets.skins.push_back(Texture2D{});
+    assets.skins.push_back(SkinAsset{ "default", Texture2D{} });
+    assets.skins.push_back(SkinAsset{ "alternate", Texture2D{ .id = 42 } });
     world.set<GameAssets>(assets);
     return world;
 }
@@ -94,6 +96,8 @@ Test(command_application, applies_team_and_player_creation) {
 
     cr_assert_eq(player.get<Player>().level, 4);
     cr_assert_eq(player.get<PlayerId>().value, 1);
+    cr_assert_eq(player.get<PlayerSkin>().index, 1);
+    cr_assert_eq(player.get<Texture2D>().id, 42);
     cr_assert_eq(player.get<Orientation>(), Orientation::EAST);
 }
 

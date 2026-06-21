@@ -13,6 +13,7 @@
 #include "src/minecraft/MinecraftRenderer.hpp"
 #include "src/protocol/ZappyProtocol.hpp"
 #include "src/protocol/command/CommandRunner.hpp"
+#include "src/scenes/EndGame.hpp"
 #include "src/scenes/Game.hpp"
 #include <criterion/criterion.h>
 #include <format>
@@ -34,6 +35,7 @@ static flecs::world makeWorld() {
     world.component<ScreenMessage>();
     world.component<Lifetime>();
     world.component<Color>();
+    world.component<EndGameState>();
 
     GameAssets assets;
     assets.skins.push_back(SkinAsset{ "default", Texture2D{} });
@@ -230,12 +232,22 @@ Test(command_application, applies_time_unit) {
 
 Test(command_application, applies_game_end) {
     flecs::world world = makeWorld();
+    run(world, "tna TeamB");
+    spawnPlayer(world, 8, "TeamB");
+    run(world, "plv #8 4");
+    run(world, "pin #8 1 1 3 1 2 3 4 5 6");
 
     run(world, "seg TeamB");
 
     const auto &result = world.get<GameResult>();
     cr_assert(result.finished);
     cr_assert_eq(result.winner, std::string("TeamB"));
+    const auto &endGame = world.get<EndGameState>();
+    cr_assert_eq(endGame.winner, std::string("TeamB"));
+    cr_assert_eq(endGame.players.size(), 1);
+    cr_assert_eq(endGame.players[0].id, 8);
+    cr_assert_eq(endGame.players[0].level, 4);
+    cr_assert_eq(endGame.players[0].resources.food, 3);
     cr_assert(hasMessage(world, "Team TeamB wins!"));
 }
 

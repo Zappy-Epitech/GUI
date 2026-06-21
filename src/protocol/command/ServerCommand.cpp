@@ -1,8 +1,13 @@
 #include "ServerCommand.hpp"
 #include "src/core/Core.hpp"
 #include "src/core/Gui.hpp"
+#include "src/core/Scenes.hpp"
 #include "src/extern/flecs.h"
+#include "src/gameplay/Player.hpp"
 #include "src/gameplay/Simulation.hpp"
+#include "src/gameplay/Team.hpp"
+#include "src/gameplay/WorldLookup.hpp"
+#include "src/scenes/EndGame.hpp"
 #include <format>
 #include <raylib.h>
 #include <string>
@@ -17,6 +22,34 @@ static void addScreenMessage(const flecs::world &world, const std::string &text,
         .set(Lifetime{ lifetime });
 }
 
+static EndGameState buildEndGameState(const flecs::world &world, const std::string &winner) {
+    EndGameState state;
+    state.winner = winner;
+
+    flecs::entity team = findTeam(world, winner);
+    if (!team) {
+        return state;
+    }
+
+    world.query_builder<const Player, const PlayerId, const zappy::Resources, const Texture2D>()
+        .build()
+        .each([&](flecs::entity entity, const Player &player, const PlayerId &playerId, const zappy::Resources &resources, const Texture2D &skin) {
+            if (!entity.has<BelongsTo>(team)) {
+                return;
+            }
+
+            state.players.push_back(EndGamePlayerStats{
+                .name = entity.name().c_str(),
+                .id = playerId.value,
+                .level = player.level,
+                .resources = resources,
+                .skin = skin,
+            });
+        });
+
+    return state;
+}
+
 } // namespace
 
 /// Applies a time unit event.
@@ -29,8 +62,10 @@ void applyTimeUnit(const flecs::world &world, zappy::TimeUnit &evt) {
 /// Applies a game end event.
 void applyGameEnd(const flecs::world &world, zappy::GameEnd &evt) {
     world.set<GameResult>({ true, evt.winner });
+    world.set<EndGameState>(buildEndGameState(world, evt.winner));
 
-    addScreenMessage(world, std::format("Team {} wins!", evt.winner), GOLD, 10.0f);
+    flecs::world mutableWorld = world;
+    enterScene<EndGame>(mutableWorld);
 }
 
 /// Applies a server message event.

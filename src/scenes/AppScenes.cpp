@@ -1,6 +1,7 @@
 #include "AppScenes.hpp"
 #include "src/core/Scenes.hpp"
 #include "src/extern/flecs.h"
+#include "src/scenes/EndGame.hpp"
 #include "src/scenes/Game.hpp"
 #include "src/scenes/Home.hpp"
 
@@ -10,6 +11,7 @@ AppScenes::AppScenes(flecs::world &world) {
 
     world.import<Home>().child_of(module);
     world.import<Game>().child_of(module);
+    world.import<EndGame>().child_of(module);
 
     enterScene<Home>(world);
 }

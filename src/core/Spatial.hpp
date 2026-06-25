@@ -2,9 +2,9 @@
 #include <raylib.h>
 
 /// The window width in pixels.
-static constexpr float WINDOW_WIDTH = 1280.0f;
+static constexpr float WINDOW_WIDTH = 1920.0f;
 /// The window height in pixels.
-static constexpr float WINDOW_HEIGHT = 720.0f;
+static constexpr float WINDOW_HEIGHT = 1080.0f;
 
 namespace flecs {
 struct world;

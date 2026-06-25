@@ -36,6 +36,14 @@ void GameAssets::load(flecs::world &world) {
             assets.resourceModels[4] = LoadModel("./assets/models/gold/scene.gltf");
             assets.resourceModels[5] = LoadModel("./assets/models/diamond/scene.gltf");
             assets.resourceModels[6] = LoadModel("./assets/models/redstone/Redstone_Dust.gltf");
+            assets.resourceIconTextures[0] = LoadTexture("./assets/minecraft/item/apple.png");
+            assets.resourceIconTextures[1] = LoadTexture("./assets/minecraft/item/emerald.png");
+            assets.resourceIconTextures[2] = LoadTexture("./assets/minecraft/item/coal.png");
+            assets.resourceIconTextures[3] = LoadTexture("./assets/minecraft/item/iron_ingot.png");
+            assets.resourceIconTextures[4] = LoadTexture("./assets/minecraft/item/gold_ingot.png");
+            assets.resourceIconTextures[5] = LoadTexture("./assets/minecraft/item/diamond.png");
+            assets.resourceIconTextures[6] = LoadTexture("./assets/minecraft/item/redstone.png");
+            assets.inventoryGuiTexture = LoadTexture("./assets/minecraft/gui/container/inventory.png");
             assets.eggModel = LoadModel("./assets/models/egg/scene.gltf");
         });
 }

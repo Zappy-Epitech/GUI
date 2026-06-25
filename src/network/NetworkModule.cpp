@@ -6,10 +6,10 @@
 #include "src/extern/flecs.h"
 #include "src/protocol/command/CommandRunner.hpp"
 
-#include <cstring>
 #include <exception>
 #include <format>
 #include <raylib.h>
+#include <string>
 
 namespace {
 
@@ -156,4 +156,15 @@ void disconnectFromServer(flecs::world &world) {
         handle.client->stop();
     }
     world.set<NetworkState>(NetworkState(net::ClientStatus::Disconnected, "Disconnected"));
+}
+
+/// Sends a command through the active network client.
+bool sendServerCommand(const flecs::world &world, std::string_view command) {
+    auto &handle = world.get_mut<NetworkClientHandle>();
+    if (!handle.client || handle.client->getStatus() != net::ClientStatus::Connected) {
+        return false;
+    }
+
+    handle.client->send(std::string(command));
+    return true;
 }

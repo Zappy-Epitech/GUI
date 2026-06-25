@@ -8,6 +8,7 @@
 #include "src/gameplay/Team.hpp"
 #include "src/gameplay/WorldLookup.hpp"
 #include "src/scenes/EndGame.hpp"
+#include "src/scenes/GameUi.hpp"
 #include <format>
 #include <raylib.h>
 #include <string>
@@ -55,6 +56,14 @@ static EndGameState buildEndGameState(const flecs::world &world, const std::stri
 /// Applies a time unit event.
 void applyTimeUnit(const flecs::world &world, zappy::TimeUnit &evt) {
     world.set<SimulationTime>({ evt.value });
+
+    if (GameUiState *state = world.try_get_mut<GameUiState>()) {
+        state->confirmedFrequency = evt.value;
+        state->frequencyInitialized = true;
+        if (!state->draggingFrequency) {
+            state->requestedFrequency = static_cast<float>(evt.value);
+        }
+    }
 
     addScreenMessage(world, std::format("Time unit set to {}", evt.value), SKYBLUE, 2.0f);
 }

@@ -37,11 +37,8 @@ GameLifecycle::GameLifecycle(flecs::world &world) {
             .set(Position2::bottom_center())
             .set(OnEnter([](flecs::entity e, std::string &text) {
                 flecs::world world = e.world();
-                auto &handle = world.get_mut<NetworkClientHandle>();
 
-                if (handle.client && handle.client->getStatus() == net::ClientStatus::Connected) {
-                    handle.client->send(text);
-                } else {
+                if (!sendServerCommand(world, text)) {
                     runCommand(world, text);
                 }
                 text.clear();

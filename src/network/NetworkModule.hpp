@@ -3,6 +3,7 @@
 #include "client/ZappyClient.hpp"
 
 #include <cstdint>
+#include <cstring>
 #include <string_view>
 
 namespace flecs {

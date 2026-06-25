@@ -4,13 +4,40 @@
 #include "src/core/Spatial.hpp"
 #include "src/extern/flecs.h"
 #include "src/gameplay/Player.hpp"
+#include "src/gameplay/Simulation.hpp"
 #include "src/gameplay/Team.hpp"
 #include "src/minecraft/MinecraftRenderer.hpp"
+#include "src/network/NetworkModule.hpp"
 #include "src/scenes/Game.hpp"
 
+#include <algorithm>
+#include <cmath>
 #include <format>
 #include <raygui.h>
 #include <raylib.h>
+
+namespace {
+
+constexpr int minFrequency = 1;
+constexpr int maxFrequency = 1000;
+
+static int normalizedFrequency(float value) {
+    return std::clamp(static_cast<int>(std::round(value)), minFrequency, maxFrequency);
+}
+
+static void initializeFrequencyState(const flecs::world &world, GameUiState &state) {
+    if (state.frequencyInitialized) {
+        return;
+    }
+
+    const SimulationTime *time = world.try_get<SimulationTime>();
+    const int frequency = std::clamp(time ? time->timeUnit : state.confirmedFrequency, minFrequency, maxFrequency);
+    state.confirmedFrequency = frequency;
+    state.requestedFrequency = static_cast<float>(frequency);
+    state.frequencyInitialized = true;
+}
+
+} // namespace
 
 /// Registers game UI observers and render systems.
 GameUi::GameUi(flecs::world &world) {
@@ -132,7 +159,36 @@ GameUi::GameUi(flecs::world &world) {
         })
         .add<InScene>(sceneId<Game>(world));
 
-    // world.system("FreqSlider").run([](flecs::iter &) {
-    //     GuiSlider({}, const char *textLeft, const char *textRight, float *value, float minValue, float maxValue)
-    // });
+    world.system("DrawFrequencySlider")
+        .kind<Render2D>()
+        .run([world](flecs::iter &) {
+            auto &state = world.get_mut<GameUiState>();
+            initializeFrequencyState(world, state);
+
+            const float panelWidth = 360.0f;
+            const Rectangle panel = { static_cast<float>(GetScreenWidth()) - panelWidth - 24.0f, 24.0f, panelWidth, 82.0f };
+            const Rectangle slider = { panel.x + 44.0f, panel.y + 38.0f, panel.width - 112.0f, 24.0f };
+
+            DrawRectangleRec(panel, Fade(BLACK, 0.42f));
+            DrawRectangleLinesEx(panel, 1.0f, Fade(WHITE, 0.28f));
+            DrawText("Freq", static_cast<int>(panel.x + 14.0f), static_cast<int>(panel.y + 14.0f), 20, WHITE);
+            DrawText(std::format("{}", normalizedFrequency(state.requestedFrequency)).c_str(), static_cast<int>(panel.x + panel.width - 70.0f), static_cast<int>(panel.y + 14.0f), 20, SKYBLUE);
+
+            const bool changed = GuiSlider(slider, "", "", &state.requestedFrequency,
+                                           static_cast<float>(minFrequency), static_cast<float>(maxFrequency));
+            state.requestedFrequency = static_cast<float>(normalizedFrequency(state.requestedFrequency));
+
+            if (changed) {
+                state.draggingFrequency = true;
+            }
+
+            if (state.draggingFrequency && IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
+                state.draggingFrequency = false;
+                const int requested = normalizedFrequency(state.requestedFrequency);
+                if (requested != state.confirmedFrequency) {
+                    sendServerCommand(world, std::format("sst {}\n", requested));
+                }
+            }
+        })
+        .add<InScene>(sceneId<Game>(world));
 }

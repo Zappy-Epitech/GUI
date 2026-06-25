@@ -3,12 +3,12 @@
 #include "client/ZappyClient.hpp"
 
 #include <cstdint>
-#include <cstring>
+#include <string_view>
 
 namespace flecs {
 /// Forward declaration for the ECS world type.
 struct world;
-}
+} // namespace flecs
 
 /// Host/port chosen by the menu before entering the game scene.
 struct NetworkConfig {
@@ -74,3 +74,5 @@ struct NetworkModule {
 void connectToServer(flecs::world &world, const NetworkConfig &config);
 /// Stops the active client and marks the network state as disconnected.
 void disconnectFromServer(flecs::world &world);
+/// Sends a command to the active server when the client is connected.
+bool sendServerCommand(const flecs::world &world, std::string_view command);

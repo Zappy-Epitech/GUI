@@ -15,6 +15,7 @@
 #include "src/protocol/command/CommandRunner.hpp"
 #include "src/scenes/EndGame.hpp"
 #include "src/scenes/Game.hpp"
+#include "src/scenes/GameUi.hpp"
 #include <criterion/criterion.h>
 #include <format>
 #include <raylib.h>
@@ -36,6 +37,8 @@ static flecs::world makeWorld() {
     world.component<Lifetime>();
     world.component<Color>();
     world.component<EndGameState>();
+    world.component<GameUiState>();
+    world.set<GameUiState>({});
 
     GameAssets assets;
     assets.skins.push_back(SkinAsset{ "default", Texture2D{} });
@@ -227,6 +230,8 @@ Test(command_application, applies_time_unit) {
 
     run(world, "sst 42");
     cr_assert_eq(world.get<SimulationTime>().timeUnit, 42);
+    cr_assert_eq(world.get<GameUiState>().confirmedFrequency, 42);
+    cr_assert_float_eq(world.get<GameUiState>().requestedFrequency, 42.0f, 0.01f);
     cr_assert(hasMessage(world, "Time unit set to 42"));
 }
 

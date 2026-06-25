@@ -17,6 +17,8 @@ struct SkinAsset {
 struct GameAssets {
     std::vector<SkinAsset> skins;
     std::array<Model, 7> resourceModels = {};
+    std::array<Texture2D, 7> resourceIconTextures = {};
+    Texture2D inventoryGuiTexture = {};
     Model eggModel = {};
 
     /// Loads shared gameplay assets.

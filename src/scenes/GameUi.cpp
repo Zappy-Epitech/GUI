@@ -3,6 +3,7 @@
 #include "src/core/Scenes.hpp"
 #include "src/core/Spatial.hpp"
 #include "src/extern/flecs.h"
+#include "src/gameplay/GameAssets.hpp"
 #include "src/gameplay/Player.hpp"
 #include "src/gameplay/Simulation.hpp"
 #include "src/gameplay/Team.hpp"
@@ -35,6 +36,68 @@ static void initializeFrequencyState(const flecs::world &world, GameUiState &sta
     state.confirmedFrequency = frequency;
     state.requestedFrequency = static_cast<float>(frequency);
     state.frequencyInitialized = true;
+}
+
+static std::array<int, 7> resourceAmounts(const zappy::Resources &resources) {
+    return {
+        resources.food,
+        resources.linemate,
+        resources.deraumere,
+        resources.sibur,
+        resources.mendiane,
+        resources.phiras,
+        resources.thystame,
+    };
+}
+
+static void drawItemCount(int amount, Rectangle slot, float scale) {
+    if (amount <= 0) {
+        return;
+    }
+
+    const std::string text = std::format("{}", amount);
+    const int fontSize = std::max(12, static_cast<int>(8.0f * scale));
+    const int width = MeasureText(text.c_str(), fontSize);
+    const int x = static_cast<int>(slot.x + slot.width - static_cast<float>(width) - 1.0f * scale);
+    const int y = static_cast<int>(slot.y + slot.height - static_cast<float>(fontSize) - 1.0f * scale);
+
+    DrawText(text.c_str(), x + 1, y + 1, fontSize, BLACK);
+    DrawText(text.c_str(), x, y, fontSize, WHITE);
+}
+
+static void drawMinecraftInventory(const GameAssets &assets, const zappy::Resources &resources, Rectangle bounds) {
+    constexpr Rectangle source = { 0.0f, 0.0f, 176.0f, 166.0f };
+    constexpr float slotSize = 18.0f;
+    constexpr float iconSize = 16.0f;
+    constexpr float hotbarX = 7.0f;
+    constexpr float hotbarY = 141.0f;
+
+    const float scale = bounds.width / source.width;
+    DrawTexturePro(assets.inventoryGuiTexture, source, bounds, Vector2{ 0.0f, 0.0f }, 0.0f, WHITE);
+
+    const auto amounts = resourceAmounts(resources);
+    for (std::size_t i = 0; i < amounts.size(); ++i) {
+        const Rectangle slot = {
+            bounds.x + (hotbarX + static_cast<float>(i) * slotSize) * scale,
+            bounds.y + hotbarY * scale,
+            slotSize * scale,
+            slotSize * scale,
+        };
+        const Rectangle icon = {
+            slot.x + scale,
+            slot.y + scale,
+            iconSize * scale,
+            iconSize * scale,
+        };
+
+        DrawTexturePro(assets.resourceIconTextures[i],
+                       Rectangle{ 0.0f, 0.0f, 16.0f, 16.0f },
+                       icon,
+                       Vector2{ 0.0f, 0.0f },
+                       0.0f,
+                       WHITE);
+        drawItemCount(amounts[i], slot, scale);
+    }
 }
 
 } // namespace
@@ -126,35 +189,32 @@ GameUi::GameUi(flecs::world &world) {
         .kind<Render2D>()
         .run([world](flecs::iter &) {
             if (auto &state = world.get_mut<GameUiState>(); state.selectedPlayer != 0 && state.resources.has_value()) {
-                const Rectangle modal = Position2::center(400, 700).rect(400, 700);
+                const float inventoryScale = 2.0f;
+                const Rectangle inventory = Position2::center(176.0f * inventoryScale, 166.0f * inventoryScale).rect(176.0f * inventoryScale, 166.0f * inventoryScale);
+                const Rectangle closeButton = { inventory.x + inventory.width - 26.0f, inventory.y + 6.0f, 20.0f, 20.0f };
 
                 DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), Fade(BLACK, 0.55f));
 
-                if (GuiWindowBox(modal, state.playerName.c_str())) {
-                    state.selectedPlayer = 0;
-                    return;
+                const GameAssets *assets = world.try_get<GameAssets>();
+                if (assets != nullptr && assets->inventoryGuiTexture.id != 0) {
+                    drawMinecraftInventory(*assets, state.resources.value(), inventory);
+                    constexpr int headerFontSize = 20;
+                    const std::string levelText = std::format("Level {}", state.level);
+                    DrawText(state.playerName.c_str(), static_cast<int>(inventory.x + 16.0f), static_cast<int>(inventory.y - 28.0f), headerFontSize, WHITE);
+                    DrawText(levelText.c_str(),
+                             static_cast<int>(inventory.x + inventory.width - 16.0f - static_cast<float>(MeasureText(levelText.c_str(), headerFontSize))),
+                             static_cast<int>(inventory.y - 28.0f),
+                             headerFontSize,
+                             WHITE);
+                } else {
+                    DrawRectangleRec(inventory, Fade(BLACK, 0.75f));
+                    DrawRectangleLinesEx(inventory, 1.0f, WHITE);
+                    DrawText("Inventory assets missing", static_cast<int>(inventory.x + 18.0f), static_cast<int>(inventory.y + 18.0f), 20, WHITE);
                 }
 
-                const auto &r = state.resources.value();
-                float y = modal.y + 30 + 58;
-
-                for (const auto &[label, amount] : {
-                         std::pair("level", state.level),
-                         std::pair("food", r.food),
-                         std::pair("linemate", r.linemate),
-                         std::pair("deraumere", r.deraumere),
-                         std::pair("sibur", r.sibur),
-                         std::pair("mendiane", r.mendiane),
-                         std::pair("phiras", r.phiras),
-                         std::pair("thystame", r.thystame),
-                     }) {
-                    GuiLabel(Position2(modal.x + 16, y).rect(modal.width * 0.65f, 58), label);
-                    GuiLabel(Position2(modal.x + modal.width - 96, y).rect(80, 58), std::format("{}", amount).c_str());
-                    y += 68;
-                }
-
-                if (GuiButton(Rectangle{ modal.x + 20, modal.y + modal.height - 62, modal.width - 40, 48 }, "Close"))
+                if (GuiButton(closeButton, "x") || IsKeyPressed(KEY_ESCAPE)) {
                     state.selectedPlayer = 0;
+                }
             }
         })
         .add<InScene>(sceneId<Game>(world));

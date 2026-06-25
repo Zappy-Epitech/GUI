@@ -1,5 +1,6 @@
 #include "MinecraftAnimation.hpp"
 #include "src/extern/flecs.h"
+#include "src/gameplay/Movement.hpp"
 #include <cmath>
 #include <raylib.h>
 
@@ -54,15 +55,35 @@ MinecraftAnimation::MinecraftAnimation(flecs::world &world) {
 
     world.system<AnimPlayer, SkinPose, const SkinAnimation>("AnimUpdate")
         .kind(flecs::OnUpdate)
-        .each([](AnimPlayer &player, SkinPose &pose, const SkinAnimation &anim) {
-            player.timer += GetFrameTime() * player.speed;
-            if (anim.loop)
-                player.timer = fmodf(player.timer, anim.duration);
-            else if (player.timer > anim.duration)
-                player.timer = anim.duration;
+        .run([](flecs::iter &it) {
+            while (it.next()) {
+                auto players = it.field<AnimPlayer>(0);
+                auto poses = it.field<SkinPose>(1);
+                auto animations = it.field<const SkinAnimation>(2);
 
-            const float t = player.timer;
-            for (int i = 0; i < 4; i++)
-                pose.angles[i] = lerp_limb(anim.tracks[i], t);
+                for (auto i : it) {
+                    AnimPlayer &player = players[i];
+                    SkinPose &pose = poses[i];
+
+                    if (!it.entity(i).has<Direction>()) {
+                        player.timer = 0.0f;
+                        for (float &angle : pose.angles) {
+                            angle = 0.0f;
+                        }
+                        continue;
+                    }
+
+                    const SkinAnimation &anim = animations[i];
+                    player.timer += GetFrameTime() * player.speed;
+                    if (anim.loop)
+                        player.timer = fmodf(player.timer, anim.duration);
+                    else if (player.timer > anim.duration)
+                        player.timer = anim.duration;
+
+                    const float t = player.timer;
+                    for (int limb = 0; limb < 4; limb++)
+                        pose.angles[limb] = lerp_limb(anim.tracks[limb], t);
+                }
+            }
         });
 }

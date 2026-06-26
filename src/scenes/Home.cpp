@@ -9,14 +9,13 @@
 #include "src/scenes/Game.hpp"
 
 #include <charconv>
-#include <cstring>
 #include <iostream>
 #include <raylib.h>
 #include <string>
 
 struct HomeConnectForm {
-    std::string host = "172.20.10.3";
-    std::string port = "8080";
+    std::string host = "127.0.0.1";
+    std::string port = "4242";
 };
 
 bool parsePort(const std::string &text, std::uint16_t &port) {
@@ -46,7 +45,7 @@ Home::Home(flecs::world &world) {
             .set(Position2::center().sub_y(100))
             .set(OnTextUpdate([](flecs::entity e, std::string &update) {
                 e.world().get_mut<HomeConnectForm>().host = update;
-                std::cout <<update<< std::endl;
+                std::cout << update << std::endl;
             }))
             .add<DespawnOnExit>(sceneId<Home>(world));
 

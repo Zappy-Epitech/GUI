@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <cmath>
 #include <format>
+#include <print>
 #include <raygui.h>
 #include <raylib.h>
 
@@ -234,17 +235,13 @@ GameUi::GameUi(flecs::world &world) {
             DrawText("Freq", static_cast<int>(panel.x + 14.0f), static_cast<int>(panel.y + 14.0f), 20, WHITE);
             DrawText(std::format("{}", normalizedFrequency(state.requestedFrequency)).c_str(), static_cast<int>(panel.x + panel.width - 70.0f), static_cast<int>(panel.y + 14.0f), 20, SKYBLUE);
 
-            const bool changed = GuiSlider(slider, "", "", &state.requestedFrequency,
-                                           static_cast<float>(minFrequency), static_cast<float>(maxFrequency));
+            GuiSlider(slider, "", "", &state.requestedFrequency,
+                      static_cast<float>(minFrequency), static_cast<float>(maxFrequency));
             state.requestedFrequency = static_cast<float>(normalizedFrequency(state.requestedFrequency));
 
-            if (changed) {
-                state.draggingFrequency = true;
-            }
-
-            if (state.draggingFrequency && IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
-                state.draggingFrequency = false;
+            if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON) && state.requestedFrequency != state.confirmedFrequency) {
                 const int requested = normalizedFrequency(state.requestedFrequency);
+                std::println("send: {}", requested);
                 if (requested != state.confirmedFrequency) {
                     sendServerCommand(world, std::format("sst {}\n", requested));
                 }

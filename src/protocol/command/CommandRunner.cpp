@@ -6,6 +6,7 @@
 #include "src/protocol/command/ServerCommand.hpp"
 #include "src/protocol/command/TeamCommand.hpp"
 #include <cstdlib>
+#include <iostream>
 #include <optional>
 #include <print>
 #include <variant>
@@ -26,6 +27,7 @@ auto invalid = [](const auto &) {
 
 /// Parses and applies one command.
 void runCommand(const flecs::world &world, const std::string &command) {
+    std::cout << command << std::endl;
     std::optional<zappy::Event> event =
         zappy::ZappyProtocol::parseLine(command);
 

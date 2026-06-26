@@ -7,6 +7,7 @@
 #include "src/network/NetworkModule.hpp"
 #include "src/scenes/AppScenes.hpp"
 #include "src/scenes/Game.hpp"
+#include "src/scenes/Settings.hpp"
 
 #include <charconv>
 #include <cstdio>
@@ -72,6 +73,15 @@ Home::Home(flecs::world &world) {
 
                 connectToServer(world, NetworkConfig(form.host.c_str(), port));
                 enterScene<Game>(world);
+            }))
+            .add<DespawnOnExit>(sceneId<Home>(world));
+
+        world.entity("Settings Button")
+            .set(Button("Settings"))
+            .set(Position2::center().add_y(80))
+            .set(OnClick([](flecs::entity e) {
+                flecs::world world = e.world();
+                enterScene<SettingsScene>(world);
             }))
             .add<DespawnOnExit>(sceneId<Home>(world));
     });

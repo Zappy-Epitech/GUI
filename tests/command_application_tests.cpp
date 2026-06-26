@@ -33,6 +33,7 @@ static flecs::world makeWorld() {
     world.component<PlayerSkin>();
     world.component<EggId>();
     world.component<Incantating>();
+    world.component<PlayerBroadcastBubble>();
     world.component<ScreenMessage>();
     world.component<Lifetime>();
     world.component<Color>();
@@ -137,8 +138,12 @@ Test(command_application, applies_player_feedback_messages) {
     run(world, "pbc #3 hello team");
     run(world, "pdr #3 0");
 
+    flecs::entity player = findPlayer(world, 3);
+    cr_assert(player);
+    cr_assert(player.has<PlayerBroadcastBubble>());
+    cr_assert_eq(player.get<PlayerBroadcastBubble>().message, std::string("hello team"));
+    cr_assert_float_eq(player.get<PlayerBroadcastBubble>().remaining, 4.0f, 0.001f);
     cr_assert(hasMessage(world, "Player #3 was expelled"));
-    cr_assert(hasMessage(world, "Player #3: hello team"));
     cr_assert(hasMessage(world, "Player #3 dropped food"));
 }
 

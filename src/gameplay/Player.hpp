@@ -1,5 +1,6 @@
 #pragma once
 #include <cstddef>
+#include <string>
 
 /// Stores player state.
 struct Player {
@@ -18,3 +19,9 @@ struct PlayerSkin {
 
 /// Marks a player in incantation.
 struct Incantating {};
+
+/// Stores the current broadcast bubble shown over a player.
+struct PlayerBroadcastBubble {
+    std::string message;
+    float remaining = 0.0f;
+};

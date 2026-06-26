@@ -3,6 +3,7 @@
 #include "src/core/Scenes.hpp"
 #include "src/core/Spatial.hpp"
 #include "src/extern/flecs.h"
+#include "src/gameplay/CameraController.hpp"
 #include "src/gameplay/GameAssets.hpp"
 #include "src/gameplay/Player.hpp"
 #include "src/gameplay/Simulation.hpp"
@@ -14,9 +15,10 @@
 #include <algorithm>
 #include <cmath>
 #include <format>
-#include <print>
 #include <raygui.h>
 #include <raylib.h>
+#include <sstream>
+#include <vector>
 
 namespace {
 
@@ -52,10 +54,6 @@ static std::array<int, 7> resourceAmounts(const zappy::Resources &resources) {
 }
 
 static void drawItemCount(int amount, Rectangle slot, float scale) {
-    if (amount <= 0) {
-        return;
-    }
-
     const std::string text = std::format("{}", amount);
     const int fontSize = std::max(12, static_cast<int>(8.0f * scale));
     const int width = MeasureText(text.c_str(), fontSize);
@@ -64,6 +62,54 @@ static void drawItemCount(int amount, Rectangle slot, float scale) {
 
     DrawText(text.c_str(), x + 1, y + 1, fontSize, BLACK);
     DrawText(text.c_str(), x, y, fontSize, WHITE);
+}
+
+static void drawSkinPart(Texture2D skin, Rectangle sourcePixels, Rectangle destination) {
+    const float pixelWidth = static_cast<float>(skin.width) / 64.0f;
+    const float pixelHeight = static_cast<float>(skin.height) / 64.0f;
+    const Rectangle source = {
+        sourcePixels.x * pixelWidth,
+        sourcePixels.y * pixelHeight,
+        sourcePixels.width * pixelWidth,
+        sourcePixels.height * pixelHeight,
+    };
+
+    DrawTexturePro(skin, source, destination, Vector2{ 0.0f, 0.0f }, 0.0f, WHITE);
+}
+
+static void drawMinecraftPlayerPreview(Texture2D skin, Rectangle bounds) {
+    if (skin.id == 0 || skin.width <= 0 || skin.height <= 0) {
+        DrawRectangleRec(bounds, Fade(GRAY, 0.35f));
+        DrawRectangleLinesEx(bounds, 1.0f, Fade(WHITE, 0.35f));
+        return;
+    }
+
+    const float pixelScale = std::min(bounds.width / 16.0f, bounds.height / 32.0f);
+    const float x = bounds.x + (bounds.width - 16.0f * pixelScale) * 0.5f;
+    const float y = bounds.y + (bounds.height - 32.0f * pixelScale) * 0.5f;
+
+    auto part = [&](Rectangle source, float partX, float partY, float width, float height) {
+        drawSkinPart(skin, source, Rectangle{
+                                       x + partX * pixelScale,
+                                       y + partY * pixelScale,
+                                       width * pixelScale,
+                                       height * pixelScale,
+                                   });
+    };
+
+    part(Rectangle{ 44, 20, 4, 12 }, 0, 8, 4, 12);
+    part(Rectangle{ 20, 20, 8, 12 }, 4, 8, 8, 12);
+    part(Rectangle{ 36, 52, 4, 12 }, 12, 8, 4, 12);
+    part(Rectangle{ 4, 20, 4, 12 }, 4, 20, 4, 12);
+    part(Rectangle{ 20, 52, 4, 12 }, 8, 20, 4, 12);
+    part(Rectangle{ 8, 8, 8, 8 }, 4, 0, 8, 8);
+
+    part(Rectangle{ 44, 36, 4, 12 }, 0, 8, 4, 12);
+    part(Rectangle{ 20, 36, 8, 12 }, 4, 8, 8, 12);
+    part(Rectangle{ 52, 52, 4, 12 }, 12, 8, 4, 12);
+    part(Rectangle{ 4, 36, 4, 12 }, 4, 20, 4, 12);
+    part(Rectangle{ 4, 52, 4, 12 }, 8, 20, 4, 12);
+    part(Rectangle{ 40, 8, 8, 8 }, 4, 0, 8, 8);
 }
 
 static void drawMinecraftInventory(const GameAssets &assets, const zappy::Resources &resources, Rectangle bounds) {
@@ -101,6 +147,81 @@ static void drawMinecraftInventory(const GameAssets &assets, const zappy::Resour
     }
 }
 
+static float vectorDot(Vector3 left, Vector3 right) {
+    return left.x * right.x + left.y * right.y + left.z * right.z;
+}
+
+static Vector3 vectorSubtract(Vector3 left, Vector3 right) {
+    return Vector3{ left.x - right.x, left.y - right.y, left.z - right.z };
+}
+
+static std::vector<std::string> wrapBubbleText(const std::string &text, int fontSize, int maxWidth) {
+    std::vector<std::string> lines;
+    std::istringstream words(text);
+    std::string word;
+    std::string line;
+
+    while (words >> word) {
+        const std::string candidate = line.empty() ? word : line + " " + word;
+        if (!line.empty() && MeasureText(candidate.c_str(), fontSize) > maxWidth) {
+            lines.push_back(line);
+            line = word;
+        } else {
+            line = candidate;
+        }
+    }
+
+    if (!line.empty()) {
+        lines.push_back(line);
+    }
+    if (lines.empty()) {
+        lines.push_back("");
+    }
+    return lines;
+}
+
+static void drawBroadcastBubble(const std::string &message, Vector3 worldPosition) {
+    const Camera &camera = CameraController::camera();
+    const Vector3 cameraForward = vectorSubtract(camera.target, camera.position);
+    const Vector3 toBubble = vectorSubtract(worldPosition, camera.position);
+
+    if (vectorDot(cameraForward, toBubble) <= 0.0f) {
+        return;
+    }
+
+    const Vector2 anchor = GetWorldToScreen(worldPosition, camera);
+    const int fontSize = 18;
+    const int maxTextWidth = 320;
+    const int paddingX = 12;
+    const int paddingY = 8;
+    const int lineGap = 4;
+    const std::vector<std::string> lines = wrapBubbleText(message, fontSize, maxTextWidth);
+
+    int textWidth = 0;
+    for (const std::string &line : lines) {
+        textWidth = std::max(textWidth, MeasureText(line.c_str(), fontSize));
+    }
+
+    const float width = static_cast<float>(textWidth + paddingX * 2);
+    const float height = static_cast<float>(static_cast<int>(lines.size()) * fontSize + (static_cast<int>(lines.size()) - 1) * lineGap + paddingY * 2);
+    const Rectangle bubble = {
+        anchor.x - width * 0.5f,
+        anchor.y - height,
+        width,
+        height,
+    };
+
+    DrawRectangleRounded(bubble, 0.22f, 8, Fade(BLACK, 0.72f));
+    DrawRectangleRoundedLines(bubble, 0.22f, 8, Fade(WHITE, 0.86f));
+
+    float y = bubble.y + static_cast<float>(paddingY);
+    for (const std::string &line : lines) {
+        const int lineWidth = MeasureText(line.c_str(), fontSize);
+        DrawText(line.c_str(), static_cast<int>(bubble.x + (bubble.width - static_cast<float>(lineWidth)) * 0.5f), static_cast<int>(y), fontSize, WHITE);
+        y += static_cast<float>(fontSize + lineGap);
+    }
+}
+
 } // namespace
 
 /// Registers game UI observers and render systems.
@@ -128,6 +249,37 @@ GameUi::GameUi(flecs::world &world) {
             if (e.id() == state.selectedPlayer)
                 state.selectedPlayer = 0;
         });
+
+    world.system<PlayerBroadcastBubble>("UpdateBroadcastBubbles")
+        .kind(flecs::PostUpdate)
+        .run([](flecs::iter &it) {
+            while (it.next()) {
+                auto bubbles = it.field<PlayerBroadcastBubble>(0);
+
+                for (auto i : it) {
+                    bubbles[i].remaining -= it.delta_time();
+                    if (bubbles[i].remaining <= 0.0f) {
+                        it.entity(i).remove<PlayerBroadcastBubble>();
+                    }
+                }
+            }
+        })
+        .add<InScene>(sceneId<Game>(world));
+
+    world.system<const Position3, const PlayerBroadcastBubble>("DrawBroadcastBubbles")
+        .kind<Render2D>()
+        .run([](flecs::iter &it) {
+            while (it.next()) {
+                auto positions = it.field<const Position3>(0);
+                auto bubbles = it.field<const PlayerBroadcastBubble>(1);
+
+                for (auto i : it) {
+                    const Position3 bubblePosition = positions[i].add_y(1.05f);
+                    drawBroadcastBubble(bubbles[i].message, Vector3{ bubblePosition.x, bubblePosition.y, bubblePosition.z });
+                }
+            }
+        })
+        .add<InScene>(sceneId<Game>(world));
 
     world.system<const Team>("DrawTeamButtons")
         .kind<Render2D>()
@@ -199,6 +351,20 @@ GameUi::GameUi(flecs::world &world) {
                 const GameAssets *assets = world.try_get<GameAssets>();
                 if (assets != nullptr && assets->inventoryGuiTexture.id != 0) {
                     drawMinecraftInventory(*assets, state.resources.value(), inventory);
+                    const float inventoryPixelScale = inventory.width / 176.0f;
+                    const Rectangle skinPreview = {
+                        inventory.x + 26.0f * inventoryPixelScale,
+                        inventory.y + 8.0f * inventoryPixelScale,
+                        48.0f * inventoryPixelScale,
+                        70.0f * inventoryPixelScale,
+                    };
+                    if (world.is_alive(state.selectedPlayer)) {
+                        const flecs::entity selectedPlayer(world, state.selectedPlayer);
+                        if (const Texture2D *skin = selectedPlayer.try_get<Texture2D>(); skin != nullptr) {
+                            drawMinecraftPlayerPreview(*skin, skinPreview);
+                        }
+                    }
+
                     constexpr int headerFontSize = 20;
                     const std::string levelText = std::format("Level {}", state.level);
                     DrawText(state.playerName.c_str(), static_cast<int>(inventory.x + 16.0f), static_cast<int>(inventory.y - 28.0f), headerFontSize, WHITE);

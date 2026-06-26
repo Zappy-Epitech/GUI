@@ -21,6 +21,8 @@ Game::Game(flecs::world &world) {
 
     world.component<Incantating>();
 
+    world.component<PlayerBroadcastBubble>();
+
     world.import<GameUi>().child_of(module);
     world.import<GameLifecycle>().child_of(module);
 

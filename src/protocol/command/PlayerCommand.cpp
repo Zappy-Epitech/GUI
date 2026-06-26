@@ -99,6 +99,13 @@ void applyPlayerExpelled(const flecs::world &world, zappy::PlayerExpelled &evt) 
 
 /// Applies a player broadcast event.
 void applyPlayerBroadcast(const flecs::world &world, zappy::PlayerBroadcast &evt) {
+    flecs::entity player = findPlayer(world, evt.id);
+
+    if (player) {
+        player.set(PlayerBroadcastBubble{ evt.message, 4.0f });
+        return;
+    }
+
     addScreenMessage(world, std::format("Player #{}: {}", evt.id, evt.message), WHITE, 4.0f);
 }
 

@@ -7,7 +7,9 @@
 #include "src/gameplay/Team.hpp"
 #include "src/minecraft/MinecraftAnimation.hpp"
 #include "src/scenes/GameUi.hpp"
+#include <algorithm>
 #include <bit>
+#include <cmath>
 #include <raylib.h>
 #include <rlgl.h>
 
@@ -136,6 +138,92 @@ static void drawPlayer(Texture2D tex, Vector3 pos, float scale, float angle, con
     limb(tex, LLEG, px, 2 * px, 0, 0, pose.angles[(int)Limb::LeftLeg], 4, 12, 4, tint);
 
     rlPopMatrix();
+}
+
+static void drawPreviewPlayer(Texture2D tex, float scale, float bodyYaw, float headYaw, float headPitch) {
+    const float px = scale / 16.0f;
+
+    rlPushMatrix();
+    rlRotatef(bodyYaw, 0, 1, 0);
+
+    rlPushMatrix();
+    rlTranslatef(0, 16 * px, 0);
+    rlRotatef(headYaw, 0, 1, 0);
+    rlRotatef(headPitch, 1, 0, 0);
+    skinCube(tex, HEAD, 8 * px, 8 * px, 8 * px, WHITE);
+    rlPopMatrix();
+
+    rlPushMatrix();
+    rlTranslatef(0, 6 * px, 0);
+    skinCube(tex, BODY, 8 * px, 12 * px, 4 * px, WHITE);
+    rlPopMatrix();
+
+    constexpr float relaxedArmAngle = 7.0f;
+    limb(tex, RARM, px, -6 * px, 12 * px, 0, relaxedArmAngle, 4, 12, 4, WHITE);
+    limb(tex, LARM, px, 6 * px, 12 * px, 0, -relaxedArmAngle, 4, 12, 4, WHITE);
+    limb(tex, RLEG, px, -2 * px, 0, 0, 0, 4, 12, 4, WHITE);
+    limb(tex, LLEG, px, 2 * px, 0, 0, 0, 4, 12, 4, WHITE);
+
+    rlPopMatrix();
+}
+
+static RenderTexture2D &previewTexture(int width, int height) {
+    static RenderTexture2D target = {};
+
+    if (target.id == 0 || target.texture.width != width || target.texture.height != height) {
+        if (target.id != 0) {
+            UnloadRenderTexture(target);
+        }
+        target = LoadRenderTexture(width, height);
+        SetTextureFilter(target.texture, TEXTURE_FILTER_BILINEAR);
+    }
+    return target;
+}
+
+/// Draws a 3D inventory player preview whose head tracks the mouse.
+void DrawMinecraftPlayerPreview3D(Texture2D skin, Rectangle bounds, Vector2 mouse) {
+    if (skin.id == 0 || skin.width <= 0 || skin.height <= 0) {
+        DrawRectangleRec(bounds, Fade(GRAY, 0.35f));
+        DrawRectangleLinesEx(bounds, 1.0f, Fade(WHITE, 0.35f));
+        return;
+    }
+
+    const int textureWidth = std::max(96, static_cast<int>(std::round(bounds.width)));
+    const int textureHeight = std::max(128, static_cast<int>(std::round(bounds.height)));
+    RenderTexture2D &target = previewTexture(textureWidth, textureHeight);
+
+    const Vector2 center = {
+        bounds.x + bounds.width * 0.5f,
+        bounds.y + bounds.height * 0.36f,
+    };
+    const float lookX = std::clamp((mouse.x - center.x) / std::max(bounds.width * 0.75f, 1.0f), -1.0f, 1.0f);
+    const float lookY = std::clamp((mouse.y - center.y) / std::max(bounds.height * 0.65f, 1.0f), -1.0f, 1.0f);
+    const float headYaw = lookX * 42.0f;
+    const float headPitch = lookY * 26.0f;
+    const float bodyYaw = lookX * 7.0f;
+    const Camera3D camera = {
+        Vector3{ 0.0f, 0.9f, 7.0f },
+        Vector3{ 0.0f, 0.42f, 0.0f },
+        Vector3{ 0.0f, 1.0f, 0.0f },
+        19.0f,
+        CAMERA_PERSPECTIVE,
+    };
+
+    BeginTextureMode(target);
+    ClearBackground(BLANK);
+    BeginMode3D(camera);
+    rlDisableBackfaceCulling();
+    drawPreviewPlayer(skin, 1.0f, bodyYaw, headYaw, headPitch);
+    rlEnableBackfaceCulling();
+    EndMode3D();
+    EndTextureMode();
+
+    DrawTexturePro(target.texture,
+                   Rectangle{ 0.0f, 0.0f, static_cast<float>(target.texture.width), -static_cast<float>(target.texture.height) },
+                   bounds,
+                   Vector2{ 0.0f, 0.0f },
+                   0.0f,
+                   WHITE);
 }
 
 static void drawPlayerHoverMarker(Vector3 pos, float scale) {

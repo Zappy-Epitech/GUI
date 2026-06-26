@@ -1,4 +1,5 @@
 #include "Game.hpp"
+#include "src/core/Scenes.hpp"
 #include "src/extern/flecs.h"
 #include "src/gameplay/Player.hpp"
 #include "src/protocol/command/CommandRunner.hpp"
@@ -27,7 +28,11 @@ Game::Game(flecs::world &world) {
     world.import<GameLifecycle>().child_of(module);
 
     // onEnterScene<Game>(world, "DebugSetup", [](flecs::world &world) {
+    //     world.defer_begin();
+
     //     runCommand(world, "msz 20 20");
-    //     runCommand(world, "pnw #2 2 2 2 2 sasa");
+    //     runCommand(world, "pnw #3 5 7 4 1 team1");
+    //     runCommand(world, "pin #3 5 7 10 0 0 0 0 0 0");
+    //     world.defer_suspend();
     // });
 }

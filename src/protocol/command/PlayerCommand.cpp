@@ -16,6 +16,7 @@
 #include "src/scenes/Game.hpp"
 #include <array>
 #include <format>
+#include <iostream>
 #include <raylib.h>
 #include <string>
 
@@ -87,9 +88,11 @@ void applyPlayerLevel(const flecs::world &world, zappy::PlayerLevel &evt) {
 
 /// Applies a player inventory event.
 void applyPlayerInventory(const flecs::world &world, zappy::PlayerInventory &evt) {
-    findPlayer(world, evt.id)
-        .set(gridCenterPosition(evt.x, evt.y))
-        .set(evt.resources);
+    auto player = findPlayer(world, evt.id);
+
+    std::cout << player << std::endl;
+    // .set(gridCenterPosition(evt.x, evt.y))
+    // .set(evt.resources);
 }
 
 /// Applies a player expulsion event.

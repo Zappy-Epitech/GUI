@@ -2,8 +2,27 @@
 #include "../extern/flecs.h"
 #include "src/core/Spatial.hpp"
 #include "src/gameplay/GamePlay.hpp"
+#include "src/gameplay/Simulation.hpp"
 #include <algorithm>
 #include <cmath>
+
+namespace {
+
+constexpr int minFrequency = 1;
+constexpr int maxFrequency = 1000;
+constexpr float movementActionTimeUnits = 7.0f;
+constexpr float minMovementDuration = 0.08f;
+constexpr float maxMovementDuration = 1.2f;
+
+} // namespace
+
+/// Returns the player interpolation speed for a movement distance and server frequency.
+float movementSpeedForFrequency(float distance, int frequency) {
+    const int clampedFrequency = std::clamp(frequency, minFrequency, maxFrequency);
+    const float duration = std::clamp(movementActionTimeUnits / static_cast<float>(clampedFrequency), minMovementDuration, maxMovementDuration);
+
+    return distance / duration;
+}
 
 /// Registers movement interpolation systems.
 Movement::Movement(flecs::world &world) {
@@ -11,7 +30,8 @@ Movement::Movement(flecs::world &world) {
 
     world.component<Direction>()
         .member<float>("x")
-        .member<float>("y");
+        .member<float>("y")
+        .member<float>("speed");
 
     // direction.y represent the direction along the z-axis
     world.system<Position3, const Direction>("Movement")
@@ -38,9 +58,7 @@ Movement::Movement(flecs::world &world) {
                         continue;
                     }
 
-                    const float speedFactor = 1.0f;
-                    const float speed = dist * speedFactor;
-                    const float move = std::min(dist, speed * dt);
+                    const float move = std::min(dist, std::max(dir.speed, 0.01f) * dt);
 
                     pos.x += (dx / dist) * move;
                     pos.z += (dy / dist) * move;

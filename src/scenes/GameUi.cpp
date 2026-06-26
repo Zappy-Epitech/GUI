@@ -241,7 +241,7 @@ GameUi::GameUi(flecs::world &world) {
 
             if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON) && state.requestedFrequency != state.confirmedFrequency) {
                 const int requested = normalizedFrequency(state.requestedFrequency);
-                std::println("send: {}", requested);
+
                 if (requested != state.confirmedFrequency) {
                     sendServerCommand(world, std::format("sst {}\n", requested));
                 }

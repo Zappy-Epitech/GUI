@@ -8,6 +8,7 @@
 #include "src/gameplay/Grid.hpp"
 #include "src/gameplay/Movement.hpp"
 #include "src/gameplay/Player.hpp"
+#include "src/gameplay/Simulation.hpp"
 #include "src/gameplay/Team.hpp"
 #include "src/gameplay/WorldLookup.hpp"
 #include "src/minecraft/MinecraftAnimation.hpp"
@@ -15,6 +16,7 @@
 #include "src/protocol/ZappyProtocol.hpp"
 #include "src/scenes/Game.hpp"
 #include <array>
+#include <cmath>
 #include <format>
 #include <iostream>
 #include <raylib.h>
@@ -77,7 +79,20 @@ void applyPlayerPosition(const flecs::world &world, zappy::PlayerPosition &evt) 
     float rotation_y = evt.orientation == Orientation::NORTH ? 0 : evt.orientation == Orientation::SOUTH ? 180
                                                                : evt.orientation == Orientation::EAST    ? 90
                                                                                                          : 270;
-    findPlayer(world, evt.id).set(Direction(gridCenterPosition(evt.x, evt.y))).set<Orientation>(evt.orientation).set(Rotation3::from_xyz(0, rotation_y, 0));
+    flecs::entity player = findPlayer(world, evt.id);
+    const Position3 target = gridCenterPosition(evt.x, evt.y);
+    const Position3 *position = player.try_get<Position3>();
+    const SimulationTime *time = world.try_get<SimulationTime>();
+    float speed = 1.0f;
+
+    if (position != nullptr) {
+        const float dx = target.x - position->x;
+        const float dz = target.z - position->z;
+        const float distance = std::sqrt(dx * dx + dz * dz);
+        speed = movementSpeedForFrequency(distance, time != nullptr ? time->timeUnit : 100);
+    }
+
+    player.set(Direction(target, speed)).set<Orientation>(evt.orientation).set(Rotation3::from_xyz(0, rotation_y, 0));
 }
 
 /// Applies a player level event.

@@ -55,6 +55,6 @@ int main() {
         .enable_stats()
         .enable_rest()
 #endif
-        .threads(4)
+        .threads(0)
         .run();
 }

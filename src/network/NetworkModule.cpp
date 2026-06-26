@@ -3,9 +3,12 @@
 #include "src/core/Core.hpp"
 #include "src/core/Gui.hpp"
 #include "src/core/Raylib.hpp"
+#include "src/core/Scenes.hpp"
 #include "src/extern/flecs.h"
 #include "src/protocol/command/CommandRunner.hpp"
+#include "src/scenes/Home.hpp"
 
+#include <cstdio>
 #include <exception>
 #include <format>
 #include <raylib.h>
@@ -99,6 +102,7 @@ NetworkModule::NetworkModule(flecs::world &world) {
                     .set(ScreenMessage{ error })
                     .set<Color>(RED)
                     .set(Lifetime{ 4.0f });
+                enterScene<Home>(world);
             }
 
             std::string line;
@@ -107,9 +111,7 @@ NetworkModule::NetworkModule(flecs::world &world) {
             // prevents a large network burst from monopolizing one render tick.
             while (budget-- > 0 && handle.client->pollLine(line)) {
                 try {
-                    world.defer_suspend();
                     runCommand(world, line);
-                    world.defer_resume();
                 } catch (const std::exception &err) {
                     world.entity()
                         .set(ScreenMessage{ std::format("Protocol error: {}", err.what()) })

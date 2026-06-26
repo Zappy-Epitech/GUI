@@ -27,13 +27,13 @@ struct ResourceVisual {
 /// The per-resource transforms normalize heterogeneous GLTF origins and sizes.
 /// Position is relative to the tile origin after model rotation and scaling.
 static const std::array<ResourceVisual, 7> resourceVisuals = {
-    ResourceVisual{ Position3{ 0.00000f, 0.54455f, -0.12000f }, Rotation3{ -90.0f, 0.0f, -30.0f }, 0.12800f },   // food / apple
-    ResourceVisual{ Position3{ -0.25000f, 0.47000f, -0.37000f }, Rotation3{ 90.0f, 0.0f, 0.0f }, 0.32000f },     // linemate / emerald
-    ResourceVisual{ Position3{ 0.25003f, 0.55470f, -0.37000f }, Rotation3{ 90.0f, 0.0f, 30.0f }, 0.14769f },      // deraumere / coal
-    ResourceVisual{ Position3{ -0.24993f, 0.45947f, -0.00030f }, Rotation3{ 90.0f, 0.0f, 0.0f }, 0.04808f },    // sibur / iron
-    ResourceVisual{ Position3{ 0.25007f, 0.45947f, -0.00030f }, Rotation3{ 90.0f, 0.0f, 0.0f }, 0.04808f },     // mendiane / gold
-    ResourceVisual{ Position3{ -0.23174f, 0.57001f, 0.12982f }, Rotation3{ 90.0f, 0.0f, 90.0f }, 0.02503f },    // phiras / diamond
-    ResourceVisual{ Position3{ 0.28956f, 0.01370f, 0.24902f }, Rotation3{ 90.0f, 0.0f, 26.0f }, 0.32929f },     // thystame / redstone
+    ResourceVisual{ Position3{ 0.00000f, 0.54455f, -0.12000f }, Rotation3{ -90.0f, 0.0f, -30.0f }, 0.12800f }, // food / apple
+    ResourceVisual{ Position3{ -0.25000f, 0.47000f, -0.37000f }, Rotation3{ 90.0f, 0.0f, 0.0f }, 0.32000f },   // linemate / emerald
+    ResourceVisual{ Position3{ 0.25003f, 0.55470f, -0.37000f }, Rotation3{ 90.0f, 0.0f, 30.0f }, 0.14769f },   // deraumere / coal
+    ResourceVisual{ Position3{ -0.24993f, 0.45947f, -0.00030f }, Rotation3{ 90.0f, 0.0f, 0.0f }, 0.04808f },   // sibur / iron
+    ResourceVisual{ Position3{ 0.25007f, 0.45947f, -0.00030f }, Rotation3{ 90.0f, 0.0f, 0.0f }, 0.04808f },    // mendiane / gold
+    ResourceVisual{ Position3{ -0.23174f, 0.57001f, 0.12982f }, Rotation3{ 90.0f, 0.0f, 90.0f }, 0.02503f },   // phiras / diamond
+    ResourceVisual{ Position3{ 0.28956f, 0.01370f, 0.24902f }, Rotation3{ 90.0f, 0.0f, 26.0f }, 0.32929f },    // thystame / redstone
 };
 
 /// Views resources as an indexed array.
@@ -52,12 +52,12 @@ static void clearTileResources(flecs::entity tile) {
     }
 }
 
-struct Linemate{};
-struct Deraumere{};
-struct Sibure{};
-struct Mendiane{};
-struct Phiras{};
-struct Thystame{};
+struct Linemate {};
+struct Deraumere {};
+struct Sibure {};
+struct Mendiane {};
+struct Phiras {};
+struct Thystame {};
 
 /// Spawns one rendered resource.
 static void spawnTileResource(
@@ -84,13 +84,6 @@ static void spawnTileResource(
 
 /// Applies a new map size.
 void applyMapNew(const flecs::world &world, zappy::MapSize &evt) {
-    world.query_builder()
-        .with<GridContainer>()
-        .build()
-        .each([](flecs::entity e) {
-            e.destruct();
-        });
-
     Grid::spawn(world, evt.width, evt.height);
 }
 

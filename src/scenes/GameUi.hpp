@@ -18,6 +18,7 @@ struct GameUiState {
     int confirmedFrequency = 100;
     bool draggingFrequency = false;
     bool frequencyInitialized = false;
+    flecs::entity_t hoveredTeam = 0;
 };
 
 /// Registers game UI observers and render systems.

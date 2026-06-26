@@ -1,8 +1,12 @@
 #include "MinecraftRenderer.hpp"
 #include "src/core/Raylib.hpp"
+#include "src/core/Settings.hpp"
 #include "src/core/Spatial.hpp"
 #include "src/extern/flecs.h"
+#include "src/gameplay/Player.hpp"
+#include "src/gameplay/Team.hpp"
 #include "src/minecraft/MinecraftAnimation.hpp"
+#include "src/scenes/GameUi.hpp"
 #include <bit>
 #include <raylib.h>
 #include <rlgl.h>
@@ -44,7 +48,7 @@ void DrawMinecraftHead(Texture2D skin, Rectangle bounds) {
 }
 
 /// Draws a textured cuboid.
-static void skinCube(Texture2D tex, const PartUV &uv, float w, float h, float d) {
+static void skinCube(Texture2D tex, const PartUV &uv, float w, float h, float d, Color tint) {
     const float tw = (float)tex.width;
     const float th = (float)tex.height;
 
@@ -69,6 +73,7 @@ static void skinCube(Texture2D tex, const PartUV &uv, float w, float h, float d)
 
     rlSetTexture(tex.id);
     rlBegin(RL_QUADS);
+    rlColor4ub(tint.r, tint.g, tint.b, tint.a);
 
     quad({ 0, 0, 1 }, uv.front,
          { -p.x, -p.y, p.z }, { p.x, -p.y, p.z },
@@ -95,21 +100,22 @@ static void skinCube(Texture2D tex, const PartUV &uv, float w, float h, float d)
          { -p.x, -p.y, p.z }, { -p.x, p.y, p.z });
 
     rlEnd();
+    rlColor4ub(255, 255, 255, 255);
     rlSetTexture(0);
 }
 
 /// Draws one animated limb.
-static void limb(Texture2D tex, const PartUV &uv, float px, float ox, float oy, float oz, float angle, float w, float h, float d) {
+static void limb(Texture2D tex, const PartUV &uv, float px, float ox, float oy, float oz, float angle, float w, float h, float d, Color tint) {
     rlPushMatrix();
     rlTranslatef(ox, oy, oz);
     rlRotatef(angle, 1, 0, 0);
     rlTranslatef(0, -h * px * .5f, 0);
-    skinCube(tex, uv, w * px, h * px, d * px);
+    skinCube(tex, uv, w * px, h * px, d * px, tint);
     rlPopMatrix();
 }
 
 /// Draws a Minecraft-style player.
-static void drawPlayer(Texture2D tex, Vector3 pos, float scale, float angle, const SkinPose &pose) {
+static void drawPlayer(Texture2D tex, Vector3 pos, float scale, float angle, const SkinPose &pose, Color tint) {
     float px = scale / 16.f;
     rlPushMatrix();
     rlTranslatef(pos.x, pos.y, pos.z);
@@ -117,19 +123,52 @@ static void drawPlayer(Texture2D tex, Vector3 pos, float scale, float angle, con
 
     rlPushMatrix();
     rlTranslatef(0, 16 * px, 0);
-    skinCube(tex, HEAD, 8 * px, 8 * px, 8 * px);
+    skinCube(tex, HEAD, 8 * px, 8 * px, 8 * px, tint);
     rlPopMatrix();
     rlPushMatrix();
     rlTranslatef(0, 6 * px, 0);
-    skinCube(tex, BODY, 8 * px, 12 * px, 4 * px);
+    skinCube(tex, BODY, 8 * px, 12 * px, 4 * px, tint);
     rlPopMatrix();
 
-    limb(tex, RARM, px, -6 * px, 12 * px, 0, pose.angles[(int)Limb::RightArm], 4, 12, 4);
-    limb(tex, LARM, px, 6 * px, 12 * px, 0, pose.angles[(int)Limb::LeftArm], 4, 12, 4);
-    limb(tex, RLEG, px, -2 * px, 0, 0, pose.angles[(int)Limb::RightLeg], 4, 12, 4);
-    limb(tex, LLEG, px, 2 * px, 0, 0, pose.angles[(int)Limb::LeftLeg], 4, 12, 4);
+    limb(tex, RARM, px, -6 * px, 12 * px, 0, pose.angles[(int)Limb::RightArm], 4, 12, 4, tint);
+    limb(tex, LARM, px, 6 * px, 12 * px, 0, pose.angles[(int)Limb::LeftArm], 4, 12, 4, tint);
+    limb(tex, RLEG, px, -2 * px, 0, 0, pose.angles[(int)Limb::RightLeg], 4, 12, 4, tint);
+    limb(tex, LLEG, px, 2 * px, 0, 0, pose.angles[(int)Limb::LeftLeg], 4, 12, 4, tint);
 
     rlPopMatrix();
+}
+
+static void drawPlayerHoverMarker(Vector3 pos, float scale) {
+    const float px = scale / 16.0f;
+    const float radius = scale * 0.62f;
+    const float footY = pos.y - 12.0f * px;
+    const float y = footY + 0.08f;
+
+    DrawCylinderEx(
+        Vector3{ pos.x, y, pos.z },
+        Vector3{ pos.x, y + 0.003f, pos.z },
+        radius,
+        radius,
+        24,
+        Fade(SKYBLUE, 0.58f));
+    DrawCylinderWiresEx(
+        Vector3{ pos.x, y + 0.004f, pos.z },
+        Vector3{ pos.x, y + 0.007f, pos.z },
+        radius,
+        radius,
+        24,
+        SKYBLUE);
+}
+
+static bool shouldHighlightPlayer(flecs::world world, flecs::entity player) {
+    const GuiSettings *settings = world.try_get<GuiSettings>();
+    const GameUiState *state = world.try_get<GameUiState>();
+
+    return settings != nullptr
+        && settings->highlightTeamOnHover
+        && state != nullptr
+        && state->hoveredTeam != 0
+        && player.has<BelongsTo>(state->hoveredTeam);
 }
 
 /// Registers skin rendering systems.
@@ -147,8 +186,23 @@ MinecraftRenderer::MinecraftRenderer(flecs::world &world) {
                 auto skin = it.field<const MinecraftSkin>(3);
                 auto poses = it.field<const SkinPose>(4);
 
-                for (auto i : it)
-                    drawPlayer(tex[i], std::bit_cast<Vector3>(positions[i]), skin[i].scale, rotations[i].y, poses[i]);
+                for (auto i : it) {
+                    const Vector3 position = std::bit_cast<Vector3>(positions[i]);
+
+                    const bool highlighted = shouldHighlightPlayer(it.world(), it.entity(i));
+
+                    if (highlighted) {
+                        drawPlayerHoverMarker(position, skin[i].scale);
+                    }
+
+                    drawPlayer(tex[i], position, skin[i].scale, rotations[i].y, poses[i], WHITE);
+
+                    if (highlighted) {
+                        rlSetBlendMode(BLEND_ADDITIVE);
+                        drawPlayer(tex[i], position, skin[i].scale * 1.006f, rotations[i].y, poses[i], Color{ 70, 95, 115, 255 });
+                        rlSetBlendMode(BLEND_ALPHA);
+                    }
+                }
             }
         });
 }

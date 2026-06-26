@@ -1,6 +1,7 @@
 #include "GameUi.hpp"
 #include "src/core/Raylib.hpp"
 #include "src/core/Scenes.hpp"
+#include "src/core/Settings.hpp"
 #include "src/core/Spatial.hpp"
 #include "src/extern/flecs.h"
 #include "src/gameplay/CameraController.hpp"
@@ -155,6 +156,16 @@ static Vector3 vectorSubtract(Vector3 left, Vector3 right) {
     return Vector3{ left.x - right.x, left.y - right.y, left.z - right.z };
 }
 
+static float vectorLength(Vector3 value) {
+    return std::sqrt(value.x * value.x + value.y * value.y + value.z * value.z);
+}
+
+static float playerLabelScale(Vector3 playerPosition) {
+    const float distance = vectorLength(vectorSubtract(playerPosition, CameraController::camera().position));
+
+    return std::clamp(10.0f / std::max(distance, 1.0f), 0.9f, 1.65f);
+}
+
 static std::vector<std::string> wrapBubbleText(const std::string &text, int fontSize, int maxWidth) {
     std::vector<std::string> lines;
     std::istringstream words(text);
@@ -180,21 +191,22 @@ static std::vector<std::string> wrapBubbleText(const std::string &text, int font
     return lines;
 }
 
-static void drawBroadcastBubble(const std::string &message, Vector3 worldPosition) {
+static void drawBroadcastBubble(const std::string &message, Vector3 playerPosition) {
     const Camera &camera = CameraController::camera();
     const Vector3 cameraForward = vectorSubtract(camera.target, camera.position);
-    const Vector3 toBubble = vectorSubtract(worldPosition, camera.position);
+    const Vector3 toBubble = vectorSubtract(playerPosition, camera.position);
 
     if (vectorDot(cameraForward, toBubble) <= 0.0f) {
         return;
     }
 
-    const Vector2 anchor = GetWorldToScreen(worldPosition, camera);
-    const int fontSize = 18;
-    const int maxTextWidth = 320;
-    const int paddingX = 12;
-    const int paddingY = 8;
-    const int lineGap = 4;
+    const float scale = playerLabelScale(playerPosition);
+    const Vector2 head = GetWorldToScreen(Vector3{ playerPosition.x, playerPosition.y + 0.82f, playerPosition.z }, camera);
+    const int fontSize = static_cast<int>(std::round(18.0f * scale));
+    const int maxTextWidth = static_cast<int>(320.0f * scale);
+    const int paddingX = static_cast<int>(12.0f * scale);
+    const int paddingY = static_cast<int>(8.0f * scale);
+    const int lineGap = static_cast<int>(4.0f * scale);
     const std::vector<std::string> lines = wrapBubbleText(message, fontSize, maxTextWidth);
 
     int textWidth = 0;
@@ -205,8 +217,8 @@ static void drawBroadcastBubble(const std::string &message, Vector3 worldPositio
     const float width = static_cast<float>(textWidth + paddingX * 2);
     const float height = static_cast<float>(static_cast<int>(lines.size()) * fontSize + (static_cast<int>(lines.size()) - 1) * lineGap + paddingY * 2);
     const Rectangle bubble = {
-        anchor.x - width * 0.5f,
-        anchor.y - height,
+        head.x - width * 0.5f,
+        head.y - height - 26.0f * scale,
         width,
         height,
     };
@@ -220,6 +232,30 @@ static void drawBroadcastBubble(const std::string &message, Vector3 worldPositio
         DrawText(line.c_str(), static_cast<int>(bubble.x + (bubble.width - static_cast<float>(lineWidth)) * 0.5f), static_cast<int>(y), fontSize, WHITE);
         y += static_cast<float>(fontSize + lineGap);
     }
+}
+
+static bool isInFrontOfCamera(Vector3 worldPosition) {
+    const Camera &camera = CameraController::camera();
+    const Vector3 cameraForward = vectorSubtract(camera.target, camera.position);
+    const Vector3 toLabel = vectorSubtract(worldPosition, camera.position);
+
+    return vectorDot(cameraForward, toLabel) > 0.0f;
+}
+
+static void drawPlayerLabel(const std::string &text, Vector3 playerPosition, int baseFontSize, Color color) {
+    if (!isInFrontOfCamera(playerPosition)) {
+        return;
+    }
+
+    const float scale = playerLabelScale(playerPosition);
+    const Vector2 anchor = GetWorldToScreen(Vector3{ playerPosition.x, playerPosition.y + 0.82f, playerPosition.z }, CameraController::camera());
+    const int fontSize = static_cast<int>(std::round(static_cast<float>(baseFontSize) * scale));
+    const int width = MeasureText(text.c_str(), fontSize);
+    const int x = static_cast<int>(anchor.x - static_cast<float>(width) * 0.5f);
+    const int y = static_cast<int>(anchor.y - static_cast<float>(fontSize) * 0.5f + 10.0f * scale);
+
+    DrawText(text.c_str(), x + 1, y + 1, fontSize, BLACK);
+    DrawText(text.c_str(), x, y, fontSize, color);
 }
 
 } // namespace
@@ -274,8 +310,39 @@ GameUi::GameUi(flecs::world &world) {
                 auto bubbles = it.field<const PlayerBroadcastBubble>(1);
 
                 for (auto i : it) {
-                    const Position3 bubblePosition = positions[i].add_y(1.05f);
-                    drawBroadcastBubble(bubbles[i].message, Vector3{ bubblePosition.x, bubblePosition.y, bubblePosition.z });
+                    drawBroadcastBubble(bubbles[i].message, Vector3{ positions[i].x, positions[i].y, positions[i].z });
+                }
+            }
+        })
+        .add<InScene>(sceneId<Game>(world));
+
+    world.system<const Position3>("DrawPlayerTeamNames")
+        .kind<Render2D>()
+        .with<Player>()
+        .run([world](flecs::iter &it) {
+            const GuiSettings *settings = world.try_get<GuiSettings>();
+
+            if (settings != nullptr && !settings->showTeamNames) {
+                return;
+            }
+
+            while (it.next()) {
+                auto positions = it.field<const Position3>(0);
+
+                for (auto i : it) {
+                    flecs::entity player = it.entity(i);
+                    flecs::entity team = player.target<BelongsTo>();
+
+                    if (!team) {
+                        continue;
+                    }
+
+                    const Team *teamData = team.try_get<Team>();
+                    if (teamData == nullptr) {
+                        continue;
+                    }
+
+                    drawPlayerLabel(teamData->name, Vector3{ positions[i].x, positions[i].y, positions[i].z }, 20, SKYBLUE);
                 }
             }
         })
@@ -285,11 +352,15 @@ GameUi::GameUi(flecs::world &world) {
         .kind<Render2D>()
         .run([world](flecs::iter &it) {
             auto &state = world.get_mut<GameUiState>();
+            state.hoveredTeam = 0;
             Rectangle btn = { 200, 25, 200, 42 };
 
             while (it.next()) {
                 auto teams = it.field<const Team>(0);
                 for (auto i : it) {
+                    if (CheckCollisionPointRec(GetMousePosition(), btn)) {
+                        state.hoveredTeam = it.entity(i).id();
+                    }
                     if (GuiButton(btn, teams[i].name.c_str())) {
                         state.openedTeam = (state.openedTeam == it.entity(i).id()) ? 0 : it.entity(i).id();
                         state.panelPositionX = btn.x;

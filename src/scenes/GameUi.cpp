@@ -65,54 +65,6 @@ static void drawItemCount(int amount, Rectangle slot, float scale) {
     DrawText(text.c_str(), x, y, fontSize, WHITE);
 }
 
-static void drawSkinPart(Texture2D skin, Rectangle sourcePixels, Rectangle destination) {
-    const float pixelWidth = static_cast<float>(skin.width) / 64.0f;
-    const float pixelHeight = static_cast<float>(skin.height) / 64.0f;
-    const Rectangle source = {
-        sourcePixels.x * pixelWidth,
-        sourcePixels.y * pixelHeight,
-        sourcePixels.width * pixelWidth,
-        sourcePixels.height * pixelHeight,
-    };
-
-    DrawTexturePro(skin, source, destination, Vector2{ 0.0f, 0.0f }, 0.0f, WHITE);
-}
-
-static void drawMinecraftPlayerPreview(Texture2D skin, Rectangle bounds) {
-    if (skin.id == 0 || skin.width <= 0 || skin.height <= 0) {
-        DrawRectangleRec(bounds, Fade(GRAY, 0.35f));
-        DrawRectangleLinesEx(bounds, 1.0f, Fade(WHITE, 0.35f));
-        return;
-    }
-
-    const float pixelScale = std::min(bounds.width / 16.0f, bounds.height / 32.0f);
-    const float x = bounds.x + (bounds.width - 16.0f * pixelScale) * 0.5f;
-    const float y = bounds.y + (bounds.height - 32.0f * pixelScale) * 0.5f;
-
-    auto part = [&](Rectangle source, float partX, float partY, float width, float height) {
-        drawSkinPart(skin, source, Rectangle{
-                                       x + partX * pixelScale,
-                                       y + partY * pixelScale,
-                                       width * pixelScale,
-                                       height * pixelScale,
-                                   });
-    };
-
-    part(Rectangle{ 44, 20, 4, 12 }, 0, 8, 4, 12);
-    part(Rectangle{ 20, 20, 8, 12 }, 4, 8, 8, 12);
-    part(Rectangle{ 36, 52, 4, 12 }, 12, 8, 4, 12);
-    part(Rectangle{ 4, 20, 4, 12 }, 4, 20, 4, 12);
-    part(Rectangle{ 20, 52, 4, 12 }, 8, 20, 4, 12);
-    part(Rectangle{ 8, 8, 8, 8 }, 4, 0, 8, 8);
-
-    part(Rectangle{ 44, 36, 4, 12 }, 0, 8, 4, 12);
-    part(Rectangle{ 20, 36, 8, 12 }, 4, 8, 8, 12);
-    part(Rectangle{ 52, 52, 4, 12 }, 12, 8, 4, 12);
-    part(Rectangle{ 4, 36, 4, 12 }, 4, 20, 4, 12);
-    part(Rectangle{ 4, 52, 4, 12 }, 8, 20, 4, 12);
-    part(Rectangle{ 40, 8, 8, 8 }, 4, 0, 8, 8);
-}
-
 static void drawMinecraftInventory(const GameAssets &assets, const zappy::Resources &resources, Rectangle bounds) {
     constexpr Rectangle source = { 0.0f, 0.0f, 176.0f, 166.0f };
     constexpr float slotSize = 18.0f;
@@ -432,7 +384,7 @@ GameUi::GameUi(flecs::world &world) {
                     if (world.is_alive(state.selectedPlayer)) {
                         const flecs::entity selectedPlayer(world, state.selectedPlayer);
                         if (const Texture2D *skin = selectedPlayer.try_get<Texture2D>(); skin != nullptr) {
-                            drawMinecraftPlayerPreview(*skin, skinPreview);
+                            DrawMinecraftPlayerPreview3D(*skin, skinPreview, GetMousePosition());
                         }
                     }
 

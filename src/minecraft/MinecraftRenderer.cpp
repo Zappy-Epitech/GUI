@@ -32,6 +32,12 @@ static constexpr PartUV RARM = { { 40, 20, 4, 12 }, { 44, 20, 4, 12 }, { 48, 20,
 static constexpr PartUV LARM = { { 32, 52, 4, 12 }, { 36, 52, 4, 12 }, { 40, 52, 4, 12 }, { 44, 52, 4, 12 }, { 36, 48, 4, 4 }, { 40, 48, 4, 4 } };
 static constexpr PartUV RLEG = { { 0, 20, 4, 12 }, { 4, 20, 4, 12 }, { 8, 20, 4, 12 }, { 12, 20, 4, 12 }, { 4, 16, 4, 4 }, { 8, 16, 4, 4 } };
 static constexpr PartUV LLEG = { { 16, 52, 4, 12 }, { 20, 52, 4, 12 }, { 24, 52, 4, 12 }, { 28, 52, 4, 12 }, { 20, 48, 4, 4 }, { 24, 48, 4, 4 } };
+static constexpr PartUV HEAD_OVERLAY = { { 32, 8, 8, 8 }, { 40, 8, 8, 8 }, { 48, 8, 8, 8 }, { 56, 8, 8, 8 }, { 40, 0, 8, 8 }, { 48, 0, 8, 8 } };
+static constexpr PartUV BODY_OVERLAY = { { 16, 36, 4, 12 }, { 20, 36, 8, 12 }, { 28, 36, 4, 12 }, { 32, 36, 8, 12 }, { 20, 32, 8, 4 }, { 28, 32, 8, 4 } };
+static constexpr PartUV RARM_OVERLAY = { { 40, 36, 4, 12 }, { 44, 36, 4, 12 }, { 48, 36, 4, 12 }, { 52, 36, 4, 12 }, { 44, 32, 4, 4 }, { 48, 32, 4, 4 } };
+static constexpr PartUV LARM_OVERLAY = { { 48, 52, 4, 12 }, { 52, 52, 4, 12 }, { 56, 52, 4, 12 }, { 60, 52, 4, 12 }, { 52, 48, 4, 4 }, { 56, 48, 4, 4 } };
+static constexpr PartUV RLEG_OVERLAY = { { 0, 36, 4, 12 }, { 4, 36, 4, 12 }, { 8, 36, 4, 12 }, { 12, 36, 4, 12 }, { 4, 32, 4, 4 }, { 8, 32, 4, 4 } };
+static constexpr PartUV LLEG_OVERLAY = { { 0, 52, 4, 12 }, { 4, 52, 4, 12 }, { 8, 52, 4, 12 }, { 12, 52, 4, 12 }, { 4, 48, 4, 4 }, { 8, 48, 4, 4 } };
 
 /// Draws the front face of a Minecraft skin head in 2D.
 void DrawMinecraftHead(Texture2D skin, Rectangle bounds) {
@@ -110,12 +116,17 @@ static void skinCube(Texture2D tex, const PartUV &uv, float w, float h, float d,
 }
 
 /// Draws one animated limb.
-static void limb(Texture2D tex, const PartUV &uv, float px, float ox, float oy, float oz, float angle, float w, float h, float d, Color tint) {
+static void limb(Texture2D tex, const PartUV &uv, const PartUV *overlayUv, float px, float ox, float oy, float oz, float angle, float w, float h, float d, Color tint) {
     rlPushMatrix();
     rlTranslatef(ox, oy, oz);
     rlRotatef(angle, 1, 0, 0);
     rlTranslatef(0, -h * px * .5f, 0);
     skinCube(tex, uv, w * px, h * px, d * px, tint);
+    if (overlayUv != nullptr) {
+        constexpr float overlayPadding = 0.045f;
+
+        skinCube(tex, *overlayUv, (w + overlayPadding) * px, (h + overlayPadding) * px, (d + overlayPadding) * px, tint);
+    }
     rlPopMatrix();
 }
 
@@ -140,23 +151,25 @@ static void drawPlayer(Texture2D tex, Vector3 pos, float scale, float angle, con
         return;
     }
 
-    limb(tex, RLEG, px, -2 * px, 0, 0, pose.angles[(int)Limb::RightLeg], 4, 12, 4, tint);
-    limb(tex, LLEG, px, 2 * px, 0, 0, pose.angles[(int)Limb::LeftLeg], 4, 12, 4, tint);
+    limb(tex, RLEG, &RLEG_OVERLAY, px, -2 * px, 0, 0, pose.angles[(int)Limb::RightLeg], 4, 12, 4, tint);
+    limb(tex, LLEG, &LLEG_OVERLAY, px, 2 * px, 0, 0, pose.angles[(int)Limb::LeftLeg], 4, 12, 4, tint);
 
     rlPushMatrix();
     rlTranslatef(0, 0, 0);
     rlRotatef(pose.bodyPitch, 1, 0, 0);
 
-    limb(tex, RARM, px, -6 * px, 12 * px, 0, pose.angles[(int)Limb::RightArm], 4, 12, 4, tint);
-    limb(tex, LARM, px, 6 * px, 12 * px, 0, pose.angles[(int)Limb::LeftArm], 4, 12, 4, tint);
+    limb(tex, RARM, &RARM_OVERLAY, px, -6 * px, 12 * px, 0, pose.angles[(int)Limb::RightArm], 4, 12, 4, tint);
+    limb(tex, LARM, &LARM_OVERLAY, px, 6 * px, 12 * px, 0, pose.angles[(int)Limb::LeftArm], 4, 12, 4, tint);
 
     rlPushMatrix();
     rlTranslatef(0, 16 * px, 0);
     skinCube(tex, HEAD, 8 * px, 8 * px, 8 * px, tint);
+    skinCube(tex, HEAD_OVERLAY, 8.45f * px, 8.45f * px, 8.45f * px, tint);
     rlPopMatrix();
     rlPushMatrix();
     rlTranslatef(0, 6 * px, 0);
     skinCube(tex, BODY, 8 * px, 12 * px, 4 * px, tint);
+    skinCube(tex, BODY_OVERLAY, 8.35f * px, 12.35f * px, 4.35f * px, tint);
     rlPopMatrix();
 
     rlPopMatrix();
@@ -175,18 +188,20 @@ static void drawPreviewPlayer(Texture2D tex, float scale, float bodyYaw, float h
     rlRotatef(headYaw, 0, 1, 0);
     rlRotatef(headPitch, 1, 0, 0);
     skinCube(tex, HEAD, 8 * px, 8 * px, 8 * px, WHITE);
+    skinCube(tex, HEAD_OVERLAY, 8.45f * px, 8.45f * px, 8.45f * px, WHITE);
     rlPopMatrix();
 
     rlPushMatrix();
     rlTranslatef(0, 6 * px, 0);
     skinCube(tex, BODY, 8 * px, 12 * px, 4 * px, WHITE);
+    skinCube(tex, BODY_OVERLAY, 8.35f * px, 12.35f * px, 4.35f * px, WHITE);
     rlPopMatrix();
 
     constexpr float relaxedArmAngle = 7.0f;
-    limb(tex, RARM, px, -6 * px, 12 * px, 0, relaxedArmAngle, 4, 12, 4, WHITE);
-    limb(tex, LARM, px, 6 * px, 12 * px, 0, -relaxedArmAngle, 4, 12, 4, WHITE);
-    limb(tex, RLEG, px, -2 * px, 0, 0, 0, 4, 12, 4, WHITE);
-    limb(tex, LLEG, px, 2 * px, 0, 0, 0, 4, 12, 4, WHITE);
+    limb(tex, RARM, &RARM_OVERLAY, px, -6 * px, 12 * px, 0, relaxedArmAngle, 4, 12, 4, WHITE);
+    limb(tex, LARM, &LARM_OVERLAY, px, 6 * px, 12 * px, 0, -relaxedArmAngle, 4, 12, 4, WHITE);
+    limb(tex, RLEG, &RLEG_OVERLAY, px, -2 * px, 0, 0, 0, 4, 12, 4, WHITE);
+    limb(tex, LLEG, &LLEG_OVERLAY, px, 2 * px, 0, 0, 0, 4, 12, 4, WHITE);
 
     rlPopMatrix();
 }

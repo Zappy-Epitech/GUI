@@ -37,7 +37,7 @@ bool parsePort(const std::string &text, std::uint16_t &port) {
 Home::Home(flecs::world &world) {
     auto module = world.module<Home>("home").child_of<AppScenes>();
     world.singleton<HomeConnectForm>().set<HomeConnectForm>({}).child_of(module);
-    puts("ok");
+
     onEnterScene<Home>(world, "EnterHome", [](flecs::world &world) {
         world.entity("Ip Input")
             .set(TextInput(world.get<HomeConnectForm>().host.c_str()))

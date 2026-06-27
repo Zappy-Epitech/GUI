@@ -8,9 +8,6 @@
 #include "src/protocol/command/CommandRunner.hpp"
 #include "src/scenes/AppScenes.hpp"
 #include "src/scenes/Game.hpp"
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
 #include <string>
 
 struct CommandInput {

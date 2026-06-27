@@ -8,6 +8,7 @@
 #include "src/gameplay/Grid.hpp"
 #include "src/gameplay/WorldLookup.hpp"
 #include "src/scenes/Game.hpp"
+#include <cstdio>
 #include <format>
 #include <raylib.h>
 #include <string>
@@ -16,7 +17,7 @@ namespace {
 
 /// Returns an egg position on a tile.
 static Position3 eggPosition(int x, int y) {
-    return Grid::position(x, y).add_y(0.1f);
+    return Grid::position(x, y).add_y(0.83);
 }
 
 /// Adds a temporary screen message.
@@ -26,20 +27,10 @@ static void addScreenMessage(const flecs::world &world, const std::string &text,
         .set<Color>(color)
         .set(Lifetime{ lifetime });
 }
-
-/// Removes a laying preview for a player if present.
-static void clearEggPreview(const flecs::world &world, int playerId) {
-    if (flecs::entity preview = world.lookup(std::format("EggPreview({})", playerId).c_str()); preview) {
-        preview.destruct();
-    }
-}
-
 } // namespace
 
 /// Applies a new egg event.
 void applyEggNew(const flecs::world &world, zappy::EggNew &evt) {
-    clearEggPreview(world, evt.playerId);
-
     if (flecs::entity existing = findEgg(world, evt.id); existing) {
         existing.destruct();
     }
@@ -52,7 +43,7 @@ void applyEggNew(const flecs::world &world, zappy::EggNew &evt) {
         .set(eggPosition(evt.x, evt.y))
         .set(Rotation3::from_xyz(90, 0, 0))
         .set(assets.eggModel)
-        .set(Scale{ 0.07f });
+        .set(Scale{ 0.12f });
 
     addScreenMessage(
         world,

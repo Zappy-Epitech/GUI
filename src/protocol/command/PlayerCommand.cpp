@@ -35,6 +35,13 @@ static Position3 gridCenterPosition(int x, int y) {
     return Grid::position(x, y).with_y(1.f);
 }
 
+/// Returns the Minecraft skin yaw matching a server orientation.
+static float playerYaw(Orientation orientation) {
+    return orientation == Orientation::NORTH ? 180.0f : orientation == Orientation::SOUTH ? 0.0f
+                                             : orientation == Orientation::EAST    ? 90.0f
+                                                                                   : 270.0f;
+}
+
 /// Adds a temporary screen message.
 static void addScreenMessage(const flecs::world &world, const std::string &text, Color color, float lifetime) {
     world.entity()
@@ -65,7 +72,7 @@ void applyPlayerNew(const flecs::world &world, const zappy::PlayerNew &evt) {
         .set(Player{ .level = evt.level })
         .set(PlayerSkin{ skinIndex })
         .set(skin)
-        .set(Rotation3::zero())
+        .set(Rotation3::from_xyz(0, playerYaw(evt.orientation), 0))
         .set<Orientation>(evt.orientation)
         .set(gridCenterPosition(evt.x, evt.y))
         .set<MinecraftSkin>({ .scale = 0.35f })
@@ -76,9 +83,6 @@ void applyPlayerNew(const flecs::world &world, const zappy::PlayerNew &evt) {
 
 /// Applies a player position event.
 void applyPlayerPosition(const flecs::world &world, zappy::PlayerPosition &evt) {
-    float rotation_y = evt.orientation == Orientation::NORTH ? 0 : evt.orientation == Orientation::SOUTH ? 180
-                                                               : evt.orientation == Orientation::EAST    ? 90
-                                                                                                         : 270;
     flecs::entity player = findPlayer(world, evt.id);
     const Position3 target = gridCenterPosition(evt.x, evt.y);
     const Position3 *position = player.try_get<Position3>();
@@ -92,7 +96,7 @@ void applyPlayerPosition(const flecs::world &world, zappy::PlayerPosition &evt) 
         speed = movementSpeedForFrequency(distance, time != nullptr ? time->timeUnit : 100);
     }
 
-    player.set(Direction(target, speed)).set<Orientation>(evt.orientation).set(Rotation3::from_xyz(0, rotation_y, 0));
+    player.set(Direction(target, speed)).set<Orientation>(evt.orientation).set(Rotation3::from_xyz(0, playerYaw(evt.orientation), 0));
 }
 
 /// Applies a player level event.
@@ -111,6 +115,7 @@ void applyPlayerInventory(const flecs::world &world, zappy::PlayerInventory &evt
 
 /// Applies a player expulsion event.
 void applyPlayerExpelled(const flecs::world &world, zappy::PlayerExpelled &evt) {
+    startPlayerExpelAnimation(world, evt.id);
     addScreenMessage(world, std::format("Player #{} was expelled", evt.id), ORANGE, 2.0f);
 }
 

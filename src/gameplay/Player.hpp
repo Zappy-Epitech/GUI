@@ -2,6 +2,10 @@
 #include <cstddef>
 #include <string>
 
+namespace flecs {
+struct world;
+}
+
 /// Stores player state.
 struct Player {
     int level;
@@ -24,4 +28,19 @@ struct Incantating {};
 struct PlayerBroadcastBubble {
     std::string message;
     float remaining = 0.0f;
+};
+
+/// Animates a player pushing both arms forward during expulsion.
+struct PlayerExpelAnimation {
+    float elapsed;
+    float duration;
+};
+
+/// Starts the visible player expulsion sequence.
+void startPlayerExpelAnimation(const flecs::world &world, int playerId);
+
+/// Registers player gameplay visuals.
+struct Players {
+    /// Imports player systems.
+    Players(flecs::world &world);
 };

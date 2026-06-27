@@ -105,6 +105,7 @@ Test(command_application, applies_team_and_player_creation) {
     cr_assert_eq(player.get<PlayerSkin>().index, 1);
     cr_assert_eq(player.get<Texture2D>().id, 42);
     cr_assert_eq(player.get<Orientation>(), Orientation::EAST);
+    cr_assert_float_eq(player.get<Rotation3>().y, 90.0f, 0.001f);
 }
 
 Test(command_application, applies_player_position_level_and_inventory) {
@@ -119,6 +120,7 @@ Test(command_application, applies_player_position_level_and_inventory) {
     cr_assert(player);
     cr_assert_eq(player.get<Player>().level, 6);
     cr_assert_eq(player.get<Orientation>(), Orientation::EAST);
+    cr_assert_float_eq(player.get<Rotation3>().y, 90.0f, 0.001f);
 
     const auto &position = player.get<Position3>();
     Position3 expected = Grid::position(5, 6).with_y(1.0f);
@@ -128,6 +130,18 @@ Test(command_application, applies_player_position_level_and_inventory) {
     const auto &resources = player.get<zappy::Resources>();
     cr_assert_eq(resources.food, 1);
     cr_assert_eq(resources.thystame, 7);
+}
+
+Test(command_application, maps_player_north_and_south_to_skin_yaw) {
+    flecs::world world = makeWorld();
+
+    run(world, "pnw #8 0 0 1 1 red");
+    flecs::entity player = findPlayer(world, 8);
+    cr_assert(player);
+    cr_assert_float_eq(player.get<Rotation3>().y, 180.0f, 0.001f);
+
+    run(world, "ppo #8 0 0 3");
+    cr_assert_float_eq(player.get<Rotation3>().y, 0.0f, 0.001f);
 }
 
 Test(command_application, applies_player_feedback_messages) {
@@ -140,6 +154,7 @@ Test(command_application, applies_player_feedback_messages) {
 
     flecs::entity player = findPlayer(world, 3);
     cr_assert(player);
+    cr_assert(player.has<PlayerExpelAnimation>());
     cr_assert(player.has<PlayerBroadcastBubble>());
     cr_assert_eq(player.get<PlayerBroadcastBubble>().message, std::string("hello team"));
     cr_assert_float_eq(player.get<PlayerBroadcastBubble>().remaining, 4.0f, 0.001f);

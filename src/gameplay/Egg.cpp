@@ -93,7 +93,7 @@ void startEggLayingAnimation(const flecs::world &world, int playerId) {
         return;
     }
 
-    player.set(EggLayingAnimation{ *position, 0.0f, forkActionTimeUnits, false });
+    player.set(EggLayingAnimation{ *position, 0.0f, forkActionTimeUnits });
 }
 
 /// Registers egg gameplay visuals.

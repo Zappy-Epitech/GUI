@@ -23,7 +23,6 @@ struct EggLayingAnimation {
     Position3 basePosition;
     float elapsed;
     float duration;
-    bool previewStarted;
 };
 
 /// Starts the visible player laying sequence.

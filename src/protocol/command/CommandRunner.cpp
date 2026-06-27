@@ -1,4 +1,5 @@
 #include "CommandRunner.hpp"
+#include "src/core/IncantationEffect.hpp"
 #include "src/protocol/ZappyProtocol.hpp"
 #include "src/protocol/command/EggCommand.hpp"
 #include "src/protocol/command/MapCommand.hpp"
@@ -8,7 +9,6 @@
 #include <cstdlib>
 #include <iostream>
 #include <optional>
-#include <print>
 #include <variant>
 
 /// Combines variant visitors.
@@ -63,9 +63,11 @@ void runCommand(const flecs::world &world, const std::string &command) {
                 },
                 [&world](zappy::IncantationStart evt) {
                     applyIncantationStart(world, evt);
+                    startIncantationEffect(world, evt.x, evt.y, evt.level, evt.playerIds);
                 },
                 [&world](zappy::IncantationEnd evt) {
                     applyIncantationEnd(world, evt);
+                    finishIncantationEffect(world, evt.x, evt.y, evt.success);
                 },
                 [&world](zappy::PlayerEggLayStart evt) {
                     applyPlayerEggLayStart(world, evt);

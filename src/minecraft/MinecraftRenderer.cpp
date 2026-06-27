@@ -3,7 +3,6 @@
 #include "src/core/Settings.hpp"
 #include "src/core/Spatial.hpp"
 #include "src/extern/flecs.h"
-#include "src/gameplay/Player.hpp"
 #include "src/gameplay/Team.hpp"
 #include "src/minecraft/MinecraftAnimation.hpp"
 #include "src/scenes/GameUi.hpp"
@@ -252,11 +251,7 @@ static bool shouldHighlightPlayer(flecs::world world, flecs::entity player) {
     const GuiSettings *settings = world.try_get<GuiSettings>();
     const GameUiState *state = world.try_get<GameUiState>();
 
-    return settings != nullptr
-        && settings->highlightTeamOnHover
-        && state != nullptr
-        && state->hoveredTeam != 0
-        && player.has<BelongsTo>(state->hoveredTeam);
+    return settings != nullptr && settings->highlightTeamOnHover && state != nullptr && state->hoveredTeam != 0 && player.has<BelongsTo>(state->hoveredTeam);
 }
 
 /// Registers skin rendering systems.

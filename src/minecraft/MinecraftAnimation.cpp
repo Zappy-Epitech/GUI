@@ -67,6 +67,7 @@ MinecraftAnimation::MinecraftAnimation(flecs::world &world) {
 
                     if (!it.entity(i).has<Direction>()) {
                         player.timer = 0.0f;
+                        pose.bodyPitch = 0.0f;
                         for (float &angle : pose.angles) {
                             angle = 0.0f;
                         }
@@ -81,6 +82,7 @@ MinecraftAnimation::MinecraftAnimation(flecs::world &world) {
                         player.timer = anim.duration;
 
                     const float t = player.timer;
+                    pose.bodyPitch = 0.0f;
                     for (int limb = 0; limb < 4; limb++)
                         pose.angles[limb] = lerp_limb(anim.tracks[limb], t);
                 }

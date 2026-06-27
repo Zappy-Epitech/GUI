@@ -122,6 +122,16 @@ static void drawPlayer(Texture2D tex, Vector3 pos, float scale, float angle, con
     rlTranslatef(pos.x, pos.y, pos.z);
     rlRotatef(angle, 0, 1, 0);
 
+    limb(tex, RLEG, px, -2 * px, 0, 0, pose.angles[(int)Limb::RightLeg], 4, 12, 4, tint);
+    limb(tex, LLEG, px, 2 * px, 0, 0, pose.angles[(int)Limb::LeftLeg], 4, 12, 4, tint);
+
+    rlPushMatrix();
+    rlTranslatef(0, 0, 0);
+    rlRotatef(pose.bodyPitch, 1, 0, 0);
+
+    limb(tex, RARM, px, -6 * px, 12 * px, 0, pose.angles[(int)Limb::RightArm], 4, 12, 4, tint);
+    limb(tex, LARM, px, 6 * px, 12 * px, 0, pose.angles[(int)Limb::LeftArm], 4, 12, 4, tint);
+
     rlPushMatrix();
     rlTranslatef(0, 16 * px, 0);
     skinCube(tex, HEAD, 8 * px, 8 * px, 8 * px, tint);
@@ -131,10 +141,7 @@ static void drawPlayer(Texture2D tex, Vector3 pos, float scale, float angle, con
     skinCube(tex, BODY, 8 * px, 12 * px, 4 * px, tint);
     rlPopMatrix();
 
-    limb(tex, RARM, px, -6 * px, 12 * px, 0, pose.angles[(int)Limb::RightArm], 4, 12, 4, tint);
-    limb(tex, LARM, px, 6 * px, 12 * px, 0, pose.angles[(int)Limb::LeftArm], 4, 12, 4, tint);
-    limb(tex, RLEG, px, -2 * px, 0, 0, pose.angles[(int)Limb::RightLeg], 4, 12, 4, tint);
-    limb(tex, LLEG, px, 2 * px, 0, 0, pose.angles[(int)Limb::LeftLeg], 4, 12, 4, tint);
+    rlPopMatrix();
 
     rlPopMatrix();
 }

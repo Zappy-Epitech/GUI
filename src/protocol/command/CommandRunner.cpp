@@ -7,7 +7,6 @@
 #include "src/protocol/command/ServerCommand.hpp"
 #include "src/protocol/command/TeamCommand.hpp"
 #include <cstdlib>
-#include <iostream>
 #include <optional>
 #include <variant>
 

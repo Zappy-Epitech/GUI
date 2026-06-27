@@ -1,5 +1,6 @@
 #include "Core.hpp"
 #include "src/core/Gui.hpp"
+#include "src/core/IncantationEffect.hpp"
 #include "src/core/Raylib.hpp"
 #include "src/core/Scenes.hpp"
 #include "src/core/Settings.hpp"
@@ -12,6 +13,7 @@ Core::Core(flecs::world &world) {
     world.import<Spatial>().child_of(module);
     world.import<Raylib>().child_of(module);
     world.import<Settings>().child_of(module);
+    world.import<IncantationEffects>().child_of(module);
     world.import<Gui>().child_of(module);
     world.import<Scenes>().child_of(module);
 

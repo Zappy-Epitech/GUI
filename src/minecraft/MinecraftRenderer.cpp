@@ -3,14 +3,18 @@
 #include "src/core/Settings.hpp"
 #include "src/core/Spatial.hpp"
 #include "src/extern/flecs.h"
+#include "src/gameplay/Player.hpp"
 #include "src/gameplay/Team.hpp"
 #include "src/minecraft/MinecraftAnimation.hpp"
 #include "src/scenes/GameUi.hpp"
 #include <algorithm>
 #include <bit>
 #include <cmath>
+#include <map>
 #include <raylib.h>
 #include <rlgl.h>
+#include <utility>
+#include <vector>
 
 /// Stores one face UV rectangle.
 struct FaceUV {
@@ -261,37 +265,149 @@ static bool shouldHighlightPlayer(flecs::world world, flecs::entity player) {
     return settings != nullptr && settings->highlightTeamOnHover && state != nullptr && state->hoveredTeam != 0 && player.has<BelongsTo>(state->hoveredTeam);
 }
 
+struct RenderPlayer {
+    flecs::entity entity;
+    Vector3 position;
+    float yaw;
+    Texture2D texture;
+    float scale;
+    SkinPose pose;
+    int playerId;
+    Vector3 offset = {};
+    float crowdScale = 1.0f;
+};
+
+static std::pair<int, int> tileKey(Vector3 position) {
+    constexpr float gridStep = 1.1f;
+
+    return {
+        static_cast<int>(std::round(position.x / gridStep)),
+        static_cast<int>(std::round(position.z / gridStep)),
+    };
+}
+
+static float crowdScaleForCount(std::size_t count) {
+    if (count <= 1) {
+        return 1.0f;
+    }
+    if (count == 2) {
+        return 0.92f;
+    }
+    if (count == 3) {
+        return 0.86f;
+    }
+    if (count == 4) {
+        return 0.80f;
+    }
+    if (count <= 8) {
+        return 0.72f;
+    }
+    return 0.62f;
+}
+
+static float crowdRadiusForCount(std::size_t count) {
+    if (count <= 1) {
+        return 0.0f;
+    }
+    if (count == 2) {
+        return 0.18f;
+    }
+    if (count <= 4) {
+        return 0.23f;
+    }
+    return 0.28f;
+}
+
+static Vector3 crowdOffset(std::size_t index, std::size_t count) {
+    if (count <= 1) {
+        return Vector3{};
+    }
+
+    constexpr float halfPi = PI * 0.5f;
+    const float radius = crowdRadiusForCount(count);
+    const float angle = -halfPi + static_cast<float>(index) * (2.0f * PI / static_cast<float>(count));
+
+    return Vector3{
+        std::cos(angle) * radius,
+        0.0f,
+        std::sin(angle) * radius,
+    };
+}
+
+static void applyCrowdLayout(std::vector<RenderPlayer> &players) {
+    std::map<std::pair<int, int>, std::vector<std::size_t>> groups;
+
+    for (std::size_t i = 0; i < players.size(); i++) {
+        groups[tileKey(players[i].position)].push_back(i);
+    }
+
+    for (auto &[_, group] : groups) {
+        std::sort(group.begin(), group.end(), [&](std::size_t a, std::size_t b) {
+            return players[a].playerId < players[b].playerId;
+        });
+
+        const float scale = crowdScaleForCount(group.size());
+        for (std::size_t slot = 0; slot < group.size(); slot++) {
+            RenderPlayer &player = players[group[slot]];
+            player.offset = crowdOffset(slot, group.size());
+            player.crowdScale = scale;
+        }
+    }
+}
+
 /// Registers skin rendering systems.
 MinecraftRenderer::MinecraftRenderer(flecs::world &world) {
     world.module<MinecraftRenderer>("renderer");
     world.component<MinecraftSkin>();
 
-    world.system<const Position3, const Rotation3, const Texture2D, const MinecraftSkin, const SkinPose>("SkinRender")
+    world.system<const Position3, const Rotation3, const Texture2D, const MinecraftSkin, const SkinPose, const PlayerId>("SkinRender")
         .kind<Draw3D>()
         .run([](flecs::iter &it) {
+            flecs::world renderWorld = it.world();
+            std::vector<RenderPlayer> players;
+
             while (it.next()) {
                 auto positions = it.field<const Position3>(0);
                 auto rotations = it.field<const Rotation3>(1);
                 auto tex = it.field<const Texture2D>(2);
                 auto skin = it.field<const MinecraftSkin>(3);
                 auto poses = it.field<const SkinPose>(4);
+                auto ids = it.field<const PlayerId>(5);
 
                 for (auto i : it) {
-                    const Vector3 position = std::bit_cast<Vector3>(positions[i]);
+                    players.push_back(RenderPlayer{
+                        it.entity(i),
+                        std::bit_cast<Vector3>(positions[i]),
+                        rotations[i].y,
+                        tex[i],
+                        skin[i].scale,
+                        poses[i],
+                        ids[i].value,
+                    });
+                }
+            }
 
-                    const bool highlighted = shouldHighlightPlayer(it.world(), it.entity(i));
+            applyCrowdLayout(players);
 
-                    if (highlighted) {
-                        drawPlayerHoverMarker(position, skin[i].scale);
-                    }
+            for (const RenderPlayer &player : players) {
+                const Vector3 position = {
+                    player.position.x + player.offset.x,
+                    player.position.y,
+                    player.position.z + player.offset.z,
+                };
+                const float scale = player.scale * player.crowdScale;
+                const bool highlighted = shouldHighlightPlayer(renderWorld, player.entity);
 
-                    drawPlayer(tex[i], position, skin[i].scale, rotations[i].y, poses[i], WHITE);
+                if (highlighted) {
+                    drawPlayerHoverMarker(position, scale);
+                }
 
-                    if (highlighted) {
-                        rlSetBlendMode(BLEND_ADDITIVE);
-                        drawPlayer(tex[i], position, skin[i].scale * 1.006f, rotations[i].y, poses[i], Color{ 70, 95, 115, 255 });
-                        rlSetBlendMode(BLEND_ALPHA);
-                    }
+                drawPlayer(player.texture, position, scale, player.yaw, player.pose, WHITE);
+
+                if (highlighted) {
+                    rlSetBlendMode(BLEND_ADDITIVE);
+                    drawPlayer(player.texture, position, scale * 1.006f, player.yaw, player.pose, Color{ 70, 95, 115, 255 });
+                    rlSetBlendMode(BLEND_ALPHA);
                 }
             }
         });

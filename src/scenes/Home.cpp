@@ -81,7 +81,7 @@ Home::Home(flecs::world &world) {
             .set(Position2::center().add_y(80))
             .set(OnClick([](flecs::entity e) {
                 flecs::world world = e.world();
-                enterScene<SettingsScene>(world);
+                openSettingsModal(world);
             }))
             .add<DespawnOnExit>(sceneId<Home>(world));
     });

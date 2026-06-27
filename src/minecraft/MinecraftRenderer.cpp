@@ -126,6 +126,20 @@ static void drawPlayer(Texture2D tex, Vector3 pos, float scale, float angle, con
     rlTranslatef(pos.x, pos.y, pos.z);
     rlRotatef(angle, 0, 1, 0);
 
+    if (tex.id == 0 || tex.width <= 0 || tex.height <= 0) {
+        const Color body = Color{ 72, 96, 128, tint.a };
+        const Color head = Color{ 210, 178, 140, tint.a };
+
+        DrawCube(Vector3{ 0, 6 * px, 0 }, 8 * px, 12 * px, 4 * px, body);
+        DrawCube(Vector3{ 0, 16 * px, 0 }, 8 * px, 8 * px, 8 * px, head);
+        DrawCube(Vector3{ -6 * px, 6 * px, 0 }, 4 * px, 12 * px, 4 * px, body);
+        DrawCube(Vector3{ 6 * px, 6 * px, 0 }, 4 * px, 12 * px, 4 * px, body);
+        DrawCube(Vector3{ -2 * px, -6 * px, 0 }, 4 * px, 12 * px, 4 * px, body);
+        DrawCube(Vector3{ 2 * px, -6 * px, 0 }, 4 * px, 12 * px, 4 * px, body);
+        rlPopMatrix();
+        return;
+    }
+
     limb(tex, RLEG, px, -2 * px, 0, 0, pose.angles[(int)Limb::RightLeg], 4, 12, 4, tint);
     limb(tex, LLEG, px, 2 * px, 0, 0, pose.angles[(int)Limb::LeftLeg], 4, 12, 4, tint);
 

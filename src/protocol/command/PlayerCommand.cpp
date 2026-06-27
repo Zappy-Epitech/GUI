@@ -56,7 +56,7 @@ static void addScreenMessage(const flecs::world &world, const std::string &text,
 /// Applies a new player event.
 void applyPlayerNew(const flecs::world &world, const zappy::PlayerNew &evt) {
     const GameAssets &assets = world.get<GameAssets>();
-    const std::size_t skinIndex = assets.skins.empty() ? 0 : static_cast<std::size_t>(evt.id) % (assets.skins.size() - 1);
+    const std::size_t skinIndex = assets.skins.empty() ? 0 : static_cast<std::size_t>(evt.id) % assets.skins.size();
     const Texture2D skin = assets.skins.empty() ? Texture2D{} : assets.skins[skinIndex].texture;
     flecs::entity team = findOrCreateTeam(world, evt.team);
 

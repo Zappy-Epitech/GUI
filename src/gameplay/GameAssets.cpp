@@ -3,7 +3,16 @@
 #include "src/gameplay/GamePlay.hpp"
 #include <algorithm>
 #include <filesystem>
+#include <raylib.h>
 #include <vector>
+
+namespace {
+
+static bool isUsableSkin(Texture2D texture) {
+    return texture.id != 0 && texture.width >= 64 && texture.height >= 32;
+}
+
+} // namespace
 
 /// Loads skins and resource models.
 void GameAssets::load(flecs::world &world) {
@@ -26,6 +35,13 @@ void GameAssets::load(flecs::world &world) {
             std::sort(skinPaths.begin(), skinPaths.end());
             for (const auto &path : skinPaths) {
                 Texture2D texture = LoadTexture(path.c_str());
+                if (!isUsableSkin(texture)) {
+                    TraceLog(LOG_WARNING, "Ignoring invalid skin texture: %s", path.c_str());
+                    if (texture.id != 0) {
+                        UnloadTexture(texture);
+                    }
+                    continue;
+                }
                 assets.skins.push_back(SkinAsset{ path.stem().string(), texture });
             }
 

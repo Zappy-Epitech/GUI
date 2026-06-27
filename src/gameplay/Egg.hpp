@@ -18,6 +18,17 @@ struct EggSpawnAnimation {
     float duration;
 };
 
+/// Animates a player during egg laying.
+struct EggLayingAnimation {
+    Position3 basePosition;
+    float elapsed;
+    float duration;
+    bool previewStarted;
+};
+
+/// Starts the visible player laying sequence.
+void startEggLayingAnimation(const flecs::world &world, int playerId);
+
 /// Registers egg gameplay visuals.
 struct Eggs {
     /// Imports egg systems.

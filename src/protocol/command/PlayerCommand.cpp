@@ -4,6 +4,7 @@
 #include "src/core/Scenes.hpp"
 #include "src/core/Spatial.hpp"
 #include "src/extern/flecs.h"
+#include "src/gameplay/Egg.hpp"
 #include "src/gameplay/GameAssets.hpp"
 #include "src/gameplay/Grid.hpp"
 #include "src/gameplay/Movement.hpp"
@@ -144,6 +145,7 @@ void applyIncantationStart(const flecs::world &world, zappy::IncantationStart &e
 
 /// Applies an egg laying start event.
 void applyPlayerEggLayStart(const flecs::world &world, zappy::PlayerEggLayStart &evt) {
+    startEggLayingAnimation(world, evt.id);
     addScreenMessage(world, std::format("Player #{} is laying an egg", evt.id), WHITE, 2.0f);
 }
 

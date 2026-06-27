@@ -50,6 +50,7 @@ struct AnimPlayer {
 /// Stores current limb angles.
 struct SkinPose {
     float angles[4] = {};
+    float bodyPitch = 0.0f;
 };
 
 /// Registers skin animation systems.

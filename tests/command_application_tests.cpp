@@ -190,7 +190,6 @@ Test(command_application, applies_egg_new) {
 
     run(world, "enw #7 #2 1 1");
 
-    cr_assert(!world.lookup("EggPreview(2)"));
     flecs::entity egg = findEgg(world, 7);
     cr_assert(egg);
     cr_assert_eq(egg.get<EggId>().value, 7);
@@ -217,14 +216,15 @@ Test(command_application, applies_egg_hatched_and_death) {
 Test(command_application, applies_player_egg_lay_start) {
     flecs::world world = makeWorld();
     spawnPlayer(world, 5);
+    run(world, "sgt 10");
 
     run(world, "pfk #5");
 
-    flecs::entity egg = world.lookup("EggPreview(5)");
-    cr_assert(egg);
-    cr_assert(egg.has<Model>());
-    cr_assert(egg.has<Scale>());
-    cr_assert(egg.has<Lifetime>());
+    flecs::entity player = findPlayer(world, 5);
+    cr_assert(player);
+    cr_assert(player.has<EggLayingAnimation>());
+    const auto &animation = player.get<EggLayingAnimation>();
+    cr_assert_float_eq(animation.duration, 42.0f, 0.001f);
     cr_assert(hasMessage(world, "Player #5 is laying an egg"));
 }
 

@@ -31,7 +31,7 @@ SettingsScene::SettingsScene(flecs::world &world) {
     onEnterScene<SettingsScene>(world, "EnterSettings", [](flecs::world &world) {
         world.entity("Settings Back Button")
             .set(Button("Back"))
-            .set(Position2::center().add_y(185))
+            .set(Position2::center().add_y(220))
             .set(OnClick([](flecs::entity e) {
                 flecs::world world = e.world();
                 enterScene<Home>(world);
@@ -45,7 +45,7 @@ SettingsScene::SettingsScene(flecs::world &world) {
             GuiSettings &settings = world.get_mut<GuiSettings>();
 
             const float panelWidth = 520.0f;
-            const float panelHeight = 320.0f;
+            const float panelHeight = 380.0f;
             const Rectangle panel = {
                 static_cast<float>(GetScreenWidth()) * 0.5f - panelWidth * 0.5f,
                 static_cast<float>(GetScreenHeight()) * 0.5f - panelHeight * 0.5f - 18.0f,
@@ -55,6 +55,7 @@ SettingsScene::SettingsScene(flecs::world &world) {
             const Rectangle slider = { panel.x + 170.0f, panel.y + 100.0f, panel.width - 265.0f, 28.0f };
             const Rectangle teamNamesCheckbox = { panel.x + 250.0f, panel.y + 154.0f, 24.0f, 24.0f };
             const Rectangle highlightCheckbox = { panel.x + 250.0f, panel.y + 204.0f, 24.0f, 24.0f };
+            const Rectangle logPanelCheckbox = { panel.x + 250.0f, panel.y + 254.0f, 24.0f, 24.0f };
 
             DrawRectangleRec(panel, Fade(BLACK, 0.55f));
             DrawRectangleLinesEx(panel, 1.0f, Fade(WHITE, 0.4f));
@@ -75,6 +76,9 @@ SettingsScene::SettingsScene(flecs::world &world) {
 
             DrawText("Hover highlight", static_cast<int>(panel.x + 46.0f), static_cast<int>(highlightCheckbox.y - 2.0f), 24, WHITE);
             GuiCheckBox(highlightCheckbox, "", &settings.highlightTeamOnHover);
+
+            DrawText("Log panel", static_cast<int>(panel.x + 46.0f), static_cast<int>(logPanelCheckbox.y - 2.0f), 24, WHITE);
+            GuiCheckBox(logPanelCheckbox, "", &settings.showLogPanel);
         })
         .add<InScene>(sceneId<SettingsScene>(world));
 }

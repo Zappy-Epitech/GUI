@@ -1,12 +1,15 @@
 #include "Gui.hpp"
 #include "Spatial.hpp"
 #include "src/core/Raylib.hpp"
+#include "src/core/Settings.hpp"
 #include "src/extern/flecs.h"
+#include <algorithm>
 #include <cstdio>
 #include <cstring>
 #include <functional>
 #include <raygui.h>
 #include <raylib.h>
+#include <vector>
 
 /// The font size for GUI text.
 static constexpr float fontSize = 40.0f;
@@ -27,6 +30,25 @@ static int textInputEditBufferSize(TextInput &input) {
     input.text.resize(input.text.capacity(), '\0');
     return static_cast<int>(input.text.size() + 1);
 }
+
+/// Returns text shortened to fit the requested width.
+static std::string truncateTextToWidth(const std::string &text, int fontSize, int maxWidth) {
+    if (MeasureText(text.c_str(), fontSize) <= maxWidth) {
+        return text;
+    }
+
+    std::string shortened = text;
+    while (!shortened.empty() && MeasureText((shortened + "...").c_str(), fontSize) > maxWidth) {
+        shortened.pop_back();
+    }
+    return shortened + "...";
+}
+
+/// Stores one line prepared for log panel rendering.
+struct LogPanelMessage {
+    std::string text;
+    Color color;
+};
 
 /// Registers GUI components and render systems.
 Gui::Gui(flecs::world &world) {
@@ -138,23 +160,54 @@ Gui::Gui(flecs::world &world) {
     world.system<const ScreenMessage, const Color>("ScreenMessageRender")
         .kind<Render2D>()
         .run([](flecs::iter &it) {
+            const GuiSettings *settings = it.world().try_get<GuiSettings>();
+
+            if (settings != nullptr && !settings->showLogPanel) {
+                return;
+            }
+
             constexpr int messageFontSize = 24;
             constexpr int lineHeight = 34;
-            int row = 0;
+            constexpr int maxMessages = 8;
+            constexpr int panelWidth = 430;
+            constexpr int panelPadding = 14;
+            constexpr int margin = 24;
+            const int panelX = GetScreenWidth() - panelWidth - margin;
+            const int panelBottom = GetScreenHeight() - margin;
+            std::vector<LogPanelMessage> visibleMessages;
+            visibleMessages.reserve(maxMessages);
 
             while (it.next()) {
                 auto messages = it.field<const ScreenMessage>(0);
                 auto colors = it.field<const Color>(1);
 
                 for (auto i : it) {
-                    int width = MeasureText(messages[i].value.c_str(), messageFontSize);
-                    int x = GetScreenWidth() / 2 - width / 2;
-                    int y = GetScreenHeight() - 150 - row * lineHeight;
+                    if (static_cast<int>(visibleMessages.size()) >= maxMessages) {
+                        break;
+                    }
 
-                    DrawRectangle(x - 10, y - 5, width + 20, messageFontSize + 10, Fade(BLACK, 0.65f));
-                    DrawText(messages[i].value.c_str(), x, y, messageFontSize, colors[i]);
-                    row++;
+                    visibleMessages.push_back(LogPanelMessage{
+                        truncateTextToWidth(messages[i].value, messageFontSize, panelWidth - panelPadding * 2),
+                        colors[i],
+                    });
                 }
+            }
+
+            if (visibleMessages.empty()) {
+                return;
+            }
+
+            const int panelHeight = panelPadding * 2 + static_cast<int>(visibleMessages.size()) * lineHeight;
+            const int panelY = panelBottom - panelHeight;
+            const int textX = panelX + panelPadding;
+
+            DrawRectangle(panelX, panelY, panelWidth, panelHeight, Fade(BLACK, 0.68f));
+            DrawRectangleLines(panelX, panelY, panelWidth, panelHeight, Fade(WHITE, 0.32f));
+
+            for (std::size_t i = 0; i < visibleMessages.size(); i++) {
+                const int y = panelBottom - panelPadding - messageFontSize - static_cast<int>(i) * lineHeight;
+
+                DrawText(visibleMessages[i].text.c_str(), textX, y, messageFontSize, visibleMessages[i].color);
             }
         });
 }

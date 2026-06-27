@@ -1,6 +1,8 @@
 #include "EggCommand.hpp"
 #include "src/core/Core.hpp"
 #include "src/core/Gui.hpp"
+#include "src/core/Raylib.hpp"
+#include "src/core/Scenes.hpp"
 #include "src/core/Spatial.hpp"
 #include "src/extern/flecs.h"
 #include "src/gameplay/Egg.hpp"
@@ -8,7 +10,6 @@
 #include "src/gameplay/Grid.hpp"
 #include "src/gameplay/WorldLookup.hpp"
 #include "src/scenes/Game.hpp"
-#include <cstdio>
 #include <format>
 #include <raylib.h>
 #include <string>
@@ -40,10 +41,12 @@ void applyEggNew(const flecs::world &world, zappy::EggNew &evt) {
     world.entity(std::format("Egg({})", evt.id).c_str())
         .child_of<Game>()
         .set(EggId{ evt.id })
-        .set(eggPosition(evt.x, evt.y))
+        .set(eggPosition(evt.x, evt.y).add_y(-0.18f))
         .set(Rotation3::from_xyz(90, 0, 0))
         .set(assets.eggModel)
-        .set(Scale{ 0.12f });
+        .set(Scale{ 0.0f })
+        .add<DespawnOnExit>(sceneId<Game>(world))
+        .set(EggSpawnAnimation{ eggPosition(evt.x, evt.y), 0.0f, 0.22f });
 
     addScreenMessage(
         world,

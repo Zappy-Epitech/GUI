@@ -195,6 +195,7 @@ Test(command_application, applies_egg_new) {
     cr_assert(egg);
     cr_assert_eq(egg.get<EggId>().value, 7);
     cr_assert(egg.has<Model>());
+    cr_assert(egg.has<EggSpawnAnimation>());
     cr_assert(hasMessage(world, "Egg #7 laid at (1, 1) by player #2"));
 }
 

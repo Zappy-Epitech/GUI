@@ -18,7 +18,6 @@
 #include <array>
 #include <cmath>
 #include <format>
-#include <iostream>
 #include <raylib.h>
 #include <string>
 
@@ -145,14 +144,6 @@ void applyIncantationStart(const flecs::world &world, zappy::IncantationStart &e
 
 /// Applies an egg laying start event.
 void applyPlayerEggLayStart(const flecs::world &world, zappy::PlayerEggLayStart &evt) {
-    world.entity(std::format("EggPreview({})", evt.id).c_str())
-        .set(findPlayer(world, evt.id).get<Position3>().add_y(0.1))
-        .set(Rotation3::from_xyz(90, 0, 0))
-        .set(world.get<GameAssets>().eggModel)
-        .set(Scale{ 0.07f })
-        .set(Lifetime{ 3.0f })
-        .add<DespawnOnExit>(sceneId<Game>(world));
-
     addScreenMessage(world, std::format("Player #{} is laying an egg", evt.id), WHITE, 2.0f);
 }
 

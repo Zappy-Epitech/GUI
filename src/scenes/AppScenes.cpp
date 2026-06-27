@@ -14,6 +14,5 @@ AppScenes::AppScenes(flecs::world &world) {
     world.import<SettingsScene>().child_of(module);
     world.import<Game>().child_of(module);
     world.import<EndGame>().child_of(module);
-
     enterScene<Home>(world);
 }

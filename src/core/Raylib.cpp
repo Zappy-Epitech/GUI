@@ -53,9 +53,13 @@ Raylib::Raylib(flecs::world &world) {
         .add(flecs::Phase)
         .depends_on<Draw3D>();
 
-    world.component<Render2D>()
+    world.component<RenderWorld2D>()
         .add(flecs::Phase)
         .depends_on<CloseRender3D>();
+
+    world.component<Render2D>()
+        .add(flecs::Phase)
+        .depends_on<RenderWorld2D>();
 
     world.component<PostRender>()
         .add(flecs::Phase)

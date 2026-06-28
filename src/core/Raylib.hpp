@@ -17,6 +17,9 @@ struct Draw3D {};
 /// Phase for closing 3D rendering.
 struct CloseRender3D {};
 
+/// Phase for screen-space overlays attached to 3D world positions.
+struct RenderWorld2D {};
+
 /// Phase for drawing 2D content.
 struct Render2D {};
 

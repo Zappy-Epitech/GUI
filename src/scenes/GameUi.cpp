@@ -264,7 +264,7 @@ GameUi::GameUi(flecs::world &world) {
         .add<InScene>(sceneId<Game>(world));
 
     world.system<const Position3, const PlayerBroadcastBubble>("DrawBroadcastBubbles")
-        .kind<Render2D>()
+        .kind<RenderWorld2D>()
         .run([](flecs::iter &it) {
             while (it.next()) {
                 auto positions = it.field<const Position3>(0);
@@ -278,7 +278,7 @@ GameUi::GameUi(flecs::world &world) {
         .add<InScene>(sceneId<Game>(world));
 
     world.system<const Position3, const Player>("DrawPlayerTeamNames")
-        .kind<Render2D>()
+        .kind<RenderWorld2D>()
         .with<Player>()
         .run([world](flecs::iter &it) {
             const GuiSettings *settings = world.try_get<GuiSettings>();

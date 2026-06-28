@@ -268,7 +268,7 @@ GameUi::GameUi(flecs::world &world) {
         })
         .add<InScene>(sceneId<Game>(world));
 
-    world.system<const Position3>("DrawPlayerTeamNames")
+    world.system<const Position3, const Player>("DrawPlayerTeamNames")
         .kind<Render2D>()
         .with<Player>()
         .run([world](flecs::iter &it) {
@@ -280,6 +280,7 @@ GameUi::GameUi(flecs::world &world) {
 
             while (it.next()) {
                 auto positions = it.field<const Position3>(0);
+                auto p_info = it.field<const Player>(1);
 
                 for (auto i : it) {
                     flecs::entity player = it.entity(i);
@@ -294,7 +295,7 @@ GameUi::GameUi(flecs::world &world) {
                         continue;
                     }
 
-                    drawPlayerLabel(teamData->name, Vector3{ positions[i].x, positions[i].y, positions[i].z }, 20, SKYBLUE);
+                    drawPlayerLabel(std::format("{} | Lv {}", teamData->name, p_info[i].level), Vector3{ positions[i].x, positions[i].y, positions[i].z }, 20, SKYBLUE);
                 }
             }
         })

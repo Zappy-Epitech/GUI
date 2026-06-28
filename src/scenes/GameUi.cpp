@@ -380,7 +380,7 @@ GameUi::GameUi(flecs::world &world) {
             if (auto &state = world.get_mut<GameUiState>(); state.selectedPlayer != 0 && state.resources.has_value()) {
                 const float inventoryScale = 2.0f;
                 const Rectangle inventory = Position2::center(176.0f * inventoryScale, 166.0f * inventoryScale).rect(176.0f * inventoryScale, 166.0f * inventoryScale);
-                const Rectangle closeButton = { inventory.x + inventory.width - 26.0f, inventory.y + 6.0f, 20.0f, 20.0f };
+                const Rectangle closeButton = { inventory.x + inventory.width - 32.0f, inventory.y + 6.0f, 20.0f, 20.0f };
 
                 DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), Fade(BLACK, 0.55f));
 

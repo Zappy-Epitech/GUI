@@ -1,4 +1,5 @@
 #include "Settings.hpp"
+#include "src/core/Gui.hpp"
 #include "src/core/Raylib.hpp"
 #include "src/core/Settings.hpp"
 #include "src/extern/flecs.h"
@@ -102,7 +103,7 @@ SettingsModal::SettingsModal(flecs::world &world) {
             DrawText("Log panel", static_cast<int>(panel.x + 46.0f), static_cast<int>(logPanelCheckbox.y - 2.0f), 24, WHITE);
             GuiCheckBox(logPanelCheckbox, "", &settings.showLogPanel);
 
-            if (GuiButton(closeButton, "x") || IsKeyPressed(KEY_ESCAPE)) {
+            if (drawMinecraftButton(closeButton, "x", 18) || IsKeyPressed(KEY_ESCAPE)) {
                 modal.open = false;
             }
 

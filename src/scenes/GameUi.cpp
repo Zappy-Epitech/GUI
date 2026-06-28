@@ -1,4 +1,5 @@
 #include "GameUi.hpp"
+#include "src/core/Gui.hpp"
 #include "src/core/Raylib.hpp"
 #include "src/core/Scenes.hpp"
 #include "src/core/Settings.hpp"
@@ -315,7 +316,7 @@ GameUi::GameUi(flecs::world &world) {
                     if (CheckCollisionPointRec(GetMousePosition(), btn)) {
                         state.hoveredTeam = it.entity(i).id();
                     }
-                    if (GuiButton(btn, teams[i].name.c_str())) {
+                    if (drawMinecraftButton(btn, teams[i].name.c_str(), 24)) {
                         state.openedTeam = (state.openedTeam == it.entity(i).id()) ? 0 : it.entity(i).id();
                         state.panelPositionX = btn.x;
                     }
@@ -407,7 +408,7 @@ GameUi::GameUi(flecs::world &world) {
                     DrawText("Inventory assets missing", static_cast<int>(inventory.x + 18.0f), static_cast<int>(inventory.y + 18.0f), 20, WHITE);
                 }
 
-                if (GuiButton(closeButton, "x") || IsKeyPressed(KEY_ESCAPE)) {
+                if (drawMinecraftButton(closeButton, "x", 14) || IsKeyPressed(KEY_ESCAPE)) {
                     state.selectedPlayer = 0;
                 }
             }

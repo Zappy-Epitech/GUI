@@ -246,13 +246,37 @@ IncantationEffects::IncantationEffects(flecs::world &world) {
 
     world.system<const IncantationEffect>("DrawIncantationEffects")
         .kind<Draw3D>()
-        .each([](const IncantationEffect &effect) {
-            drawIncantationEffect(effect);
+        .run([](flecs::iter &it) {
+            const flecs::world renderWorld = it.world();
+
+            while (it.next()) {
+                auto effects = it.field<const IncantationEffect>(0);
+
+                for (auto i : it) {
+                    const Position3 tilePosition = Grid::position(effects[i].x, effects[i].y);
+
+                    if (!isWithinRenderDistance(renderWorld, std::bit_cast<Vector3>(tilePosition))) {
+                        continue;
+                    }
+                    drawIncantationEffect(effects[i]);
+                }
+            }
         });
 
     world.system<const Position3, const IncantationParticipant>("DrawIncantationParticipantMarkers")
         .kind<Draw3D>()
-        .each([](const Position3 &position, const IncantationParticipant &) {
-            drawParticipantMarker(position);
+        .run([](flecs::iter &it) {
+            const flecs::world renderWorld = it.world();
+
+            while (it.next()) {
+                auto positions = it.field<const Position3>(0);
+
+                for (auto i : it) {
+                    if (!isWithinRenderDistance(renderWorld, std::bit_cast<Vector3>(positions[i]))) {
+                        continue;
+                    }
+                    drawParticipantMarker(positions[i]);
+                }
+            }
         });
 }

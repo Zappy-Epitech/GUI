@@ -70,17 +70,13 @@ test: $(TEST_NAME)
 	./$(TEST_NAME)
 
 perf:
-	$(MAKE) build NAME="$(PERF_NAME)" OBJ_DIR=".build/perf/obj" CXXFLAGS="$(CXXSTD) $(WARNINGS) $(PERF_OPT) $(DEPFLAGS)" CFLAGS="$(CSTD) $(WARNINGS) $(PERF_OPT) $(DEPFLAGS)" LDFLAGS="$(PERF_LDFLAGS)"
+	$(MAKE) build NAME="$(PERF_NAME)" OBJ_DIR=".build/perf/obj" CXXFLAGS="$(CXXSTD) $(WARNINGS) $(PERF_OPT) $(DEPFLAGS)" CFLAGS="$(CSTD) $(WARNINGS) $(PERF_OPT) $(DEPFLAGS)" EXTERN_CXXFLAGS="$(CXXSTD) $(PERF_OPT) $(DEPFLAGS)" EXTERN_CFLAGS="$(CSTD) $(PERF_OPT) $(DEPFLAGS)" LDFLAGS="$(PERF_LDFLAGS)"
 
 $(NAME): $(OBJ) | $(BIN_DIR)
 	$(CXX) $^ -o $@ $(LDFLAGS) $(LDLIBS)
 
 $(TEST_NAME): $(LIB_OBJ) $(TEST_OBJ) | $(BIN_DIR)
 	$(CXX) $^ -o $@ $(LDFLAGS) $(LDLIBS) $(TEST_LDLIBS)
-
-$(OBJ_DIR)/src/extern/%.o: src/extern/%.cpp
-	@mkdir -p $(dir $@)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -w -c $< -o $@
 
 $(OBJ_DIR)/src/extern/%.o: src/extern/%.cpp
 	@mkdir -p $(dir $@)

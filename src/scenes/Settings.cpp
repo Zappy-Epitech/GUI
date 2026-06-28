@@ -1,3 +1,8 @@
+/**
+ * @file Settings.cpp
+ * @ingroup gui_scenes
+ * @brief Implements the settings modal overlay and its open/close/toggle helpers.
+ */
 #include "Settings.hpp"
 #include "src/core/Gui.hpp"
 #include "src/core/Raylib.hpp"

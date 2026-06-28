@@ -1,3 +1,8 @@
+/**
+ * @file Scenes.cpp
+ * @ingroup gui_core
+ * @brief Implements scene lifecycle: despawn-on-enter/exit, InScene sync and enterScene helpers.
+ */
 #include "Scenes.hpp"
 #include "src/core/Core.hpp"
 #include "src/extern/flecs.h"

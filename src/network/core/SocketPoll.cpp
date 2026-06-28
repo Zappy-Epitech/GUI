@@ -1,3 +1,8 @@
+/**
+ * @file SocketPoll.cpp
+ * @ingroup gui_network
+ * @brief Implements poll()-based readiness waits and SO_ERROR checks.
+ */
 #include "SocketPoll.hpp"
 
 #include <cerrno>

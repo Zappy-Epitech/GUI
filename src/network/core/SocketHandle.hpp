@@ -1,8 +1,15 @@
+/**
+ * @file SocketHandle.hpp
+ * @ingroup gui_network
+ * @brief RAII owner for a POSIX socket file descriptor.
+ */
 #pragma once
 
 namespace net {
 
-/// RAII owner for a POSIX socket descriptor.
+/** @brief RAII owner for a POSIX socket descriptor.
+ * @ingroup gui_network
+ */
 class SocketHandle {
   public:
     /// Creates an empty socket handle.

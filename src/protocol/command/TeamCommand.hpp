@@ -1,3 +1,8 @@
+/**
+ * @file TeamCommand.hpp
+ * @ingroup gui_protocol
+ * @brief Handler that applies team-name protocol events to the world.
+ */
 #pragma once
 
 #include "src/protocol/ZappyProtocol.hpp"

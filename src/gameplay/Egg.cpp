@@ -1,3 +1,8 @@
+/**
+ * @file Egg.cpp
+ * @ingroup gui_gameplay
+ * @brief Implements egg spawn/laying animations and their flecs systems.
+ */
 #include "Egg.hpp"
 #include "src/core/Core.hpp"
 #include "src/core/Raylib.hpp"

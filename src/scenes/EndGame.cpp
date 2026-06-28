@@ -1,3 +1,8 @@
+/**
+ * @file EndGame.cpp
+ * @ingroup gui_scenes
+ * @brief Implements the end-game scene: winner summary panel and "Back home" button.
+ */
 #include "EndGame.hpp"
 #include "src/core/Gui.hpp"
 #include "src/core/Raylib.hpp"

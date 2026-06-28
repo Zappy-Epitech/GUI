@@ -1,3 +1,8 @@
+/**
+ * @file ZappySession.hpp
+ * @ingroup gui_network
+ * @brief Handles the Zappy GUI WELCOME/GRAPHIC handshake before forwarding lines.
+ */
 #pragma once
 
 #include "../utils/Result.hpp"
@@ -20,7 +25,9 @@ enum class ZappyLineAction {
     Forward
 };
 
-/// Handles Zappy GUI transport setup before normal protocol lines are forwarded.
+/** @brief Handles Zappy GUI transport setup before normal protocol lines are forwarded.
+ * @ingroup gui_network
+ */
 class ZappySession {
   public:
     /// Ensures an outgoing command is newline-terminated.

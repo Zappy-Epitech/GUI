@@ -1,3 +1,8 @@
+/**
+ * @file SocketHandle.cpp
+ * @ingroup gui_network
+ * @brief Implements RAII move semantics and close() for the socket descriptor.
+ */
 #include "SocketHandle.hpp"
 
 #include <unistd.h>

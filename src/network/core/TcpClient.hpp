@@ -1,3 +1,8 @@
+/**
+ * @file TcpClient.hpp
+ * @ingroup gui_network
+ * @brief RAII non-blocking TCP client with poll-based timeouts and byte helpers.
+ */
 #pragma once
 
 #include "../utils/Result.hpp"
@@ -13,23 +18,23 @@
 
 namespace net {
 
-/// Configuration used by TcpClient for connect/read/write operations.
+/** @brief Configuration used by TcpClient for connect/read/write operations.
+ * @ingroup gui_network
+ */
 struct TcpClientOptions {
-    /// Maximum time spent waiting for a TCP connection attempt.
-    std::chrono::milliseconds connectTimeout{ std::chrono::seconds{ 5 } };
-    /// Maximum time spent waiting for socket readability/writability.
-    std::chrono::milliseconds ioTimeout{ std::chrono::seconds{ 5 } };
-    /// Disables Nagle's algorithm for lower latency protocol commands.
-    bool tcpNoDelay{ true };
-    /// Enables TCP keepalive at the OS level.
-    bool keepAlive{ true };
+    std::chrono::milliseconds connectTimeout{ std::chrono::seconds{ 5 } }; ///< Max wait for a connect() attempt (milliseconds).
+    std::chrono::milliseconds ioTimeout{ std::chrono::seconds{ 5 } };      ///< Max wait per send/receive readiness poll (milliseconds).
+    bool tcpNoDelay{ true };                                              ///< Disable Nagle's algorithm (TCP_NODELAY) for lower latency.
+    bool keepAlive{ true };                                              ///< Enable OS-level TCP keepalive (SO_KEEPALIVE).
 };
 
-/// Small RAII wrapper around a POSIX TCP socket.
-///
-/// The socket is configured as non-blocking, but public send/receive methods
-/// still wait with poll() up to the configured timeout. Use it from a worker
-/// thread when the caller must never block rendering.
+/** @brief Small RAII wrapper around a POSIX TCP socket.
+ *
+ * The socket is configured as non-blocking, but public send/receive methods
+ * still wait with poll() up to the configured timeout. Use it from a worker
+ * thread when the caller must never block rendering.
+ * @ingroup gui_network
+ */
 class TcpClient {
   public:
     /// Creates a disconnected client wrapper.

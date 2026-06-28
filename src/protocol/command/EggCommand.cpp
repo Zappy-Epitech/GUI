@@ -1,3 +1,8 @@
+/**
+ * @file EggCommand.cpp
+ * @ingroup gui_protocol
+ * @brief Spawns, hatches and removes egg entities in response to egg events.
+ */
 #include "EggCommand.hpp"
 #include "src/core/Core.hpp"
 #include "src/core/Gui.hpp"

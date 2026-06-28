@@ -1,3 +1,8 @@
+/**
+ * @file ZappyProtocol.hpp
+ * @ingroup gui_protocol
+ * @brief Protocol event types and the line parser for the Zappy server feed.
+ */
 #pragma once
 #include "src/core/Spatial.hpp"
 #include <optional>
@@ -7,15 +12,18 @@
 
 namespace zappy {
 
-/// Stores resource counts.
+/**
+ * @brief Stores the seven Zappy resource counts.
+ * @ingroup gui_protocol
+ */
 struct Resources {
-    int food = 0;
-    int linemate = 0;
-    int deraumere = 0;
-    int sibur = 0;
-    int mendiane = 0;
-    int phiras = 0;
-    int thystame = 0;
+    int food = 0;      ///< Number of food units.
+    int linemate = 0;  ///< Number of linemate stones.
+    int deraumere = 0; ///< Number of deraumere stones.
+    int sibur = 0;     ///< Number of sibur stones.
+    int mendiane = 0;  ///< Number of mendiane stones.
+    int phiras = 0;    ///< Number of phiras stones.
+    int thystame = 0;  ///< Number of thystame stones.
 };
 
 /// Stores map dimensions.
@@ -184,10 +192,21 @@ using Event = std::variant<
     UnknownCommand,
     BadParameter>;
 
-/// Parses Zappy server protocol lines.
+/**
+ * @brief Parses Zappy server protocol lines into typed events.
+ * @ingroup gui_protocol
+ */
 class ZappyProtocol {
   public:
-    /// Parses one protocol line.
+    /**
+     * @brief Parses one server protocol line into an Event.
+     *
+     * Trims line endings, reads the leading command token and dispatches to the
+     * matching command parser, which validates the arguments.
+     * @param line A single protocol line (with or without trailing `\n`/`\r`).
+     * @return The parsed zappy::Event variant on success; `std::nullopt` if the
+     *         line is empty, the command is unknown, or its arguments are invalid.
+     */
     static std::optional<Event> parseLine(std::string_view line);
 };
 

@@ -1,3 +1,8 @@
+/**
+ * @file Team.cpp
+ * @ingroup gui_gameplay
+ * @brief Implements registration of team components.
+ */
 #include "Team.hpp"
 #include "src/extern/flecs.h"
 #include "src/gameplay/GamePlay.hpp"

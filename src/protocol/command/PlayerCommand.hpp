@@ -1,3 +1,8 @@
+/**
+ * @file PlayerCommand.hpp
+ * @ingroup gui_protocol
+ * @brief Handlers that apply player-related protocol events to the world.
+ */
 #pragma once
 #include "../ZappyProtocol.hpp"
 

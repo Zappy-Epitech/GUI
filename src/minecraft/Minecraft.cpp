@@ -1,3 +1,8 @@
+/**
+ * @file Minecraft.cpp
+ * @ingroup gui_minecraft
+ * @brief Implements the top-level Minecraft module by importing its child modules.
+ */
 #include "Minecraft.hpp"
 #include "src/extern/flecs.h"
 #include "src/minecraft/MinecraftAnimation.hpp"

@@ -1,3 +1,8 @@
+/**
+ * @file Spatial.hpp
+ * @ingroup gui_core
+ * @brief Spatial component definitions (positions, sizes, rotation, scale, orientation) and module.
+ */
 #pragma once
 #include <raylib.h>
 
@@ -102,7 +107,13 @@ struct Scale {
     float value;
 };
 
-/// Registers spatial components.
+/**
+ * @brief ECS module registering the spatial components.
+ * @details Registers Position2, Position3, Rotation3, Size2, Scale and the
+ * Orientation enum (with reflected members) so they can be used and serialized
+ * by other modules.
+ * @ingroup gui_core
+ */
 struct Spatial {
     /// Imports the spatial module.
     Spatial(flecs::world &world);

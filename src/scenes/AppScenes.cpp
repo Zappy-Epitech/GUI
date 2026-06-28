@@ -1,3 +1,8 @@
+/**
+ * @file AppScenes.cpp
+ * @ingroup gui_scenes
+ * @brief Imports the Home, Game, EndGame and SettingsModal modules and enters the Home scene.
+ */
 #include "AppScenes.hpp"
 #include "src/core/Scenes.hpp"
 #include "src/extern/flecs.h"

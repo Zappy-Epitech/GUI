@@ -1,3 +1,8 @@
+/**
+ * @file SocketPoll.hpp
+ * @ingroup gui_network
+ * @brief poll()-based readiness waits and asynchronous socket error checks.
+ */
 #pragma once
 
 #include "../utils/Result.hpp"

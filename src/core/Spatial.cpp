@@ -1,3 +1,8 @@
+/**
+ * @file Spatial.cpp
+ * @ingroup gui_core
+ * @brief Registers spatial components and implements the Position/Rotation helper methods.
+ */
 #include "Spatial.hpp"
 #include "src/extern/flecs.h"
 

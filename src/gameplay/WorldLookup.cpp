@@ -1,3 +1,8 @@
+/**
+ * @file WorldLookup.cpp
+ * @ingroup gui_gameplay
+ * @brief Implements gameplay entity lookup queries by id, coordinate or name.
+ */
 #include "WorldLookup.hpp"
 #include "src/extern/flecs.h"
 #include "src/gameplay/Egg.hpp"

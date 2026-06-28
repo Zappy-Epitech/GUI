@@ -1,3 +1,8 @@
+/**
+ * @file ZappyClient.cpp
+ * @ingroup gui_network
+ * @brief Implements the threaded Zappy client worker loop and queue handling.
+ */
 #include "ZappyClient.hpp"
 
 #include "../io/LineBuffer.hpp"

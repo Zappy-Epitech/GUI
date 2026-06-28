@@ -1,3 +1,8 @@
+/**
+ * @file Gui.hpp
+ * @ingroup gui_core
+ * @brief 2D GUI building blocks: buttons, text inputs, callbacks, screen messages and module.
+ */
 #pragma once
 #include <functional>
 #include <raylib.h>
@@ -56,7 +61,14 @@ struct ScreenMessage {
     std::string value;
 };
 
-/// Registers GUI components and systems.
+/**
+ * @brief ECS module providing the 2D GUI widgets and their render systems.
+ * @details Registers the Button, TextInput, OnClick, OnEnter, OnTextUpdate,
+ * HasInputActive and ScreenMessage components. Adds systems that load the button
+ * click sound and, in the Render2D phase, draw and handle buttons, text inputs
+ * (with enter/change callbacks), and the on-screen log message panel.
+ * @ingroup gui_core
+ */
 struct Gui {
     /// Imports the GUI module.
     Gui(flecs::world &world);

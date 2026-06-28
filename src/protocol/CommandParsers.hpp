@@ -1,3 +1,8 @@
+/**
+ * @file CommandParsers.hpp
+ * @ingroup gui_protocol
+ * @brief Table mapping Zappy command names to their argument parsers.
+ */
 #pragma once
 
 #include "ParseUtils.hpp"
@@ -9,7 +14,10 @@ namespace zappy {
 /// Parses command arguments into an event.
 using CommandParserFn = std::optional<Event> (*)(ProtocolScanner &);
 
-/// Maps a command name to its parser.
+/**
+ * @brief Maps a command name to its argument parser.
+ * @ingroup gui_protocol
+ */
 struct CommandParser {
     std::string_view name;
     CommandParserFn parse;

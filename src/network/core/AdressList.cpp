@@ -1,3 +1,8 @@
+/**
+ * @file AdressList.cpp
+ * @ingroup gui_network
+ * @brief Implements getaddrinfo()-based host/port resolution and cleanup.
+ */
 #include "AdressList.hpp"
 #include <string>
 

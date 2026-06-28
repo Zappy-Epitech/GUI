@@ -1,3 +1,8 @@
+/**
+ * @file Core.cpp
+ * @ingroup gui_core
+ * @brief Implements the Core module: imports sub-modules and the Lifetime cleanup system.
+ */
 #include "Core.hpp"
 #include "src/core/Gui.hpp"
 #include "src/core/IncantationEffect.hpp"

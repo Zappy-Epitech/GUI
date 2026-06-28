@@ -1,3 +1,8 @@
+/**
+ * @file ZappySession.cpp
+ * @ingroup gui_network
+ * @brief Implements the GUI WELCOME handshake and bootstrap command sequence.
+ */
 #include "ZappySession.hpp"
 #include "../core/TcpClient.hpp"
 

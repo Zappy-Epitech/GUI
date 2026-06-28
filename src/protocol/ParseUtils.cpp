@@ -1,3 +1,8 @@
+/**
+ * @file ParseUtils.cpp
+ * @ingroup gui_protocol
+ * @brief Implementations of the low-level protocol token helpers.
+ */
 #include "ParseUtils.hpp"
 
 namespace zappy {

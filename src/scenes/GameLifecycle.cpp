@@ -1,3 +1,8 @@
+/**
+ * @file GameLifecycle.cpp
+ * @ingroup gui_scenes
+ * @brief Implements the game scene enter/exit observers and their UI buttons.
+ */
 #include "GameLifecycle.hpp"
 #include "src/core/Gui.hpp"
 #include "src/core/Scenes.hpp"

@@ -1,3 +1,8 @@
+/**
+ * @file BoundedQueue.hpp
+ * @ingroup gui_network
+ * @brief Fixed-capacity FIFO queue that drops the oldest value when full.
+ */
 #pragma once
 
 #include <cstddef>
@@ -6,7 +11,9 @@
 
 namespace net {
 
-/// FIFO queue with a fixed maximum size. When full, oldest values are dropped.
+/** @brief FIFO queue with a fixed maximum size. When full, oldest values are dropped.
+ * @ingroup gui_network
+ */
 template <typename T, std::size_t MaxSize>
 class BoundedQueue {
   public:

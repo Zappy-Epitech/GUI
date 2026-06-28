@@ -1,3 +1,8 @@
+/**
+ * @file SocketOptions.cpp
+ * @ingroup gui_network
+ * @brief Implements non-blocking mode and TCP_NODELAY/SO_KEEPALIVE configuration.
+ */
 #include "SocketOptions.hpp"
 
 #include <fcntl.h>

@@ -1,3 +1,8 @@
+/**
+ * @file ZappyProtocol.cpp
+ * @ingroup gui_protocol
+ * @brief Implements line dispatch to per-command parsers for the Zappy protocol.
+ */
 #include "ZappyProtocol.hpp"
 #include "CommandParsers.hpp"
 #include "ParseUtils.hpp"

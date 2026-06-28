@@ -1,3 +1,8 @@
+/**
+ * @file Egg.hpp
+ * @ingroup gui_gameplay
+ * @brief Egg components, laying animation API, and the egg visuals module.
+ */
 #pragma once
 
 #include "src/core/Spatial.hpp"
@@ -28,7 +33,10 @@ struct EggLayingAnimation {
 /// Starts the visible player laying sequence.
 void startEggLayingAnimation(const flecs::world &world, int playerId);
 
-/// Registers egg gameplay visuals.
+/**
+ * @brief Registers egg gameplay visuals.
+ * @ingroup gui_gameplay
+ */
 struct Eggs {
     /// Imports egg systems.
     Eggs(flecs::world &world);

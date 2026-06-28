@@ -1,3 +1,8 @@
+/**
+ * @file MinecraftSkinRender.cpp
+ * @ingroup gui_minecraft
+ * @brief Implements 2D head, full 3D player and mouse-tracking inventory preview skin drawing.
+ */
 #include "MinecraftSkinRender.hpp"
 #include <algorithm>
 #include <cmath>

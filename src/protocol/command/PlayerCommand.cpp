@@ -1,3 +1,8 @@
+/**
+ * @file PlayerCommand.cpp
+ * @ingroup gui_protocol
+ * @brief Spawns and updates player entities from player protocol events.
+ */
 #include "PlayerCommand.hpp"
 #include "src/core/Core.hpp"
 #include "src/core/Gui.hpp"

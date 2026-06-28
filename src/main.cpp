@@ -1,3 +1,7 @@
+/**
+ * @file main.cpp
+ * @brief Application entry point: builds the flecs world, imports modules, and runs the app loop.
+ */
 #include "src/core/Core.hpp"
 #include "src/core/Spatial.hpp"
 #include "src/extern/flecs.h"

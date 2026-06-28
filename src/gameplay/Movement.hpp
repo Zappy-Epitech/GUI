@@ -1,3 +1,8 @@
+/**
+ * @file Movement.hpp
+ * @ingroup gui_gameplay
+ * @brief Movement interpolation module, Direction component and speed helper.
+ */
 #pragma once
 
 #include "src/core/Spatial.hpp"
@@ -5,7 +10,10 @@ namespace flecs {
 struct world;
 }
 
-/// Registers movement systems.
+/**
+ * @brief Registers movement interpolation systems.
+ * @ingroup gui_gameplay
+ */
 struct Movement {
     /// Imports the movement module.
     Movement(flecs::world &world);
@@ -30,5 +38,13 @@ struct Direction {
     }
 };
 
-/// Returns the player interpolation speed for a movement distance and server frequency.
+/**
+ * @brief Returns the player interpolation speed for a movement distance and
+ *        server frequency.
+ * @param distance World-space distance to be travelled by the move.
+ * @param frequency Server tick frequency (ticks per second); clamped to
+ *        [1, 1000] before use.
+ * @return Speed in world units per second, computed so the move completes over
+ *         a duration clamped to [0.08s, 1.2s].
+ */
 float movementSpeedForFrequency(float distance, int frequency);

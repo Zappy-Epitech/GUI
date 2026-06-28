@@ -1,3 +1,8 @@
+/**
+ * @file Player.cpp
+ * @ingroup gui_gameplay
+ * @brief Implements player expulsion animation and its flecs system.
+ */
 #include "Player.hpp"
 #include "src/core/Raylib.hpp"
 #include "src/extern/flecs.h"

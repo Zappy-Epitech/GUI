@@ -1,3 +1,8 @@
+/**
+ * @file TeamCommand.cpp
+ * @ingroup gui_protocol
+ * @brief Creates teams in response to team-name protocol events.
+ */
 #include "TeamCommand.hpp"
 #include "src/extern/flecs.h"
 #include "src/gameplay/WorldLookup.hpp"

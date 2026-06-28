@@ -1,3 +1,8 @@
+/**
+ * @file GameUi.cpp
+ * @ingroup gui_scenes
+ * @brief Implements the in-game HUD: broadcast bubbles, team/player panels, inventory modal and frequency slider.
+ */
 #include "GameUi.hpp"
 #include "src/core/Gui.hpp"
 #include "src/core/Raylib.hpp"

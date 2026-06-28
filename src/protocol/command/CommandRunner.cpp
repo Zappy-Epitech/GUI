@@ -1,3 +1,8 @@
+/**
+ * @file CommandRunner.cpp
+ * @ingroup gui_protocol
+ * @brief Visits the parsed protocol event and dispatches to the apply* handlers.
+ */
 #include "CommandRunner.hpp"
 #include "src/core/IncantationEffect.hpp"
 #include "src/protocol/ZappyProtocol.hpp"

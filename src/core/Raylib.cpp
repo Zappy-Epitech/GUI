@@ -1,3 +1,8 @@
+/**
+ * @file Raylib.cpp
+ * @ingroup gui_core
+ * @brief Implements the Raylib module: render phases, window setup and cube/model draw systems.
+ */
 #include "Raylib.hpp"
 #include "Settings.hpp"
 #include "Spatial.hpp"

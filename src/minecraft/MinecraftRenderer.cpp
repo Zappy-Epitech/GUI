@@ -320,6 +320,10 @@ MinecraftRenderer::MinecraftRenderer(flecs::world &world) {
                 const float scale = player.scale * player.crowdScale;
                 const bool highlighted = shouldHighlightPlayer(renderWorld, player.entity);
 
+                if (!isWithinRenderDistance(renderWorld, position)) {
+                    continue;
+                }
+
                 if (highlighted) {
                     drawPlayerHoverMarker(position, scale);
                 }

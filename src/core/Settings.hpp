@@ -7,6 +7,7 @@ struct world;
 /// Stores user-configurable GUI settings.
 struct GuiSettings {
     float masterVolume = 1.0f;
+    float renderDistance = 35.0f;
     bool showTeamNames = true;
     bool highlightTeamOnHover = true;
     bool showLogPanel = true;

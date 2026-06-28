@@ -66,32 +66,43 @@ SettingsModal::SettingsModal(flecs::world &world) {
             DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), Fade(BLACK, 0.55f));
 
             const float panelWidth = 520.0f;
-            const float panelHeight = 380.0f;
+            const float panelHeight = 430.0f;
             const Rectangle panel = {
                 static_cast<float>(GetScreenWidth()) * 0.5f - panelWidth * 0.5f,
                 static_cast<float>(GetScreenHeight()) * 0.5f - panelHeight * 0.5f,
                 panelWidth,
                 panelHeight,
             };
-            const Rectangle slider = { panel.x + 170.0f, panel.y + 100.0f, panel.width - 265.0f, 28.0f };
-            const Rectangle teamNamesCheckbox = { panel.x + 250.0f, panel.y + 154.0f, 24.0f, 24.0f };
-            const Rectangle highlightCheckbox = { panel.x + 250.0f, panel.y + 204.0f, 24.0f, 24.0f };
-            const Rectangle logPanelCheckbox = { panel.x + 250.0f, panel.y + 254.0f, 24.0f, 24.0f };
+            const Rectangle volumeSlider = { panel.x + 210.0f, panel.y + 100.0f, panel.width - 305.0f, 28.0f };
+            const Rectangle renderDistanceSlider = { panel.x + 250.0f, panel.y + 154.0f, panel.width - 345.0f, 28.0f };
+            const Rectangle teamNamesCheckbox = { panel.x + 250.0f, panel.y + 214.0f, 24.0f, 24.0f };
+            const Rectangle highlightCheckbox = { panel.x + 250.0f, panel.y + 264.0f, 24.0f, 24.0f };
+            const Rectangle logPanelCheckbox = { panel.x + 250.0f, panel.y + 314.0f, 24.0f, 24.0f };
             const Rectangle closeButton = { panel.x + panel.width - 38.0f, panel.y + 12.0f, 26.0f, 26.0f };
 
             DrawRectangleRec(panel, Fade(BLACK, 0.85f));
             DrawRectangleLinesEx(panel, 1.0f, Fade(WHITE, 0.4f));
             drawCenteredText("Settings", static_cast<int>(panel.y + 28.0f), 32, WHITE);
 
-            DrawText("Volume", static_cast<int>(panel.x + 46.0f), static_cast<int>(slider.y - 2.0f), 24, WHITE);
+            DrawText("Volume", static_cast<int>(panel.x + 46.0f), static_cast<int>(volumeSlider.y - 2.0f), 24, WHITE);
             DrawText(std::format("{}%", static_cast<int>(std::round(settings.masterVolume * 100.0f))).c_str(),
                      static_cast<int>(panel.x + panel.width - 80.0f),
-                     static_cast<int>(slider.y - 2.0f),
+                     static_cast<int>(volumeSlider.y - 2.0f),
                      24,
                      SKYBLUE);
 
-            GuiSlider(slider, "", "", &settings.masterVolume, 0.0f, 1.0f);
+            GuiSlider(volumeSlider, "", "", &settings.masterVolume, 0.0f, 1.0f);
             settings.masterVolume = std::clamp(settings.masterVolume, 0.0f, 1.0f);
+
+            DrawText("Render distance", static_cast<int>(panel.x + 46.0f), static_cast<int>(renderDistanceSlider.y - 2.0f), 24, WHITE);
+            DrawText(std::format("{} tiles", static_cast<int>(std::round(settings.renderDistance))).c_str(),
+                     static_cast<int>(panel.x + panel.width - 112.0f),
+                     static_cast<int>(renderDistanceSlider.y - 2.0f),
+                     24,
+                     SKYBLUE);
+
+            GuiSlider(renderDistanceSlider, "", "", &settings.renderDistance, 8.0f, 120.0f);
+            settings.renderDistance = std::clamp(settings.renderDistance, 8.0f, 120.0f);
 
             DrawText("Team names", static_cast<int>(panel.x + 46.0f), static_cast<int>(teamNamesCheckbox.y - 2.0f), 24, WHITE);
             GuiCheckBox(teamNamesCheckbox, "", &settings.showTeamNames);

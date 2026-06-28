@@ -3,6 +3,8 @@ namespace flecs {
 struct world;
 }
 
+struct Vector3;
+
 /// Marks an entity rendered as a cube.
 struct Cube {};
 
@@ -20,6 +22,9 @@ struct Render2D {};
 
 /// Phase for finishing a frame.
 struct PostRender {};
+
+/// Returns whether a world position is close enough to be rendered.
+bool isWithinRenderDistance(const flecs::world &world, Vector3 position);
 
 /// Registers Raylib rendering systems.
 struct Raylib {

@@ -106,7 +106,7 @@ NetworkModule::NetworkModule(flecs::world &world) {
             }
 
             std::string line;
-            int budget = 256;
+            int budget = 2048;
             // Apply at most a fixed number of server lines per frame. This
             // prevents a large network burst from monopolizing one render tick.
             while (budget-- > 0 && handle.client->pollLine(line)) {

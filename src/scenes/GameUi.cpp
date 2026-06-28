@@ -220,6 +220,13 @@ static void drawPlayerLabel(const flecs::world &world, const std::string &text, 
     DrawText(text.c_str(), x, y, fontSize, color);
 }
 
+struct PlayerListEntry {
+    flecs::entity entity;
+    Player player;
+    zappy::Resources resources;
+    Texture2D skin;
+};
+
 } // namespace
 
 /// Registers game UI observers and render systems.
@@ -340,11 +347,7 @@ GameUi::GameUi(flecs::world &world) {
         })
         .run([world](flecs::iter &it) {
             if (auto &state = world.get_mut<GameUiState>(); state.openedTeam != 0) {
-                const Rectangle panel = { state.panelPositionX, 72, 230, 240 };
-
-                DrawRectangleLinesEx(panel, 1.0f, Fade(WHITE, 0.35f));
-
-                Rectangle btn = { state.panelPositionX + 8, panel.y + 8, panel.width - 16, 42 };
+                std::vector<PlayerListEntry> entries;
 
                 while (it.next()) {
                     auto players = it.field<const Player>(0);
@@ -354,21 +357,58 @@ GameUi::GameUi(flecs::world &world) {
                     for (auto i : it) {
                         auto e = it.entity(i);
                         if (e.has<BelongsTo>(state.openedTeam)) {
-                            if (GuiButton(btn, "")) {
-                                state.selectedPlayer = e.id();
-                                state.playerName = e.name().c_str();
-                                state.level = players[i].level;
-                                state.resources = resources[i];
-                            }
-
-                            const Rectangle head = { btn.x + 6, btn.y + 5, 32, 32 };
-                            DrawMinecraftHead(skins[i], head);
-                            DrawText(e.name().c_str(), static_cast<int>(btn.x + 46), static_cast<int>(btn.y + 7), 14, WHITE);
-                            DrawText(std::format("Lv {}", players[i].level).c_str(), static_cast<int>(btn.x + 46), static_cast<int>(btn.y + 24), 12, Fade(WHITE, 0.75f));
-
-                            btn.y += btn.height + 6;
+                            entries.push_back(PlayerListEntry{ e, players[i], resources[i], skins[i] });
                         }
                     }
+                }
+
+                if (entries.empty()) {
+                    return;
+                }
+
+                constexpr float panelY = 72.0f;
+                constexpr float panelWidth = 230.0f;
+                constexpr float panelGap = 10.0f;
+                constexpr float padding = 8.0f;
+                constexpr float rowHeight = 42.0f;
+                constexpr float rowGap = 6.0f;
+                constexpr float bottomMargin = 24.0f;
+                const float availableHeight = std::max(rowHeight, static_cast<float>(GetScreenHeight()) - panelY - bottomMargin);
+                const int rowsPerColumn = std::max(1, static_cast<int>((availableHeight - padding * 2.0f + rowGap) / (rowHeight + rowGap)));
+                const int columnCount = static_cast<int>((entries.size() + static_cast<std::size_t>(rowsPerColumn) - 1) / static_cast<std::size_t>(rowsPerColumn));
+                const float panelHeight = padding * 2.0f + static_cast<float>(std::min(rowsPerColumn, static_cast<int>(entries.size()))) * rowHeight
+                                        + static_cast<float>(std::max(0, std::min(rowsPerColumn, static_cast<int>(entries.size())) - 1)) * rowGap;
+                const float totalWidth = static_cast<float>(columnCount) * panelWidth + static_cast<float>(std::max(0, columnCount - 1)) * panelGap;
+                const float maxX = std::max(8.0f, static_cast<float>(GetScreenWidth()) - totalWidth - 8.0f);
+                const float startX = std::clamp(state.panelPositionX, 8.0f, maxX);
+
+                for (int column = 0; column < columnCount; column++) {
+                    const Rectangle panel = { startX + static_cast<float>(column) * (panelWidth + panelGap), panelY, panelWidth, panelHeight };
+                    DrawRectangleLinesEx(panel, 1.0f, Fade(WHITE, 0.35f));
+                }
+
+                for (std::size_t index = 0; index < entries.size(); index++) {
+                    PlayerListEntry &entry = entries[index];
+                    const int column = static_cast<int>(index / static_cast<std::size_t>(rowsPerColumn));
+                    const int row = static_cast<int>(index % static_cast<std::size_t>(rowsPerColumn));
+                    const Rectangle btn = {
+                        startX + static_cast<float>(column) * (panelWidth + panelGap) + padding,
+                        panelY + padding + static_cast<float>(row) * (rowHeight + rowGap),
+                        panelWidth - padding * 2.0f,
+                        rowHeight,
+                    };
+
+                    if (GuiButton(btn, "")) {
+                        state.selectedPlayer = entry.entity.id();
+                        state.playerName = entry.entity.name().c_str();
+                        state.level = entry.player.level;
+                        state.resources = entry.resources;
+                    }
+
+                    const Rectangle head = { btn.x + 6, btn.y + 5, 32, 32 };
+                    DrawMinecraftHead(entry.skin, head);
+                    DrawText(entry.entity.name().c_str(), static_cast<int>(btn.x + 46), static_cast<int>(btn.y + 7), 14, WHITE);
+                    DrawText(std::format("Lv {}", entry.player.level).c_str(), static_cast<int>(btn.x + 46), static_cast<int>(btn.y + 24), 12, Fade(WHITE, 0.75f));
                 }
             }
         })

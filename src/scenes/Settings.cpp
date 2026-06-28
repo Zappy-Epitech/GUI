@@ -75,7 +75,7 @@ SettingsModal::SettingsModal(flecs::world &world) {
                 panelHeight,
             };
             const Rectangle volumeSlider = { panel.x + 210.0f, panel.y + 100.0f, panel.width - 305.0f, 28.0f };
-            const Rectangle renderDistanceSlider = { panel.x + 250.0f, panel.y + 154.0f, panel.width - 345.0f, 28.0f };
+            const Rectangle renderDistanceSlider = { panel.x + 250.0f, panel.y + 154.0f, panel.width - 365.0f, 28.0f };
             const Rectangle teamNamesCheckbox = { panel.x + 250.0f, panel.y + 214.0f, 24.0f, 24.0f };
             const Rectangle highlightCheckbox = { panel.x + 250.0f, panel.y + 264.0f, 24.0f, 24.0f };
             const Rectangle logPanelCheckbox = { panel.x + 250.0f, panel.y + 314.0f, 24.0f, 24.0f };
@@ -97,7 +97,7 @@ SettingsModal::SettingsModal(flecs::world &world) {
 
             DrawText("Render distance", static_cast<int>(panel.x + 46.0f), static_cast<int>(renderDistanceSlider.y - 2.0f), 24, WHITE);
             DrawText(std::format("{} tiles", static_cast<int>(std::round(settings.renderDistance))).c_str(),
-                     static_cast<int>(panel.x + panel.width - 112.0f),
+                     static_cast<int>(panel.x + panel.width - 100.0f),
                      static_cast<int>(renderDistanceSlider.y - 2.0f),
                      24,
                      SKYBLUE);

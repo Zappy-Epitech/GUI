@@ -42,18 +42,15 @@ GameLifecycle::GameLifecycle(flecs::world &world) {
             }))
             .add<DespawnOnExit>(sceneId<Game>(world));
 
-        world.entity("Command Input")
-            .set(TextInput(""))
-            .set(Position2::bottom_center())
-            .set(OnEnter([](flecs::entity e, std::string &text) {
-                flecs::world world = e.world();
-
-                if (!sendServerCommand(world, text)) {
-                    runCommand(world, text);
-                }
-                text.clear();
-            }))
-            .add<DespawnOnExit>(sceneId<Game>(world));
+        // world.entity("Command Input")
+        //     .set(TextInput(""))
+        //     .set(Position2::bottom_center())
+        //     .set(OnEnter([](flecs::entity e, std::string &text) {
+        //         flecs::world world = e.world();
+        //         runCommand(world, text);
+        //         text.clear();
+        //     }))
+        //     .add<DespawnOnExit>(sceneId<Game>(world));
     });
 
     onExitScene<Game>(world, "ExitGame", [](flecs::world &world) {

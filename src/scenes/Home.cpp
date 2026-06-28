@@ -10,7 +10,6 @@
 #include "src/scenes/Settings.hpp"
 
 #include <charconv>
-#include <cstdio>
 #include <raylib.h>
 #include <string>
 

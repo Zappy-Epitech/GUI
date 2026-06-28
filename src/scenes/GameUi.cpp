@@ -227,7 +227,6 @@ GameUi::GameUi(flecs::world &world) {
                 state.playerName = e.name().c_str();
                 state.level = p.level;
                 state.resources = r;
-                state.panelPositionX = 0.0f;
             }
         });
 

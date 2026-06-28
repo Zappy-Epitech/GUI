@@ -78,7 +78,7 @@ Home::Home(flecs::world &world) {
 
         world.entity("Settings Button")
             .set(Button("Settings"))
-            .set(Position2::center().add_y(80))
+            .set(Position2::center().add_y(90))
             .set(OnClick([](flecs::entity e) {
                 flecs::world world = e.world();
                 openSettingsModal(world);

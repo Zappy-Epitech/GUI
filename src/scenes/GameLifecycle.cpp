@@ -35,7 +35,7 @@ GameLifecycle::GameLifecycle(flecs::world &world) {
 
         world.entity("Settings Button")
             .set(Button("Settings"))
-            .set(Position2::splat(120).with_y(80))
+            .set(Position2::splat(140).with_y(110))
             .set(OnClick([](flecs::entity e) {
                 flecs::world world = e.world();
                 openSettingsModal(world);

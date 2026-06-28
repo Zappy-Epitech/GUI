@@ -11,6 +11,7 @@
 #include "src/scenes/Game.hpp"
 #include "src/scenes/GameUi.hpp"
 #include "src/scenes/Home.hpp"
+#include "src/scenes/Settings.hpp"
 
 /// Registers game scene lifecycle observers.
 GameLifecycle::GameLifecycle(flecs::world &world) {
@@ -29,6 +30,15 @@ GameLifecycle::GameLifecycle(flecs::world &world) {
 
                 disconnectFromServer(world);
                 enterScene<Home>(world);
+            }))
+            .add<DespawnOnExit>(sceneId<Game>(world));
+
+        world.entity("Settings Button")
+            .set(Button("Settings"))
+            .set(Position2::splat(140).with_y(110))
+            .set(OnClick([](flecs::entity e) {
+                flecs::world world = e.world();
+                openSettingsModal(world);
             }))
             .add<DespawnOnExit>(sceneId<Game>(world));
 

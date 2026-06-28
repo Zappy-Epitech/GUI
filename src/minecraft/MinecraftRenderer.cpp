@@ -39,25 +39,6 @@ static constexpr PartUV LARM_OVERLAY = { { 48, 52, 4, 12 }, { 52, 52, 4, 12 }, {
 static constexpr PartUV RLEG_OVERLAY = { { 0, 36, 4, 12 }, { 4, 36, 4, 12 }, { 8, 36, 4, 12 }, { 12, 36, 4, 12 }, { 4, 32, 4, 4 }, { 8, 32, 4, 4 } };
 static constexpr PartUV LLEG_OVERLAY = { { 0, 52, 4, 12 }, { 4, 52, 4, 12 }, { 8, 52, 4, 12 }, { 12, 52, 4, 12 }, { 4, 48, 4, 4 }, { 8, 48, 4, 4 } };
 
-/// Draws the front face of a Minecraft skin head in 2D.
-void DrawMinecraftHead(Texture2D skin, Rectangle bounds) {
-    if (skin.id == 0 || skin.width <= 0 || skin.height <= 0) {
-        DrawRectangleRec(bounds, Fade(GRAY, 0.65f));
-        DrawRectangleLinesEx(bounds, 1.0f, Fade(WHITE, 0.45f));
-        return;
-    }
-
-    const float px = static_cast<float>(skin.width) / 64.0f;
-    const Rectangle head = { 8.0f * px, 8.0f * px, 8.0f * px, 8.0f * px };
-    const Rectangle overlay = { 40.0f * px, 8.0f * px, 8.0f * px, 8.0f * px };
-
-    DrawTexturePro(skin, head, bounds, Vector2{ 0.0f, 0.0f }, 0.0f, WHITE);
-    if (skin.width >= static_cast<int>(48.0f * px) && skin.height >= static_cast<int>(16.0f * px)) {
-        DrawTexturePro(skin, overlay, bounds, Vector2{ 0.0f, 0.0f }, 0.0f, WHITE);
-    }
-    DrawRectangleLinesEx(bounds, 1.0f, Fade(BLACK, 0.35f));
-}
-
 /// Draws a textured cuboid.
 static void skinCube(Texture2D tex, const PartUV &uv, float w, float h, float d, Color tint) {
     const float tw = (float)tex.width;
@@ -175,94 +156,6 @@ static void drawPlayer(Texture2D tex, Vector3 pos, float scale, float angle, con
     rlPopMatrix();
 
     rlPopMatrix();
-}
-
-static void drawPreviewPlayer(Texture2D tex, float scale, float bodyYaw, float headYaw, float headPitch) {
-    const float px = scale / 16.0f;
-
-    rlPushMatrix();
-    rlRotatef(bodyYaw, 0, 1, 0);
-
-    rlPushMatrix();
-    rlTranslatef(0, 16 * px, 0);
-    rlRotatef(headYaw, 0, 1, 0);
-    rlRotatef(headPitch, 1, 0, 0);
-    skinCube(tex, HEAD, 8 * px, 8 * px, 8 * px, WHITE);
-    skinCube(tex, HEAD_OVERLAY, 8.45f * px, 8.45f * px, 8.45f * px, WHITE);
-    rlPopMatrix();
-
-    rlPushMatrix();
-    rlTranslatef(0, 6 * px, 0);
-    skinCube(tex, BODY, 8 * px, 12 * px, 4 * px, WHITE);
-    skinCube(tex, BODY_OVERLAY, 8.35f * px, 12.35f * px, 4.35f * px, WHITE);
-    rlPopMatrix();
-
-    constexpr float relaxedArmAngle = 7.0f;
-    limb(tex, RARM, &RARM_OVERLAY, px, -6 * px, 12 * px, 0, relaxedArmAngle, 4, 12, 4, WHITE);
-    limb(tex, LARM, &LARM_OVERLAY, px, 6 * px, 12 * px, 0, -relaxedArmAngle, 4, 12, 4, WHITE);
-    limb(tex, RLEG, &RLEG_OVERLAY, px, -2 * px, 0, 0, 0, 4, 12, 4, WHITE);
-    limb(tex, LLEG, &LLEG_OVERLAY, px, 2 * px, 0, 0, 0, 4, 12, 4, WHITE);
-
-    rlPopMatrix();
-}
-
-static RenderTexture2D &previewTexture(int width, int height) {
-    static RenderTexture2D target = {};
-
-    if (target.id == 0 || target.texture.width != width || target.texture.height != height) {
-        if (target.id != 0) {
-            UnloadRenderTexture(target);
-        }
-        target = LoadRenderTexture(width, height);
-        SetTextureFilter(target.texture, TEXTURE_FILTER_BILINEAR);
-    }
-    return target;
-}
-
-/// Draws a 3D inventory player preview whose head tracks the mouse.
-void DrawMinecraftPlayerPreview3D(Texture2D skin, Rectangle bounds, Vector2 mouse) {
-    if (skin.id == 0 || skin.width <= 0 || skin.height <= 0) {
-        DrawRectangleRec(bounds, Fade(GRAY, 0.35f));
-        DrawRectangleLinesEx(bounds, 1.0f, Fade(WHITE, 0.35f));
-        return;
-    }
-
-    const int textureWidth = std::max(96, static_cast<int>(std::round(bounds.width)));
-    const int textureHeight = std::max(128, static_cast<int>(std::round(bounds.height)));
-    RenderTexture2D &target = previewTexture(textureWidth, textureHeight);
-
-    const Vector2 center = {
-        bounds.x + bounds.width * 0.5f,
-        bounds.y + bounds.height * 0.36f,
-    };
-    const float lookX = std::clamp((mouse.x - center.x) / std::max(bounds.width * 0.75f, 1.0f), -1.0f, 1.0f);
-    const float lookY = std::clamp((mouse.y - center.y) / std::max(bounds.height * 0.65f, 1.0f), -1.0f, 1.0f);
-    const float headYaw = lookX * 42.0f;
-    const float headPitch = lookY * 26.0f;
-    const float bodyYaw = lookX * 7.0f;
-    const Camera3D camera = {
-        Vector3{ 0.0f, 0.9f, 7.0f },
-        Vector3{ 0.0f, 0.42f, 0.0f },
-        Vector3{ 0.0f, 1.0f, 0.0f },
-        19.0f,
-        CAMERA_PERSPECTIVE,
-    };
-
-    BeginTextureMode(target);
-    ClearBackground(BLANK);
-    BeginMode3D(camera);
-    rlDisableBackfaceCulling();
-    drawPreviewPlayer(skin, 1.0f, bodyYaw, headYaw, headPitch);
-    rlEnableBackfaceCulling();
-    EndMode3D();
-    EndTextureMode();
-
-    DrawTexturePro(target.texture,
-                   Rectangle{ 0.0f, 0.0f, static_cast<float>(target.texture.width), -static_cast<float>(target.texture.height) },
-                   bounds,
-                   Vector2{ 0.0f, 0.0f },
-                   0.0f,
-                   WHITE);
 }
 
 static void drawPlayerHoverMarker(Vector3 pos, float scale) {

@@ -11,8 +11,9 @@ AppScenes::AppScenes(flecs::world &world) {
     flecs::entity module = world.module<AppScenes>("app");
 
     world.import<Home>().child_of(module);
-    world.import<SettingsScene>().child_of(module);
     world.import<Game>().child_of(module);
     world.import<EndGame>().child_of(module);
+    // Imported last so its overlay renders on top of every scene's UI.
+    world.import<SettingsModal>().child_of(module);
     enterScene<Home>(world);
 }

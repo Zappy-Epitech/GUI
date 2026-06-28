@@ -1,11 +1,15 @@
 #pragma once
 #include <functional>
+#include <raylib.h>
 #include <string>
 
 namespace flecs {
 struct world;
 struct entity;
 } // namespace flecs
+
+/// Draws a Minecraft-style button and returns true when it is clicked.
+bool drawMinecraftButton(Rectangle bounds, const char *label, int labelFontSize);
 
 /// Stores a button click callback.
 struct OnClick : std::function<void(flecs::entity &)> {};

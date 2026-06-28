@@ -19,6 +19,7 @@
 #include <raygui.h>
 #include <raylib.h>
 #include <sstream>
+#include <tuple>
 #include <vector>
 
 namespace {
@@ -326,6 +327,9 @@ GameUi::GameUi(flecs::world &world) {
 
     world.system<const Player, const zappy::Resources, const Texture2D>("DrawPlayerList")
         .kind<Render2D>()
+        .order_by(0, [](flecs::entity_t e1, const void *d1, flecs::entity_t e2, const void *d2) {
+            return (e1 > e2) - (e1 < e2);
+        })
         .run([world](flecs::iter &it) {
             if (auto &state = world.get_mut<GameUiState>(); state.openedTeam != 0) {
                 const Rectangle panel = { state.panelPositionX, 72, 230, 240 };

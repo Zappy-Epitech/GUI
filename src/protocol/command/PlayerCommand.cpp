@@ -38,8 +38,8 @@ static Position3 gridCenterPosition(int x, int y) {
 /// Returns the Minecraft skin yaw matching a server orientation.
 static float playerYaw(Orientation orientation) {
     return orientation == Orientation::NORTH ? 180.0f : orientation == Orientation::SOUTH ? 0.0f
-                                             : orientation == Orientation::EAST    ? 90.0f
-                                                                                   : 270.0f;
+                                                    : orientation == Orientation::EAST    ? 90.0f
+                                                                                          : 270.0f;
 }
 
 /// Adds a temporary screen message.
@@ -84,33 +84,41 @@ void applyPlayerNew(const flecs::world &world, const zappy::PlayerNew &evt) {
 /// Applies a player position event.
 void applyPlayerPosition(const flecs::world &world, zappy::PlayerPosition &evt) {
     flecs::entity player = findPlayer(world, evt.id);
-    const Position3 target = gridCenterPosition(evt.x, evt.y);
-    const Position3 *position = player.try_get<Position3>();
-    const SimulationTime *time = world.try_get<SimulationTime>();
-    float speed = 1.0f;
 
-    if (position != nullptr) {
-        const float dx = target.x - position->x;
-        const float dz = target.z - position->z;
-        const float distance = std::sqrt(dx * dx + dz * dz);
-        speed = movementSpeedForFrequency(distance, time != nullptr ? time->timeUnit : 100);
+    if (player) {
+        const Position3 target = gridCenterPosition(evt.x, evt.y);
+        const Position3 *position = player.try_get<Position3>();
+        const SimulationTime *time = world.try_get<SimulationTime>();
+        float speed = 1.0f;
+
+        if (position != nullptr) {
+            const float dx = target.x - position->x;
+            const float dz = target.z - position->z;
+            const float distance = std::sqrt(dx * dx + dz * dz);
+            speed = movementSpeedForFrequency(distance, time != nullptr ? time->timeUnit : 100);
+        }
+
+        player.set(Direction(target, speed)).set<Orientation>(evt.orientation).set(Rotation3::from_xyz(0, playerYaw(evt.orientation), 0));
     }
-
-    player.set(Direction(target, speed)).set<Orientation>(evt.orientation).set(Rotation3::from_xyz(0, playerYaw(evt.orientation), 0));
 }
 
 /// Applies a player level event.
 void applyPlayerLevel(const flecs::world &world, zappy::PlayerLevel &evt) {
-    findPlayer(world, evt.id)
-        .set(Player{ .level = evt.level });
+    auto player = findPlayer(world, evt.id);
+
+    if (player) {
+        player.set(Player{ .level = evt.level });
+    }
 }
 
 /// Applies a player inventory event.
 void applyPlayerInventory(const flecs::world &world, zappy::PlayerInventory &evt) {
     auto player = findPlayer(world, evt.id);
 
-    player.set(gridCenterPosition(evt.x, evt.y))
-        .set(evt.resources);
+    if (player) {
+        player.set(gridCenterPosition(evt.x, evt.y))
+            .set(evt.resources);
+    }
 }
 
 /// Applies a player expulsion event.
@@ -141,11 +149,16 @@ void applyIncantationStart(const flecs::world &world, zappy::IncantationStart &e
         }
     }
 
-    addScreenMessage(
-        world,
-        std::format("Incantation level {} at ({}, {})", evt.level, evt.x, evt.y),
-        YELLOW,
-        2.0f);
+    for (auto playerid : evt.playerIds) {
+        flecs::entity player = findPlayer(world, playerid);
+        if (player) {
+            addScreenMessage(
+                world,
+                std::format("Incantation level {} -> {} at ({}, {})", player.get<Player>().level, evt.level, evt.x, evt.y),
+                YELLOW,
+                2.0f);
+        }
+    }
 }
 
 /// Applies an egg laying start event.

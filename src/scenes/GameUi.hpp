@@ -14,6 +14,7 @@ struct GameUiState {
     int level = 0;
     std::string playerName;
     float panelPositionX = 0.0f;
+    float playerListScrollY = 0.0f;
     float requestedFrequency = 100.0f;
     int confirmedFrequency = 100;
     bool draggingFrequency = false;

@@ -331,8 +331,12 @@ GameUi::GameUi(flecs::world &world) {
                         state.hoveredTeam = it.entity(i).id();
                     }
                     if (drawMinecraftButton(btn, teams[i].name.c_str(), 24)) {
-                        state.openedTeam = (state.openedTeam == it.entity(i).id()) ? 0 : it.entity(i).id();
+                        const flecs::entity_t clickedTeam = it.entity(i).id();
+                        const bool openingDifferentTeam = state.openedTeam != clickedTeam;
+
+                        state.openedTeam = openingDifferentTeam ? clickedTeam : 0;
                         state.panelPositionX = btn.x;
+                        state.playerListScrollY = 0.0f;
                     }
                     btn.x += btn.width + 10;
                 }
@@ -368,35 +372,35 @@ GameUi::GameUi(flecs::world &world) {
 
                 constexpr float panelY = 72.0f;
                 constexpr float panelWidth = 230.0f;
-                constexpr float panelGap = 10.0f;
                 constexpr float padding = 8.0f;
                 constexpr float rowHeight = 42.0f;
                 constexpr float rowGap = 6.0f;
                 constexpr float bottomMargin = 24.0f;
-                const float availableHeight = std::max(rowHeight, static_cast<float>(GetScreenHeight()) - panelY - bottomMargin);
-                const int rowsPerColumn = std::max(1, static_cast<int>((availableHeight - padding * 2.0f + rowGap) / (rowHeight + rowGap)));
-                const int columnCount = static_cast<int>((entries.size() + static_cast<std::size_t>(rowsPerColumn) - 1) / static_cast<std::size_t>(rowsPerColumn));
-                const float panelHeight = padding * 2.0f + static_cast<float>(std::min(rowsPerColumn, static_cast<int>(entries.size()))) * rowHeight
-                                        + static_cast<float>(std::max(0, std::min(rowsPerColumn, static_cast<int>(entries.size())) - 1)) * rowGap;
-                const float totalWidth = static_cast<float>(columnCount) * panelWidth + static_cast<float>(std::max(0, columnCount - 1)) * panelGap;
-                const float maxX = std::max(8.0f, static_cast<float>(GetScreenWidth()) - totalWidth - 8.0f);
+                const float panelHeight = std::clamp(static_cast<float>(GetScreenHeight()) - panelY - bottomMargin, rowHeight + padding * 2.0f, 420.0f);
+                const float contentHeight = padding * 2.0f + static_cast<float>(entries.size()) * rowHeight + static_cast<float>(entries.size() - 1) * rowGap;
+                const float maxX = std::max(8.0f, static_cast<float>(GetScreenWidth()) - panelWidth - 8.0f);
                 const float startX = std::clamp(state.panelPositionX, 8.0f, maxX);
+                const Rectangle panel = { startX, panelY, panelWidth, panelHeight };
+                const Rectangle content = { panel.x, panel.y, panelWidth - 14.0f, contentHeight };
+                Vector2 scroll = { 0.0f, state.playerListScrollY };
+                Rectangle view = {};
 
-                for (int column = 0; column < columnCount; column++) {
-                    const Rectangle panel = { startX + static_cast<float>(column) * (panelWidth + panelGap), panelY, panelWidth, panelHeight };
-                    DrawRectangleLinesEx(panel, 1.0f, Fade(WHITE, 0.35f));
-                }
+                GuiScrollPanel(panel, nullptr, content, &scroll, &view);
+                state.playerListScrollY = scroll.y;
 
+                BeginScissorMode(static_cast<int>(view.x), static_cast<int>(view.y), static_cast<int>(view.width), static_cast<int>(view.height));
                 for (std::size_t index = 0; index < entries.size(); index++) {
                     PlayerListEntry &entry = entries[index];
-                    const int column = static_cast<int>(index / static_cast<std::size_t>(rowsPerColumn));
-                    const int row = static_cast<int>(index % static_cast<std::size_t>(rowsPerColumn));
                     const Rectangle btn = {
-                        startX + static_cast<float>(column) * (panelWidth + panelGap) + padding,
-                        panelY + padding + static_cast<float>(row) * (rowHeight + rowGap),
-                        panelWidth - padding * 2.0f,
+                        view.x + padding + scroll.x,
+                        view.y + padding + scroll.y + static_cast<float>(index) * (rowHeight + rowGap),
+                        view.width - padding * 2.0f,
                         rowHeight,
                     };
+
+                    if (btn.y + btn.height < view.y || btn.y > view.y + view.height) {
+                        continue;
+                    }
 
                     if (GuiButton(btn, "")) {
                         state.selectedPlayer = entry.entity.id();
@@ -410,6 +414,7 @@ GameUi::GameUi(flecs::world &world) {
                     DrawText(entry.entity.name().c_str(), static_cast<int>(btn.x + 46), static_cast<int>(btn.y + 7), 14, WHITE);
                     DrawText(std::format("Lv {}", entry.player.level).c_str(), static_cast<int>(btn.x + 46), static_cast<int>(btn.y + 24), 12, Fade(WHITE, 0.75f));
                 }
+                EndScissorMode();
             }
         })
         .add<InScene>(sceneId<Game>(world));

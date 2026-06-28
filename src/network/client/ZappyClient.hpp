@@ -1,5 +1,6 @@
 #pragma once
 #include "../io/BoundedQueue.hpp"
+#include "../io/UnboundedQueue.hpp"
 #include "../core/TcpClient.hpp"
 
 #include <cstddef>
@@ -84,14 +85,14 @@ class ZappyClient {
     /// Sends every queued outgoing command.
     bool flushOutgoing(TcpClient &client);
 
-    /// Maximum number of queued lines, commands, or errors.
+    /// Maximum number of queued commands or errors.
     static constexpr std::size_t maxQueueSize = 4096;
     /// Protects queues and visible status fields.
     mutable std::mutex mutex;
     /// Worker thread that owns the socket.
     std::jthread thread;
     /// Complete protocol lines received from the server.
-    BoundedQueue<std::string, maxQueueSize> incoming;
+    UnboundedQueue<std::string> incoming;
     /// Commands waiting to be sent to the server.
     BoundedQueue<std::string, maxQueueSize> outgoing;
     /// Errors waiting to be displayed/handled by the ECS thread.

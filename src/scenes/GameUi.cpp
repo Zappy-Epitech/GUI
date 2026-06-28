@@ -145,7 +145,11 @@ static std::vector<std::string> wrapBubbleText(const std::string &text, int font
     return lines;
 }
 
-static void drawBroadcastBubble(const std::string &message, Vector3 playerPosition) {
+static void drawBroadcastBubble(const flecs::world &world, const std::string &message, Vector3 playerPosition) {
+    if (!isWithinRenderDistance(world, playerPosition)) {
+        return;
+    }
+
     const Camera &camera = CameraController::camera();
     const Vector3 cameraForward = vectorSubtract(camera.target, camera.position);
     const Vector3 toBubble = vectorSubtract(playerPosition, camera.position);
@@ -196,7 +200,11 @@ static bool isInFrontOfCamera(Vector3 worldPosition) {
     return vectorDot(cameraForward, toLabel) > 0.0f;
 }
 
-static void drawPlayerLabel(const std::string &text, Vector3 playerPosition, int baseFontSize, Color color) {
+static void drawPlayerLabel(const flecs::world &world, const std::string &text, Vector3 playerPosition, int baseFontSize, Color color) {
+    if (!isWithinRenderDistance(world, playerPosition)) {
+        return;
+    }
+
     if (!isInFrontOfCamera(playerPosition)) {
         return;
     }
@@ -228,7 +236,6 @@ GameUi::GameUi(flecs::world &world) {
                 state.playerName = e.name().c_str();
                 state.level = p.level;
                 state.resources = r;
-                state.panelPositionX = 0.0f;
             }
         });
 
@@ -264,7 +271,7 @@ GameUi::GameUi(flecs::world &world) {
                 auto bubbles = it.field<const PlayerBroadcastBubble>(1);
 
                 for (auto i : it) {
-                    drawBroadcastBubble(bubbles[i].message, Vector3{ positions[i].x, positions[i].y, positions[i].z });
+                    drawBroadcastBubble(it.world(), bubbles[i].message, Vector3{ positions[i].x, positions[i].y, positions[i].z });
                 }
             }
         })
@@ -297,7 +304,7 @@ GameUi::GameUi(flecs::world &world) {
                         continue;
                     }
 
-                    drawPlayerLabel(std::format("{} | Lv {}", teamData->name, p_info[i].level), Vector3{ positions[i].x, positions[i].y, positions[i].z }, 20, SKYBLUE);
+                    drawPlayerLabel(world, std::format("{} | Lv {}", teamData->name, p_info[i].level), Vector3{ positions[i].x, positions[i].y, positions[i].z }, 20, SKYBLUE);
                 }
             }
         })
@@ -328,7 +335,7 @@ GameUi::GameUi(flecs::world &world) {
 
     world.system<const Player, const zappy::Resources, const Texture2D>("DrawPlayerList")
         .kind<Render2D>()
-        .order_by(0, [](flecs::entity_t e1, const void *d1, flecs::entity_t e2, const void *d2) {
+        .order_by(0, [](flecs::entity_t e1, const void *, flecs::entity_t e2, const void *) {
             return (e1 > e2) - (e1 < e2);
         })
         .run([world](flecs::iter &it) {

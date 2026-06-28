@@ -1,3 +1,8 @@
+/**
+ * @file Error.cpp
+ * @ingroup gui_network
+ * @brief Implements the error factory helpers and their message formatting.
+ */
 #include "Error.hpp"
 #include <cstring>
 #include <netdb.h>

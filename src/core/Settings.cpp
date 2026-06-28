@@ -1,3 +1,8 @@
+/**
+ * @file Settings.cpp
+ * @ingroup gui_core
+ * @brief Implements the Settings module: GuiSettings singleton and master-volume system.
+ */
 #include "Settings.hpp"
 #include "src/core/Core.hpp"
 #include "src/extern/flecs.h"

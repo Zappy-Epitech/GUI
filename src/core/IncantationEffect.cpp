@@ -1,3 +1,8 @@
+/**
+ * @file IncantationEffect.cpp
+ * @ingroup gui_core
+ * @brief Implements incantation visuals: start/finish helpers, 3D drawing and update systems.
+ */
 #include "IncantationEffect.hpp"
 #include "src/core/Core.hpp"
 #include "src/core/Raylib.hpp"

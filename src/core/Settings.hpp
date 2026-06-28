@@ -1,3 +1,8 @@
+/**
+ * @file Settings.hpp
+ * @ingroup gui_core
+ * @brief User-configurable GUI settings component and its module.
+ */
 #pragma once
 
 namespace flecs {
@@ -13,7 +18,13 @@ struct GuiSettings {
     bool showLogPanel = true;
 };
 
-/// Registers GUI settings state and systems.
+/**
+ * @brief ECS module managing user-configurable GUI settings.
+ * @details Registers the GuiSettings component as a singleton (with reflected
+ * members) and adds the ApplyMasterVolume system that pushes the master volume
+ * to the audio device each frame.
+ * @ingroup gui_core
+ */
 struct Settings {
     /// Imports settings components.
     Settings(flecs::world &world);

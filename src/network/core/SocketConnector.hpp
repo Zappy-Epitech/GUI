@@ -1,3 +1,8 @@
+/**
+ * @file SocketConnector.hpp
+ * @ingroup gui_network
+ * @brief Opens, configures, and connects a socket for one resolved address.
+ */
 #pragma once
 
 #include "../utils/Result.hpp"

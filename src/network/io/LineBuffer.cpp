@@ -1,3 +1,8 @@
+/**
+ * @file LineBuffer.cpp
+ * @ingroup gui_network
+ * @brief Implements newline splitting and CRLF trimming of buffered stream data.
+ */
 #include "LineBuffer.hpp"
 
 namespace net {

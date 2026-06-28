@@ -1,3 +1,8 @@
+/**
+ * @file GamePlay.cpp
+ * @ingroup gui_gameplay
+ * @brief Imports the gameplay sub-modules and loads shared assets.
+ */
 #include "GamePlay.hpp"
 #include "src/extern/flecs.h"
 #include "src/gameplay/CameraController.hpp"

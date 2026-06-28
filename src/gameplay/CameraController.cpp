@@ -1,3 +1,8 @@
+/**
+ * @file CameraController.cpp
+ * @ingroup gui_gameplay
+ * @brief Implements the WASD/arrow-key free-fly gameplay camera.
+ */
 #include "CameraController.hpp"
 #include "src/core/Gui.hpp"
 #include "src/extern/flecs.h"

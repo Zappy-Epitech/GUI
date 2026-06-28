@@ -1,3 +1,8 @@
+/**
+ * @file CommandParsers.cpp
+ * @ingroup gui_protocol
+ * @brief Per-command argument parsers and the command dispatch table.
+ */
 #include "CommandParsers.hpp"
 #include "src/core/Spatial.hpp"
 

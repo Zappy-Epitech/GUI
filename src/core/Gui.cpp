@@ -1,3 +1,8 @@
+/**
+ * @file Gui.cpp
+ * @ingroup gui_core
+ * @brief Implements the Gui module: Minecraft-style button drawing, text input and log panel systems.
+ */
 #include "Gui.hpp"
 #include "Spatial.hpp"
 #include "src/core/Raylib.hpp"

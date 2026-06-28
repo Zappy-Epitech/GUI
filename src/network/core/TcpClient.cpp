@@ -1,3 +1,8 @@
+/**
+ * @file TcpClient.cpp
+ * @ingroup gui_network
+ * @brief Implements TCP connect, send/receive with poll timeouts, and byte helpers.
+ */
 #include "TcpClient.hpp"
 #include "AdressList.hpp"
 #include "SocketConnector.hpp"

@@ -1,3 +1,8 @@
+/**
+ * @file Game.cpp
+ * @ingroup gui_scenes
+ * @brief Implements the game scene module: registers gameplay components and imports its sub-modules.
+ */
 #include "Game.hpp"
 #include "src/extern/flecs.h"
 #include "src/gameplay/Player.hpp"

@@ -1,3 +1,8 @@
+/**
+ * @file MinecraftSkinRender.hpp
+ * @ingroup gui_minecraft
+ * @brief Standalone helpers to draw Minecraft skins: 2D head, full 3D player, and inventory preview.
+ */
 #pragma once
 #include "src/minecraft/MinecraftAnimation.hpp"
 #include <raylib.h>

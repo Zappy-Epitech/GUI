@@ -1,3 +1,8 @@
+/**
+ * @file ServerCommand.cpp
+ * @ingroup gui_protocol
+ * @brief Applies time-unit, game-end and server-message protocol events.
+ */
 #include "ServerCommand.hpp"
 #include "src/core/Core.hpp"
 #include "src/core/Gui.hpp"

@@ -1,3 +1,8 @@
+/**
+ * @file Player.hpp
+ * @ingroup gui_gameplay
+ * @brief Player components, animation API, and the player visuals module.
+ */
 #pragma once
 #include <cstddef>
 #include <string>
@@ -39,7 +44,10 @@ struct PlayerExpelAnimation {
 /// Starts the visible player expulsion sequence.
 void startPlayerExpelAnimation(const flecs::world &world, int playerId);
 
-/// Registers player gameplay visuals.
+/**
+ * @brief Registers player gameplay visuals.
+ * @ingroup gui_gameplay
+ */
 struct Players {
     /// Imports player systems.
     Players(flecs::world &world);

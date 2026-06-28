@@ -1,3 +1,8 @@
+/**
+ * @file Grid.cpp
+ * @ingroup gui_gameplay
+ * @brief Implements grid registration, tile spawning and coordinate mapping.
+ */
 #include "Grid.hpp"
 #include "src/core/Raylib.hpp"
 #include "src/core/Scenes.hpp"

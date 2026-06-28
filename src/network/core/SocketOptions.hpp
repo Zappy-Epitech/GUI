@@ -1,3 +1,8 @@
+/**
+ * @file SocketOptions.hpp
+ * @ingroup gui_network
+ * @brief Helpers to set non-blocking mode and TCP socket options.
+ */
 #pragma once
 
 #include "../utils/Result.hpp"

@@ -1,3 +1,8 @@
+/**
+ * @file Home.cpp
+ * @ingroup gui_scenes
+ * @brief Implements the home scene: server connection form and port parsing.
+ */
 #include "Home.hpp"
 #include "src/core/Core.hpp"
 #include "src/core/Gui.hpp"

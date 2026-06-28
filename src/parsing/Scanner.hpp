@@ -1,3 +1,8 @@
+/**
+ * @file Scanner.hpp
+ * @ingroup gui_parsing
+ * @brief Cursor-based scanner for tokenising string views.
+ */
 #pragma once
 
 #include <charconv>
@@ -7,7 +12,16 @@
 
 namespace parsing {
 
-/// Reads tokens from a string view.
+/**
+ * @brief Reads tokens from a string view using a forward-only cursor.
+ * @ingroup gui_parsing
+ *
+ * Maintains a position into an immutable input view and exposes primitives to
+ * consume characters, literals and integers. Consuming operations advance the
+ * cursor; on failure the cursor is left unchanged (or restored).
+ *
+ * @tparam Char Character type the scanner operates on (defaults to `char`).
+ */
 template <typename Char = char>
 class Scanner {
   public:
@@ -40,7 +54,13 @@ class Scanner {
         return _input[_cursor];
     }
 
-    /// Consumes one expected character.
+    /**
+     * @brief Consumes one character if it matches the expected one.
+     * @param expected Character that must be at the current cursor position.
+     * @return `true` and advances the cursor by one when the current character
+     *         equals @p expected; `false` with the cursor unchanged otherwise
+     *         (including when the input is already exhausted).
+     */
     bool take(Char expected) {
         if (peek() != expected) {
             return false;
@@ -49,7 +69,13 @@ class Scanner {
         return true;
     }
 
-    /// Consumes an expected literal.
+    /**
+     * @brief Consumes an exact literal sequence starting at the cursor.
+     * @param expected Literal that must appear at the current cursor position.
+     * @return `true` and advances the cursor by `expected.size()` when the
+     *         input at the cursor starts with @p expected; `false` with the
+     *         cursor unchanged otherwise.
+     */
     bool takeLiteral(View expected) {
         if (_input.substr(_cursor, expected.size()) != expected) {
             return false;
@@ -58,7 +84,14 @@ class Scanner {
         return true;
     }
 
-    /// Consumes characters while a predicate matches.
+    /**
+     * @brief Consumes consecutive characters for which a predicate holds.
+     * @tparam Predicate Callable invocable as `bool(Char)`.
+     * @param predicate Tested against each character; consumption stops at the
+     *        first character for which it returns `false` or at end of input.
+     * @return View over the consumed characters (empty if none matched). The
+     *         cursor is advanced past the returned characters.
+     */
     template <typename Predicate>
     View takeWhile(Predicate predicate) {
         const size_t start = _cursor;
@@ -68,7 +101,16 @@ class Scanner {
         return _input.substr(start, _cursor - start);
     }
 
-    /// Consumes characters until a predicate matches.
+    /**
+     * @brief Consumes characters until a predicate first holds.
+     * @tparam Predicate Callable invocable as `bool(Char)`.
+     * @param predicate Consumption stops at the first character for which it
+     *        returns `true` (that character is left unconsumed) or at end of
+     *        input.
+     * @return View over the consumed characters (empty if the first character
+     *         already satisfies @p predicate). The cursor is advanced past the
+     *         returned characters.
+     */
     template <typename Predicate>
     View takeUntil(Predicate predicate) {
         return takeWhile([&](Char value) {
@@ -97,7 +139,15 @@ class Scanner {
         return _cursor > start;
     }
 
-    /// Reads an integer value.
+    /**
+     * @brief Reads an integer literal at the cursor.
+     * @tparam Number Integral target type; for signed types an optional leading
+     *         `-` sign is accepted.
+     * @return The parsed value on success, with the cursor advanced past the
+     *         digits (and sign). Returns `std::nullopt` and restores the cursor
+     *         to its starting position when no digits are present or the value
+     *         does not fully parse (e.g. out of range for @p Number).
+     */
     template <std::integral Number>
     std::optional<Number> takeInteger() {
         const size_t start = _cursor;
@@ -124,7 +174,15 @@ class Scanner {
         return value;
     }
 
-    /// Reads an integer with a prefix.
+    /**
+     * @brief Reads an integer that must be preceded by a given prefix character.
+     * @tparam Number Integral target type passed through to takeInteger().
+     * @param prefix Character that must immediately precede the integer.
+     * @return The parsed value on success, with the cursor advanced past the
+     *         prefix and the integer. Returns `std::nullopt` and restores the
+     *         cursor to its starting position when the prefix is absent or no
+     *         valid integer follows it.
+     */
     template <std::integral Number>
     std::optional<Number> takePrefixedInteger(Char prefix) {
         const size_t start = _cursor;

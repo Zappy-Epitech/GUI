@@ -1,3 +1,8 @@
+/**
+ * @file UnboundedQueue.hpp
+ * @ingroup gui_network
+ * @brief FIFO queue that retains every value until it is consumed.
+ */
 #pragma once
 
 #include <deque>
@@ -5,7 +10,9 @@
 
 namespace net {
 
-/// FIFO queue that preserves every value until it is consumed.
+/** @brief FIFO queue that preserves every value until it is consumed.
+ * @ingroup gui_network
+ */
 template <typename T>
 class UnboundedQueue {
   public:

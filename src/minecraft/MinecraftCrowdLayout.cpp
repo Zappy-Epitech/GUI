@@ -1,3 +1,8 @@
+/**
+ * @file MinecraftCrowdLayout.cpp
+ * @ingroup gui_minecraft
+ * @brief Implements same-tile grouping and ring offset/scale computation for crowded tiles.
+ */
 #include "MinecraftCrowdLayout.hpp"
 #include <algorithm>
 #include <cmath>

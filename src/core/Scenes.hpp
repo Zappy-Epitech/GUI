@@ -1,3 +1,8 @@
+/**
+ * @file Scenes.hpp
+ * @ingroup gui_core
+ * @brief Generic scene lifecycle: scene tags, current-scene tracking and enter/exit helpers.
+ */
 #pragma once
 
 #include "src/extern/flecs.h"
@@ -60,7 +65,13 @@ void onExitScene(flecs::world &world, const char *name, Fn &&fn) {
         });
 }
 
-/// Registers generic scene lifecycle components and systems.
+/**
+ * @brief ECS module providing the generic scene lifecycle infrastructure.
+ * @details Registers the DespawnOnEnter, DespawnOnExit, InScene and CurrentScene
+ * components, and adds observers that, on scene changes, despawn tagged entities
+ * and enable/disable entities according to the scene they belong to.
+ * @ingroup gui_core
+ */
 struct Scenes {
     /// Imports scene lifecycle infrastructure.
     Scenes(flecs::world &world);

@@ -1,3 +1,8 @@
+/**
+ * @file LineBuffer.hpp
+ * @ingroup gui_network
+ * @brief Reassembles newline-terminated protocol lines from TCP stream chunks.
+ */
 #pragma once
 
 #include <string>
@@ -5,7 +10,9 @@
 
 namespace net {
 
-/// Rebuilds newline-terminated protocol lines from TCP stream chunks.
+/** @brief Rebuilds newline-terminated protocol lines from TCP stream chunks.
+ * @ingroup gui_network
+ */
 class LineBuffer {
   public:
     /// Appends a raw TCP chunk.

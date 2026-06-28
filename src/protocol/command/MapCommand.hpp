@@ -1,3 +1,8 @@
+/**
+ * @file MapCommand.hpp
+ * @ingroup gui_protocol
+ * @brief Handlers that apply map and tile protocol events to the world.
+ */
 #pragma once
 #include "src/protocol/ZappyProtocol.hpp"
 

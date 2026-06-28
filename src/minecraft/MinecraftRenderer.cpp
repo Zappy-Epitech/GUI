@@ -1,3 +1,8 @@
+/**
+ * @file MinecraftRenderer.cpp
+ * @ingroup gui_minecraft
+ * @brief Implements UV-mapped cuboid skin drawing, crowd layout and the SkinRender system.
+ */
 #include "MinecraftRenderer.hpp"
 #include "src/core/Raylib.hpp"
 #include "src/core/Settings.hpp"

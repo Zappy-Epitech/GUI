@@ -1,3 +1,8 @@
+/**
+ * @file EggCommand.hpp
+ * @ingroup gui_protocol
+ * @brief Handlers that apply egg-related protocol events to the world.
+ */
 #pragma once
 #include "../ZappyProtocol.hpp"
 

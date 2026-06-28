@@ -1,3 +1,8 @@
+/**
+ * @file MapCommand.cpp
+ * @ingroup gui_protocol
+ * @brief Builds the grid and renders tile resources from map protocol events.
+ */
 #include "MapCommand.hpp"
 #include "src/core/Core.hpp"
 #include "src/core/Gui.hpp"

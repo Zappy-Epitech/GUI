@@ -1,3 +1,8 @@
+/**
+ * @file ServerCommand.hpp
+ * @ingroup gui_protocol
+ * @brief Handlers that apply server-level protocol events to the world.
+ */
 #pragma once
 #include "../ZappyProtocol.hpp"
 

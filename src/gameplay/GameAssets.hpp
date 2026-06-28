@@ -1,3 +1,8 @@
+/**
+ * @file GameAssets.hpp
+ * @ingroup gui_gameplay
+ * @brief Shared gameplay assets singleton (skins, resource models, icons).
+ */
 #pragma once
 #include <array>
 #include <raylib.h>
@@ -14,6 +19,10 @@ struct SkinAsset {
     Texture2D texture;
 };
 
+/**
+ * @brief Holds loaded gameplay assets shared across the scene.
+ * @ingroup gui_gameplay
+ */
 struct GameAssets {
     std::vector<SkinAsset> skins;
     std::array<Model, 7> resourceModels = {};

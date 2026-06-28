@@ -1,3 +1,8 @@
+/**
+ * @file Movement.cpp
+ * @ingroup gui_gameplay
+ * @brief Implements frame-rate-independent movement interpolation.
+ */
 #include "Movement.hpp"
 #include "../extern/flecs.h"
 #include "src/core/Spatial.hpp"

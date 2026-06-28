@@ -1,3 +1,8 @@
+/**
+ * @file MinecraftAnimation.cpp
+ * @ingroup gui_minecraft
+ * @brief Implements skin animation clip building and the per-frame limb pose update system.
+ */
 #include "MinecraftAnimation.hpp"
 #include "src/extern/flecs.h"
 #include "src/gameplay/Movement.hpp"

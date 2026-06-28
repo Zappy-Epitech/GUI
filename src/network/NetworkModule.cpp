@@ -1,3 +1,8 @@
+/**
+ * @file NetworkModule.cpp
+ * @ingroup gui_network
+ * @brief Implements the network Flecs module, drain system, and connect/disconnect helpers.
+ */
 #include "NetworkModule.hpp"
 
 #include "src/core/Core.hpp"

@@ -1,3 +1,8 @@
+/**
+ * @file SocketConnector.cpp
+ * @ingroup gui_network
+ * @brief Implements non-blocking connect with timeout for one resolved address.
+ */
 #include "SocketConnector.hpp"
 #include "SocketOptions.hpp"
 #include "SocketPoll.hpp"

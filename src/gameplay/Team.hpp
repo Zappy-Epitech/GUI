@@ -1,3 +1,8 @@
+/**
+ * @file Team.hpp
+ * @ingroup gui_gameplay
+ * @brief Team components and the team registration module.
+ */
 #pragma once
 
 #include <string>
@@ -14,7 +19,10 @@ struct Team {
 /// Marks an entity as belonging to a team.
 struct BelongsTo {};
 
-/// Registers team components.
+/**
+ * @brief Registers team components.
+ * @ingroup gui_gameplay
+ */
 struct Teams {
     /// Imports the team module.
     Teams(flecs::world &world);

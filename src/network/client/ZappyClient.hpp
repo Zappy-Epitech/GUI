@@ -1,3 +1,8 @@
+/**
+ * @file ZappyClient.hpp
+ * @ingroup gui_network
+ * @brief Threaded Zappy GUI client exchanging protocol lines via queues.
+ */
 #pragma once
 #include "../io/BoundedQueue.hpp"
 #include "../io/UnboundedQueue.hpp"
@@ -31,11 +36,14 @@ enum class ClientStatus {
     Error
 };
 
-/// Threaded Zappy GUI client.
-///
-/// This class owns the TCP client on a worker thread. The main/Flecs thread
-/// communicates with it by queueing outgoing commands and polling complete
-/// incoming protocol lines.
+/** @brief Threaded Zappy GUI client.
+ *
+ * This class owns the TCP client on a worker thread. The main/Flecs thread
+ * communicates with it by queueing outgoing commands and polling complete
+ * incoming protocol lines. All public methods are safe to call from the main
+ * thread; access to the shared queues and status is guarded by an internal mutex.
+ * @ingroup gui_network
+ */
 class ZappyClient {
   public:
     /// Creates an idle disconnected client.
@@ -48,21 +56,56 @@ class ZappyClient {
     /// Prevents assigning the thread and queues.
     ZappyClient &operator=(const ZappyClient &) = delete;
 
-    /// Starts a worker that connects to the given server.
+    /** @brief Starts a worker thread that connects to the given server.
+     *
+     * Stops any previous worker, clears the queues, sets status to Connecting,
+     * then spawns the worker that owns the socket. Returns immediately; the
+     * connection result is reported asynchronously through getStatus()/pollError().
+     * @param host Server hostname or IP to resolve and connect to.
+     * @param port Server TCP port.
+     */
     void start(std::string host, std::uint16_t port);
-    /// Stops the worker and marks the client disconnected.
+
+    /** @brief Stops the worker and marks the client disconnected.
+     *
+     * Requests the worker to stop and joins it (blocking until it exits), then
+     * sets status to Disconnected. Safe to call when no worker is running.
+     */
     void stop();
 
-    /// Queues a command for the network thread.
+    /** @brief Queues a command for the network thread to send.
+     *
+     * Non-blocking; the command is newline-terminated and enqueued, then sent
+     * by the worker on its next loop iteration. The outgoing queue is bounded,
+     * so the oldest command is dropped if it is full.
+     * @param command Protocol command to send (a trailing newline is added if missing).
+     */
     void send(std::string command);
-    /// Pops one complete server line, if available.
+
+    /** @brief Pops one complete server line, if available.
+     *
+     * Non-blocking. Intended to be polled every frame by the ECS thread.
+     * @param[out] out Receives the next complete protocol line on success.
+     * @return true if a line was dequeued into @p out, false if none is available.
+     */
     bool pollLine(std::string &out);
-    /// Pops one network error message, if available.
+
+    /** @brief Pops one network/transport error message, if available.
+     *
+     * Non-blocking.
+     * @param[out] out Receives the next error message on success.
+     * @return true if an error was dequeued into @p out, false if none is available.
+     */
     bool pollError(std::string &out);
 
-    /// Returns the last known connection status.
+    /** @brief Returns the last known connection status.
+     * @return The current ClientStatus, read under the internal mutex.
+     */
     [[nodiscard]] ClientStatus getStatus() const;
-    /// Returns the last known connection status message.
+
+    /** @brief Returns the last known connection status message.
+     * @return A copy of the display-ready status string, read under the internal mutex.
+     */
     [[nodiscard]] std::string getStatusMessage() const;
 
   private:

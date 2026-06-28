@@ -1,3 +1,8 @@
+/**
+ * @file GameAssets.cpp
+ * @ingroup gui_gameplay
+ * @brief Loads skins, resource models, icons, and the egg model on startup.
+ */
 #include "GameAssets.hpp"
 #include "src/extern/flecs.h"
 #include "src/gameplay/GamePlay.hpp"

@@ -1,10 +1,17 @@
+/**
+ * @file AdressList.hpp
+ * @ingroup gui_network
+ * @brief RAII wrapper around getaddrinfo() result lists.
+ */
 #pragma once
 
 #include <cstdint>
 #include <netdb.h>
 #include <string_view>
 
-/// RAII wrapper for getaddrinfo() results.
+/** @brief RAII wrapper for getaddrinfo() results.
+ * @ingroup gui_network
+ */
 class AddressList {
   public:
     /// Resolves host and port with getaddrinfo().

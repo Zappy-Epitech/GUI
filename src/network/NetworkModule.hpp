@@ -1,3 +1,8 @@
+/**
+ * @file NetworkModule.hpp
+ * @ingroup gui_network
+ * @brief Flecs module and helpers bridging the threaded client into the ECS world.
+ */
 #pragma once
 
 #include "client/ZappyClient.hpp"
@@ -65,7 +70,15 @@ struct NetworkClientHandle {
     net::ZappyClientPtr client = nullptr;
 };
 
-/// Registers network components and systems.
+/** @brief Flecs module bridging the threaded ZappyClient into the ECS world.
+ *
+ * @details Registers the network singleton components (NetworkConfig,
+ * NetworkState, NetworkClientHandle) and the per-frame NetworkDrain system,
+ * which runs in PreUpdate to mirror worker status into NetworkState and drain
+ * the FIFO error and incoming-line queues (dispatching protocol lines to the
+ * command runner). Also registers the DrawNetworkStatus overlay.
+ * @ingroup gui_network
+ */
 struct NetworkModule {
     /// Installs the network module into the Flecs world.
     NetworkModule(flecs::world &world);
